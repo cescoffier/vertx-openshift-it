@@ -13,6 +13,7 @@
   <properties>
     <vertx.version>3.3.3</vertx.version>
     <main.verticle/>
+    <main.class/>
     <vertx.params/>
 
     <!-- Docker configuration -->
@@ -26,6 +27,11 @@
     <module>vertx-fatjar-transformer</module>
     <module>simple-http</module>
     <module>simple-http-it</module>
+    <module>embedded-http</module>
+    <module>embedded-http-it</module>
+
+
+    <module>vertx-service-discovery-it</module>
   </modules>  
 
   <dependencyManagement>
@@ -100,6 +106,12 @@
       <artifactId>kubernetes-assertions</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>io.fabric8</groupId>
+      <artifactId>kubernetes-client</artifactId>
+      <version>1.4.13</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -115,16 +127,17 @@
               <goals>
                 <goal>shade</goal>
               </goals>
-              <configuration>
-                <transformers>
-                  <transformer implementation="io.vertx.shader.VertxFatJarTransformer">
-                    <verticle>${main.verticle}</verticle>
-                  </transformer>
-                </transformers>
-                <outputFile>${project.build.directory}/${project.artifactId}-${project.version}-fat.jar</outputFile>
-              </configuration>
             </execution>
           </executions>
+          <configuration>
+            <transformers>
+              <transformer implementation="io.vertx.shader.VertxFatJarTransformer">
+                <verticle>${main.verticle}</verticle>
+                <mainClass>${main.class}</mainClass>
+              </transformer>
+            </transformers>
+            <outputFile>${project.build.directory}/${project.artifactId}-${project.version}-fat.jar</outputFile>
+          </configuration>
           <dependencies>
             <dependency>
               <groupId>io.vertx.openshift</groupId>

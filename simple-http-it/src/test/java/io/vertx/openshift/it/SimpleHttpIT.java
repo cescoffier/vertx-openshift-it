@@ -170,7 +170,6 @@ public class SimpleHttpIT extends AbstractKubernetesIT {
 
     assertThat(hosts).hasSize(2);
 
-
     oc.deploymentConfigs().withName("simple-http").edit().editSpec().withReplicas(1).endSpec().done();
 
     await().atMost(1, TimeUnit.MINUTES)

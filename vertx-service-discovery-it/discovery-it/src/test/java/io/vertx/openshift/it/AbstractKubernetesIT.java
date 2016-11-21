@@ -1,5 +1,6 @@
 package io.vertx.openshift.it;
 
+import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.openshift.api.model.Route;
@@ -9,6 +10,8 @@ import org.junit.Before;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -28,12 +31,20 @@ public class AbstractKubernetesIT {
   }
 
 
-  public URL url(Route route) throws MalformedURLException {
-    return new URL("http://" + route.getSpec().getHost());
+  public URL url(Route route)  {
+    try {
+      return new URL("http://" + route.getSpec().getHost());
+    } catch (MalformedURLException e) {
+      throw new RuntimeException(e);
+    }
   }
 
-  public URL url(Route route, String path) throws MalformedURLException {
-    return new URL("http://" + route.getSpec().getHost() + path);
+  public URL url(Route route, String path)  {
+    try {
+      return new URL("http://" + route.getSpec().getHost() + path);
+    } catch (MalformedURLException e) {
+      throw new RuntimeException(e);
+    }
   }
 
 
@@ -48,11 +59,23 @@ public class AbstractKubernetesIT {
         .done();
   }
 
-  public Service createDefaultService(String project) {
+  public Service createDefaultService(String project, String type) {
     Objects.requireNonNull(project);
 
+
+    Map<String, String> labels = new HashMap<>();
+    if (type != null) {
+      labels.put("service-type", type);
+    }
+
+    labels.put("project", project);
+    labels.put("name", project);
+
     return client.services().createNew()
-        .withNewMetadata().withName(project).endMetadata()
+        .withNewMetadata()
+        .withName(project)
+        .withLabels(labels)
+        .endMetadata()
         .withNewSpec()
         .addNewPort()
         .withProtocol("TCP")
@@ -61,8 +84,13 @@ public class AbstractKubernetesIT {
         .endPort()
         .addToSelector("project", project)
         .withType("ClusterIP")
+        .withSessionAffinity("None")
         .endSpec()
         .done();
+  }
+
+  public String name(HasMetadata object) {
+    return object.getMetadata().getName();
   }
 
 

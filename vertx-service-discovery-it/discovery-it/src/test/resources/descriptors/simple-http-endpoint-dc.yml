@@ -1,0 +1,45 @@
+---
+  kind: "DeploymentConfig"
+  apiVersion: "v1"
+  metadata:
+    name: "simple-http-endpoint"
+    labels:
+      name: "simple-http-endpoint"
+      project: "simple-http-endpoint"
+  spec:
+    stategy: "Recreate"
+    triggers:
+      -
+        type: "ConfigChange"
+    replicas: 1
+    selector:
+      name: "simple-http-endpoint"
+      project: "simple-http-endpoint"
+    template:
+      metadata:
+        name: "simple-http-endpoint"
+        labels:
+          name: "simple-http-endpoint"
+          project: "simple-http-endpoint"
+      spec:
+        containers:
+          -
+            image: "vertx-openshift-it/simple-http-endpoint:1.0-SNAPSHOT"
+            imagePullPolicy: "IfNotPresent"
+            name: "simple-http-endpoint"
+            env:
+              - name: "KUBERNETES_NAMESPACE"
+                valueFrom:
+                  fieldRef:
+                    fieldPath: "metadata.namespace"
+            readinessProbe:
+              httpGet:
+                path: /
+                port: 8080
+              initialDelaySeconds: 5
+              timeoutSeconds: 1
+            ports:
+              -
+                name: "http"
+                containerPort: 8080
+                protocol: "TCP"

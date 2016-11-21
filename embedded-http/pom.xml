@@ -2,7 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -11,16 +10,16 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>simple-http</artifactId>
+  <artifactId>embedded-http</artifactId>
+  <description>A simple application embedding Vert.x</description>
 
   <properties>
-    <main.verticle>io.vertx.starter.MainVerticle</main.verticle>
+    <main.class>io.vertx.openshift.embedded.Main</main.class>
 
-    <fabric8.service.simple-http.name>simple-http</fabric8.service.simple-http.name>
-    <fabric8.service.simple-http.port>80</fabric8.service.simple-http.port>
-    <fabric8.service.simple-http.containerPort>8080</fabric8.service.simple-http.containerPort>
-    <fabric8.service.simple-http.type>LoadBalancer</fabric8.service.simple-http.type>
-    <fabric8.label.service-type>http-endpoint</fabric8.label.service-type>
+    <fabric8.service.embedded-http.name>embedded-http</fabric8.service.embedded-http.name>
+    <fabric8.service.embedded-http.port>80</fabric8.service.embedded-http.port>
+    <fabric8.service.embedded-http.containerPort>8080</fabric8.service.embedded-http.containerPort>
+    <fabric8.service.embedded-http.type>LoadBalancer</fabric8.service.embedded-http.type>
 
   </properties>
 

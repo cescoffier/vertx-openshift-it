@@ -26,7 +26,9 @@ public class VertxFatJarTransformer implements ResourceTransformer {
   private List<ResourceTransformer> processors = new ArrayList<>();
 
 
+
   public VertxFatJarTransformer() {
+    System.out.println("Creating the transformer");
     services.add("META-INF/services/io.vertx.core.spi.VerticleFactory");
   }
 
