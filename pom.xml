@@ -32,6 +32,7 @@
 
 
     <module>vertx-service-discovery-it</module>
+    <module>vertx-configuration-it</module>
   </modules>  
 
   <dependencyManagement>
@@ -55,7 +56,7 @@
       <dependency>
         <groupId>io.fabric8</groupId>
         <artifactId>fabric8-project-bom</artifactId>
-        <version>2.2.163</version>
+        <version>2.2.178</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -110,7 +111,13 @@
     <dependency>
       <groupId>io.fabric8</groupId>
       <artifactId>kubernetes-client</artifactId>
-      <version>1.4.13</version>
+      <version>1.4.21</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.fabric8</groupId>
+      <artifactId>openshift-client</artifactId>
+      <version>1.4.21</version>
     </dependency>
   </dependencies>
 
@@ -136,7 +143,6 @@
                 <mainClass>${main.class}</mainClass>
               </transformer>
             </transformers>
-            <outputFile>${project.build.directory}/${project.artifactId}-${project.version}-fat.jar</outputFile>
           </configuration>
           <dependencies>
             <dependency>
@@ -161,52 +167,13 @@
               <phase>process-resources</phase>
             </execution>
             <execution>
-              <id>build-docker-image</id>
+              <id>build-image-stream</id>
               <goals>
                 <goal>build</goal>
               </goals>
-              <phase>install</phase>
+              <phase>verify</phase>
             </execution>
           </executions>
-          <configuration>
-            <images>
-              <image>
-                <name>${docker.image}</name>
-                <build>
-                  <from>java:8-jre-alpine</from>
-                  <tags>
-                    <tag>latest</tag>
-                    <tag>${project.version}</tag>
-                  </tags>
-                  <workdir>/opt</workdir>
-                  <entryPoint>java -jar ${project.artifactId}-${project.version}-fat.jar ${vertx.params}</entryPoint>
-                  <runCmds>
-                    <runcmd>chmod -R 777 /opt</runcmd>
-                    <runcmd>chmod -R 777 /opt/*</runcmd>
-                  </runCmds>
-                  <assembly>
-                    <basedir>/</basedir>
-                    <inline>
-                      <files>
-                        <file>
-                          <source>${project.build.directory}/${project.artifactId}-${project.version}-fat.jar</source>
-                          <outputDirectory>/opt</outputDirectory>
-                          <fileMode>0755</fileMode>
-                        </file>
-                      </files>
-                      <fileSets>
-                        <fileSet>
-                          <directory>${project.basedir}/src/openshift/</directory>
-                          <outputDirectory>/opt</outputDirectory>
-                          <fileMode>0755</fileMode>
-                        </fileSet>
-                      </fileSets>
-                    </inline>
-                  </assembly>
-                </build>
-              </image>
-            </images>
-          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -222,5 +189,16 @@
       </plugin>
     </plugins>
   </build>
+
+  <repositories>
+    <repository>
+      <id>oss.snapshots</id>
+      <name>oss.snapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
 </project>

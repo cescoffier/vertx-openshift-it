@@ -30,6 +30,8 @@ public class VertxFatJarTransformer implements ResourceTransformer {
   public VertxFatJarTransformer() {
     System.out.println("Creating the transformer");
     services.add("META-INF/services/io.vertx.core.spi.VerticleFactory");
+    services.add("META-INF/services/io.vertx.ext.configuration.spi.ConfigurationStoreFactory");
+
   }
 
   @Override
