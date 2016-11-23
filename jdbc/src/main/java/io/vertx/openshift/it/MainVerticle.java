@@ -7,6 +7,7 @@ import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.jdbc.JDBCClient;
 import io.vertx.ext.web.Router;
+import org.flywaydb.core.Flyway;
 
 /**
  * @author Thomas Segismont
@@ -19,6 +20,22 @@ public class MainVerticle extends AbstractVerticle {
 
   @Override
   public void start(Future<Void> startFuture) throws Exception {
+    vertx.<Void>executeBlocking(future -> {
+      Flyway flyway = new Flyway();
+      flyway.setDataSource(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
+      flyway.clean();
+      flyway.migrate();
+      future.complete();
+    }, ar -> {
+      if (ar.succeeded()) {
+        setupTests(startFuture);
+      } else {
+        startFuture.fail(ar.cause());
+      }
+    });
+  }
+
+  private void setupTests(Future<Void> startFuture) {
     JsonObject config = new JsonObject()
       .put("url", JDBC_URL)
       .put("driver_class", "org.postgresql.Driver")
@@ -31,6 +48,9 @@ public class MainVerticle extends AbstractVerticle {
 
     TextQueryTest textQueryTest = new TextQueryTest(jdbcClient);
     router.route(textQueryTest.getPath()).handler(textQueryTest);
+
+    QueryWithParamsTest queryWithParamsTest = new QueryWithParamsTest(jdbcClient);
+    router.route(queryWithParamsTest.getPath()).handler(queryWithParamsTest);
 
     vertx.createHttpServer(new HttpServerOptions().setPort(8080))
       .requestHandler(router::accept)

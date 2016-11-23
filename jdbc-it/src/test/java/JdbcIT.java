@@ -14,4 +14,11 @@ public class JdbcIT {
       .assertThat()
       .statusCode(200);
   }
+
+  @Test
+  public void testQueryWithParams() {
+    RestAssured.get(BASE_URL + "/query_with_params").then()
+      .assertThat()
+      .statusCode(200);
+  }
 }

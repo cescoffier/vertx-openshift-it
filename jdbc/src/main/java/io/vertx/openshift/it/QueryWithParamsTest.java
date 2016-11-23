@@ -1,6 +1,7 @@
 package io.vertx.openshift.it;
 
 import io.vertx.core.Handler;
+import io.vertx.core.json.JsonArray;
 import io.vertx.ext.jdbc.JDBCClient;
 import io.vertx.ext.sql.ResultSet;
 import io.vertx.ext.sql.SQLConnection;
@@ -13,16 +14,16 @@ import static io.vertx.openshift.it.TestUtil.*;
 /**
  * @author Thomas Segismont
  */
-public class TextQueryTest implements Handler<RoutingContext> {
+public class QueryWithParamsTest implements Handler<RoutingContext> {
 
   private final JDBCClient jdbcClient;
 
-  public TextQueryTest(JDBCClient jdbcClient) {
+  public QueryWithParamsTest(JDBCClient jdbcClient) {
     this.jdbcClient = jdbcClient;
   }
 
   public String getPath() {
-    return "/text_query";
+    return "/query_with_params";
   }
 
   @Override
@@ -34,7 +35,7 @@ public class TextQueryTest implements Handler<RoutingContext> {
       }
 
       SQLConnection connection = ar.result();
-      connection.query("select 24/2 as test_column", res -> {
+      connection.queryWithParams("select name from person where id=?", new JsonArray().add(2), res -> {
         if (!ar.succeeded()) {
           fail(rc, ar.cause());
           return;
@@ -46,12 +47,12 @@ public class TextQueryTest implements Handler<RoutingContext> {
 
         if (res.succeeded()) {
           ResultSet resultSet = res.result();
-          if (!resultSet.getColumnNames().equals(Collections.singletonList("test_column"))) {
+          if (!resultSet.getColumnNames().equals(Collections.singletonList("name"))) {
             fail(rc, String.join(",", resultSet.getColumnNames()));
           } else if (resultSet.getResults().size() != 1) {
             fail(rc, String.valueOf(resultSet.getResults().size()));
-          } else if (!resultSet.getResults().get(0).getInteger(0).equals(12)) {
-            fail(rc, String.valueOf(resultSet.getResults().get(0).getInteger(0)));
+          } else if (!resultSet.getResults().get(0).getString(0).equals("titi")) {
+            fail(rc, resultSet.getResults().get(0).getString(0));
           } else if (resultSet.getNumRows() != 1) {
             fail(rc, String.valueOf(resultSet.getNumRows()));
           } else {
