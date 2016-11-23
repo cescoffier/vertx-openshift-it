@@ -46,6 +46,7 @@
     <module>embedded-http-it</module>
     <module>vertx-service-discovery-it</module>
     <module>jdbc-it</module>
+    <module>vertx-configuration-it</module>
   </modules>
 
   <dependencyManagement>
@@ -148,6 +149,13 @@
     <dependency>
       <groupId>io.fabric8</groupId>
       <artifactId>kubernetes-client</artifactId>
+      <version>1.4.21</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.fabric8</groupId>
+      <artifactId>openshift-client</artifactId>
+      <version>1.4.21</version>
     </dependency>
   </dependencies>
 
@@ -157,12 +165,12 @@
         <plugin>
           <groupId>io.fabric8</groupId>
           <artifactId>vertx-maven-plugin</artifactId>
-          <version>1.0.0</version>
+          <version>1.0.1</version>
           <executions>
             <execution>
               <id>vmp</id>
-              <phase>package</phase>
               <goals>
+                <goal>initialize</goal>
                 <goal>package</goal>
               </goals>
             </execution>
@@ -228,7 +236,6 @@
                 <id>fmp</id>
                 <goals>
                   <goal>resource</goal>
-                  <goal>helm</goal>
                   <goal>build</goal>
                 </goals>
               </execution>
@@ -268,5 +275,4 @@
       </build>
     </profile>
   </profiles>
-
 </project>
