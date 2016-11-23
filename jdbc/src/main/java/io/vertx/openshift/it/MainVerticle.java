@@ -13,13 +13,17 @@ import io.vertx.ext.web.Router;
  */
 public class MainVerticle extends AbstractVerticle {
 
+  public static final String JDBC_URL = System.getenv().getOrDefault("JDBC_URL", "jdbc:postgresql:testdb");
+  public static final String JDBC_USER = System.getenv().getOrDefault("JDBC_USER", "vertx");
+  public static final String JDBC_PASSWORD = System.getenv().getOrDefault("JDBC_PASSWORD", "password");
+
   @Override
   public void start(Future<Void> startFuture) throws Exception {
     JsonObject config = new JsonObject()
-      .put("url", "jdbc:postgresql:testdb")
+      .put("url", JDBC_URL)
       .put("driver_class", "org.postgresql.Driver")
-      .put("user", "vertx")
-      .put("password", "password")
+      .put("user", JDBC_USER)
+      .put("password", JDBC_PASSWORD)
       .put("max_pool_size", 30);
     JDBCClient jdbcClient = JDBCClient.createNonShared(vertx, config);
 

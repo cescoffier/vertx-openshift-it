@@ -31,7 +31,8 @@
     <module>embedded-http-it</module>
     <module>vertx-service-discovery-it</module>
     <module>jdbc</module>
-  </modules>  
+    <module>jdbc-it</module>
+  </modules>
 
   <dependencyManagement>
     <dependencies>
