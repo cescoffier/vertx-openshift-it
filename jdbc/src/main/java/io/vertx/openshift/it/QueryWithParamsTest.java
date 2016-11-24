@@ -7,8 +7,6 @@ import io.vertx.ext.sql.ResultSet;
 import io.vertx.ext.sql.SQLConnection;
 import io.vertx.ext.web.RoutingContext;
 
-import java.util.Collections;
-
 import static io.vertx.openshift.it.TestUtil.*;
 
 /**
@@ -46,14 +44,8 @@ public class QueryWithParamsTest implements Handler<RoutingContext> {
         }
 
         ResultSet resultSet = res.result();
-        if (!resultSet.getColumnNames().equals(Collections.singletonList("name"))) {
-          fail(rc, String.join(",", resultSet.getColumnNames()));
-        } else if (resultSet.getResults().size() != 1) {
-          fail(rc, String.valueOf(resultSet.getResults().size()));
-        } else if (!resultSet.getResults().get(0).getString(0).equals("titi")) {
+        if (!resultSet.getResults().get(0).getString(0).equals("titi")) {
           fail(rc, resultSet.getResults().get(0).getString(0));
-        } else if (resultSet.getNumRows() != 1) {
-          fail(rc, String.valueOf(resultSet.getNumRows()));
         } else {
           rc.response().setStatusCode(200).end();
         }
