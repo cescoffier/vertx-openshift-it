@@ -46,11 +46,18 @@ public class MainVerticle extends AbstractVerticle {
 
     Router router = Router.router(vertx);
 
+    /* === Add tests here === */
+
     TextQueryTest textQueryTest = new TextQueryTest(jdbcClient);
     router.route(textQueryTest.getPath()).handler(textQueryTest);
 
     QueryWithParamsTest queryWithParamsTest = new QueryWithParamsTest(jdbcClient);
     router.route(queryWithParamsTest.getPath()).handler(queryWithParamsTest);
+
+    CRUDTest crudTest = new CRUDTest(jdbcClient);
+    router.route(crudTest.getPath()).handler(crudTest);
+
+    /* === */
 
     vertx.createHttpServer(new HttpServerOptions().setPort(8080))
       .requestHandler(router::accept)

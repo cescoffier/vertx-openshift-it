@@ -21,4 +21,11 @@ public class JdbcIT {
       .assertThat()
       .statusCode(200);
   }
+
+  @Test
+  public void testCRUD() {
+    RestAssured.get(BASE_URL + "/crud").then()
+      .assertThat()
+      .statusCode(200);
+  }
 }
