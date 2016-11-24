@@ -28,4 +28,11 @@ public class JdbcIT {
       .assertThat()
       .statusCode(200);
   }
+
+  @Test
+  public void testUpdateWithParams() {
+    RestAssured.get(BASE_URL + "/update_with_params").then()
+      .assertThat()
+      .statusCode(200);
+  }
 }
