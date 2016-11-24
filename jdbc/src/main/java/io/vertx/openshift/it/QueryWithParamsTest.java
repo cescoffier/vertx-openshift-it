@@ -35,29 +35,27 @@ public class QueryWithParamsTest implements Handler<RoutingContext> {
       }
 
       SQLConnection connection = ar.result();
+      rc.response().bodyEndHandler(v -> {
+        connection.close();
+      });
+
       connection.queryWithParams("select name from person where id=?", new JsonArray().add(2), res -> {
-        if (!ar.succeeded()) {
-          fail(rc, ar.cause());
+        if (!res.succeeded()) {
+          fail(rc, res.cause());
           return;
         }
 
-        rc.response().bodyEndHandler(v -> {
-          connection.close();
-        });
-
-        if (res.succeeded()) {
-          ResultSet resultSet = res.result();
-          if (!resultSet.getColumnNames().equals(Collections.singletonList("name"))) {
-            fail(rc, String.join(",", resultSet.getColumnNames()));
-          } else if (resultSet.getResults().size() != 1) {
-            fail(rc, String.valueOf(resultSet.getResults().size()));
-          } else if (!resultSet.getResults().get(0).getString(0).equals("titi")) {
-            fail(rc, resultSet.getResults().get(0).getString(0));
-          } else if (resultSet.getNumRows() != 1) {
-            fail(rc, String.valueOf(resultSet.getNumRows()));
-          } else {
-            rc.response().setStatusCode(200).end();
-          }
+        ResultSet resultSet = res.result();
+        if (!resultSet.getColumnNames().equals(Collections.singletonList("name"))) {
+          fail(rc, String.join(",", resultSet.getColumnNames()));
+        } else if (resultSet.getResults().size() != 1) {
+          fail(rc, String.valueOf(resultSet.getResults().size()));
+        } else if (!resultSet.getResults().get(0).getString(0).equals("titi")) {
+          fail(rc, resultSet.getResults().get(0).getString(0));
+        } else if (resultSet.getNumRows() != 1) {
+          fail(rc, String.valueOf(resultSet.getNumRows()));
+        } else {
+          rc.response().setStatusCode(200).end();
         }
       });
     });
