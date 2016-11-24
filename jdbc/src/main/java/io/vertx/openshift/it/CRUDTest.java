@@ -8,8 +8,6 @@ import io.vertx.ext.sql.SQLConnection;
 import io.vertx.ext.sql.UpdateResult;
 import io.vertx.ext.web.RoutingContext;
 
-import java.util.Collections;
-
 import static io.vertx.openshift.it.TestUtil.*;
 
 /**
@@ -61,17 +59,8 @@ public class CRUDTest implements Handler<RoutingContext> {
           }
 
           ResultSet resultSet = sres.result();
-          if (!resultSet.getColumnNames().equals(Collections.singletonList("name"))) {
-            fail(rc, String.join(",", resultSet.getColumnNames()));
-            return;
-          } else if (resultSet.getResults().size() != 1) {
-            fail(rc, String.valueOf(resultSet.getResults().size()));
-            return;
-          } else if (!resultSet.getResults().get(0).getString(0).equals(calypso)) {
+          if (!resultSet.getResults().get(0).getString(0).equals(calypso)) {
             fail(rc, resultSet.getResults().get(0).getString(0));
-            return;
-          } else if (resultSet.getNumRows() != 1) {
-            fail(rc, String.valueOf(resultSet.getNumRows()));
             return;
           }
 
