@@ -60,6 +60,9 @@ public class MainVerticle extends AbstractVerticle {
     UpdateWithParamsTest updateWithParamsTest = new UpdateWithParamsTest(jdbcClient);
     router.route(updateWithParamsTest.getPath()).handler(updateWithParamsTest);
 
+    StoredProcedureTest storedProcedureTest = new StoredProcedureTest(jdbcClient);
+    router.route(storedProcedureTest.getPath()).handler(storedProcedureTest);
+
     /* === */
 
     vertx.createHttpServer(new HttpServerOptions().setPort(8080))

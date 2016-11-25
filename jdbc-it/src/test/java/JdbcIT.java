@@ -35,4 +35,11 @@ public class JdbcIT {
       .assertThat()
       .statusCode(200);
   }
+
+  @Test
+  public void testStoredProcedure() {
+    RestAssured.get(BASE_URL + "/stored_procedure").then()
+      .assertThat()
+      .statusCode(200);
+  }
 }
