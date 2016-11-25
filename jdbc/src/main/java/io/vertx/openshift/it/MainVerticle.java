@@ -66,6 +66,9 @@ public class MainVerticle extends AbstractVerticle {
     BatchUpdatesTest batchUpdatesTest = new BatchUpdatesTest(jdbcClient);
     router.route(batchUpdatesTest.getPath()).handler(batchUpdatesTest);
 
+    StreamingResultsTest streamingResultsTest = new StreamingResultsTest(jdbcClient);
+    router.route(streamingResultsTest.getPath()).handler(streamingResultsTest);
+
     /* === */
 
     vertx.createHttpServer(new HttpServerOptions().setPort(8080))

@@ -71,3 +71,9 @@ CREATE TABLE CITY (
   NAME          VARCHAR(100) NOT NULL UNIQUE,
   MEMBERS_COUNT INT          NOT NULL
 );
+
+-- Used for streaming results test
+
+CREATE TABLE RANDOM_STRING (
+  VALUE VARCHAR(100) NOT NULL
+);

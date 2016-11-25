@@ -49,4 +49,11 @@ public class JdbcIT {
       .assertThat()
       .statusCode(200);
   }
+
+  @Test
+  public void testStreamingResults() {
+    RestAssured.get(BASE_URL + "/streaming_results").then()
+      .assertThat()
+      .statusCode(200);
+  }
 }

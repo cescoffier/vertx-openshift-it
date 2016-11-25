@@ -44,3 +44,5 @@ fabric.properties
 simple-http-it/src/test/resources/
 simple-http/.vertx/
 simple-http/src/main/fabric8/
+
+.vertx
