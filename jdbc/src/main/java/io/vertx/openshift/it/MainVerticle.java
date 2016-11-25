@@ -63,6 +63,9 @@ public class MainVerticle extends AbstractVerticle {
     StoredProcedureTest storedProcedureTest = new StoredProcedureTest(jdbcClient);
     router.route(storedProcedureTest.getPath()).handler(storedProcedureTest);
 
+    BatchUpdatesTest batchUpdatesTest = new BatchUpdatesTest(jdbcClient);
+    router.route(batchUpdatesTest.getPath()).handler(batchUpdatesTest);
+
     /* === */
 
     vertx.createHttpServer(new HttpServerOptions().setPort(8080))

@@ -42,4 +42,11 @@ public class JdbcIT {
       .assertThat()
       .statusCode(200);
   }
+
+  @Test
+  public void testBatchUpdates() {
+    RestAssured.get(BASE_URL + "/batch_updates").then()
+      .assertThat()
+      .statusCode(200);
+  }
 }

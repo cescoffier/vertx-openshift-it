@@ -64,4 +64,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Used for batch updates test
 
+CREATE TABLE CITY (
+  ID            BIGSERIAL    NOT NULL PRIMARY KEY,
+  NAME          VARCHAR(100) NOT NULL UNIQUE,
+  MEMBERS_COUNT INT          NOT NULL
+);
