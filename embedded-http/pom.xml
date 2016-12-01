@@ -15,24 +15,23 @@
 
   <properties>
     <main.class>io.vertx.openshift.embedded.Main</main.class>
-
-    <fabric8.service.embedded-http.name>embedded-http</fabric8.service.embedded-http.name>
-    <fabric8.service.embedded-http.port>80</fabric8.service.embedded-http.port>
-    <fabric8.service.embedded-http.containerPort>8080</fabric8.service.embedded-http.containerPort>
-    <fabric8.service.embedded-http.type>LoadBalancer</fabric8.service.embedded-http.type>
-
   </properties>
 
   <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-      </plugin>
-
-      <plugin>
         <groupId>io.fabric8</groupId>
-        <artifactId>fabric8-maven-plugin</artifactId>
+        <artifactId>vertx-maven-plugin</artifactId>
+        <configuration>
+          <launcher>${main.class}</launcher>
+        </configuration>
       </plugin>
     </plugins>
   </build>
