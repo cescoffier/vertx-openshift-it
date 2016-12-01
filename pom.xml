@@ -18,8 +18,9 @@
     <!-- set by projects -->
     <main.verticle/>
     <main.class>io.vertx.core.Launcher</main.class>
+    <fabric8.skip>false</fabric8.skip>
 
-    <vertx.version>3.3.3</vertx.version>
+    <vertx.version>3.4.0-SNAPSHOT</vertx.version>
     <slf4j.version>1.7.21</slf4j.version>
     <fabric8.version>2.2.176</fabric8.version>
     <assertj.version>3.5.2</assertj.version>
@@ -199,6 +200,18 @@
         <enabled>false</enabled>
       </snapshots>
     </repository>
+
+    <repository>
+      <id>oss.snapshots</id>
+      <name>OSS Snapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
   </repositories>
 
   <profiles>
@@ -224,6 +237,7 @@
               </execution>
             </executions>
             <configuration>
+              <skip>${fabric8.skip}</skip>
               <generator>
                 <config>
                   <java-exec>

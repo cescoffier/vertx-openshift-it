@@ -14,25 +14,13 @@
 
   <properties>
     <main.verticle>io.vertx.openshift.it.HttpVerticle</main.verticle>
-
-    <fabric8.service.simple-http-endpoint.name>simple-http-endpoint</fabric8.service.simple-http-endpoint.name>
-    <fabric8.service.simple-http-endpoint.port>80</fabric8.service.simple-http-endpoint.port>
-    <fabric8.service.simple-http-endpoint.containerPort>8080</fabric8.service.simple-http-endpoint.containerPort>
-    <fabric8.service.simple-http-endpoint.type>LoadBalancer</fabric8.service.simple-http-endpoint.type>
-    <fabric8.label.service-type>http-endpoint</fabric8.label.service-type>
-
   </properties>
 
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-      </plugin>
-
-      <plugin>
         <groupId>io.fabric8</groupId>
-        <artifactId>fabric8-maven-plugin</artifactId>
+        <artifactId>vertx-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
