@@ -40,7 +40,6 @@
 
   <modules>
     <module>simple-http</module>
-    <module>simple-http-it</module>
     <module>embedded-http</module>
     <module>vertx-service-discovery-it</module>
     <module>jdbc</module>
@@ -223,14 +222,6 @@
                   <goal>build</goal>
                 </goals>
               </execution>
-
-              <!--<execution>-->
-                <!--<id>integration-test</id>-->
-                <!--<goals>-->
-                  <!--<goal>deploy</goal>-->
-                <!--</goals>-->
-                <!--<phase>pre-integration-test</phase>-->
-              <!--</execution>-->
             </executions>
             <configuration>
               <generator>
