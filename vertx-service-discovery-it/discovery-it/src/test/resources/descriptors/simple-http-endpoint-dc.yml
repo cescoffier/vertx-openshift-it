@@ -22,24 +22,26 @@
           name: "simple-http-endpoint"
           project: "simple-http-endpoint"
       spec:
-        containers:
-          -
-            image: "vertx-openshift-it/simple-http-endpoint:1.0-SNAPSHOT"
-            imagePullPolicy: "IfNotPresent"
-            name: "simple-http-endpoint"
-            env:
-              - name: "KUBERNETES_NAMESPACE"
+            containers:
+            - env:
+              - name: KUBERNETES_NAMESPACE
                 valueFrom:
                   fieldRef:
-                    fieldPath: "metadata.namespace"
-            readinessProbe:
-              httpGet:
-                path: /
-                port: 8080
-              initialDelaySeconds: 5
-              timeoutSeconds: 1
-            ports:
-              -
-                name: "http"
-                containerPort: 8080
-                protocol: "TCP"
+                    fieldPath: metadata.namespace
+              - name: JAVA_APP_DIR
+                value: /deployments
+              image: 172.30.124.75:5000/default/simple-http-endpoint:latest
+              imagePullPolicy: IfNotPresent
+              name: java-exec
+              ports:
+              - containerPort: 8080
+                name: http
+                protocol: TCP
+              - containerPort: 9779
+                name: prometheus
+                protocol: TCP
+              - containerPort: 8778
+                name: jolokia
+                protocol: TCP
+              securityContext:
+                privileged: false

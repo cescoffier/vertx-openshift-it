@@ -11,29 +11,43 @@
   <packaging>pom</packaging>
 
   <properties>
-    <vertx.version>3.3.3</vertx.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <java.version>1.8</java.version>
+
+    <!-- set by projects -->
     <main.verticle/>
-    <main.class/>
-    <vertx.params/>
+    <main.class>io.vertx.core.Launcher</main.class>
+    <fabric8.skip>false</fabric8.skip>
+
+    <vertx.version>3.4.0-SNAPSHOT</vertx.version>
+    <slf4j.version>1.7.21</slf4j.version>
+    <fabric8.version>2.2.176</fabric8.version>
+    <assertj.version>3.5.2</assertj.version>
+    <rest-assured.version>3.0.1</rest-assured.version>
+    <junit.version>4.12</junit.version>
+
+    <fabric8.maven.plugin.version>3.2.7</fabric8.maven.plugin.version>
+    <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
+    <vertx-maven-plugin.version>0.1.2</vertx-maven-plugin.version>
 
     <!-- Docker configuration -->
     <docker.group.name>vertx-openshift-it</docker.group.name>
     <fabric8.dockerUser>vertx-openshift-it</fabric8.dockerUser>
     <docker.image>${docker.group.name}/${project.artifactId}:${project.version}</docker.image>
 
+    <awaitility.version>1.7.0</awaitility.version>
   </properties>
 
   <modules>
-    <module>vertx-fatjar-transformer</module>
-    <module>simple-http</module>
     <module>simple-http-it</module>
-    <module>embedded-http</module>
     <module>embedded-http-it</module>
-
-
     <module>vertx-service-discovery-it</module>
     <module>vertx-configuration-it</module>
-  </modules>  
+    <module>jdbc</module>
+    <module>jdbc-it</module>
+  </modules>
+
 
   <dependencyManagement>
     <dependencies>
@@ -46,17 +60,17 @@
       </dependency>
 
       <dependency>
-        <groupId>org.jboss.arquillian</groupId>
-        <artifactId>arquillian-bom</artifactId>
-        <version>1.1.11.Final</version>
-        <scope>import</scope>
+        <groupId>io.fabric8</groupId>
+        <artifactId>fabric8-project-bom-with-platform-deps</artifactId>
+        <version>${fabric8.version}</version>
         <type>pom</type>
+        <scope>import</scope>
       </dependency>
 
       <dependency>
-        <groupId>io.fabric8</groupId>
-        <artifactId>fabric8-project-bom</artifactId>
-        <version>2.2.178</version>
+        <groupId>org.jboss.arquillian</groupId>
+        <artifactId>arquillian-bom</artifactId>
+        <version>1.1.11.Final</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -68,18 +82,25 @@
       <groupId>io.vertx</groupId>
       <artifactId>vertx-core</artifactId>
     </dependency>
+
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.12</version>
-      <scope>test</scope>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-web</artifactId>
     </dependency>
+
+    <!-- Logging -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+
+    <!-- Testing -->
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-unit</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.jboss.arquillian.junit</groupId>
       <artifactId>arquillian-junit-container</artifactId>
@@ -90,15 +111,32 @@
       <artifactId>fabric8-arquillian</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
-      <groupId>org.jboss.arquillian.core</groupId>
-      <artifactId>arquillian-core-api</artifactId>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
-      <version>3.5.2</version>
+      <version>${assertj.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <version>${rest-assured.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.jayway.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <version>${awaitility.version}</version>
       <scope>test</scope>
     </dependency>
 
@@ -111,13 +149,11 @@
     <dependency>
       <groupId>io.fabric8</groupId>
       <artifactId>kubernetes-client</artifactId>
-      <version>1.4.21</version>
     </dependency>
 
     <dependency>
       <groupId>io.fabric8</groupId>
       <artifactId>openshift-client</artifactId>
-      <version>1.4.21</version>
     </dependency>
   </dependencies>
 
@@ -125,51 +161,19 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-shade-plugin</artifactId>
-          <version>2.4.3</version>
+          <groupId>io.fabric8</groupId>
+          <artifactId>vertx-maven-plugin</artifactId>
+          <version>0.1-SNAPSHOT</version>
+          <configuration>
+            <verticle>${main.verticle}</verticle>
+            <launcher>io.vertx.core.Launcher</launcher>
+          </configuration>
           <executions>
             <execution>
+              <id>vmp</id>
               <phase>package</phase>
               <goals>
-                <goal>shade</goal>
-              </goals>
-            </execution>
-          </executions>
-          <configuration>
-            <transformers>
-              <transformer implementation="io.vertx.shader.VertxFatJarTransformer">
-                <verticle>${main.verticle}</verticle>
-                <mainClass>${main.class}</mainClass>
-              </transformer>
-            </transformers>
-          </configuration>
-          <dependencies>
-            <dependency>
-              <groupId>io.vertx.openshift</groupId>
-              <artifactId>vertx-fatjar-transformer</artifactId>
-              <version>1.0-SNAPSHOT</version>
-            </dependency>
-          </dependencies>
-        </plugin>
-
-
-        <plugin>
-          <groupId>io.fabric8</groupId>
-          <artifactId>fabric8-maven-plugin</artifactId>
-          <version>3.2.1</version>
-          <executions>
-            <execution>
-              <id>generate-metadata</id>
-              <goals>
-                <goal>resource</goal>
-              </goals>
-              <phase>process-resources</phase>
-            </execution>
-            <execution>
-              <id>build-image-stream</id>
-              <goals>
-                <goal>build</goal>
+                <goal>package</goal>
               </goals>
               <phase>verify</phase>
             </execution>
@@ -181,10 +185,10 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.5.1</version>
+        <version>3.6.0</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
         </configuration>
       </plugin>
     </plugins>
@@ -192,8 +196,22 @@
 
   <repositories>
     <repository>
+      <id>redhat-build</id>
+      <name>Red Hat builds Repository</name>
+      <url>http://download-node-02.eng.bos.redhat.com/brewroot/repos/jws-3.1-rhel-7-build/latest/maven/</url>
+      <layout>default</layout>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+
+    <repository>
       <id>oss.snapshots</id>
-      <name>oss.snapshots</name>
+      <name>OSS Snapshots</name>
       <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
       <snapshots>
         <enabled>true</enabled>
@@ -201,4 +219,61 @@
     </repository>
   </repositories>
 
+  <profiles>
+    <profile>
+      <id>openshift</id>
+      <properties>
+        <test.to.exclude/>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>fabric8-maven-plugin</artifactId>
+            <version>${fabric8.maven.plugin.version}</version>
+            <executions>
+              <execution>
+                <id>fmp</id>
+                <goals>
+                  <goal>resource</goal>
+                  <goal>helm</goal>
+                  <goal>build</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <skip>${fabric8.skip}</skip>
+              <generator>
+                <config>
+                  <java-exec>
+                    <mainClass>${main.class}</mainClass>
+                  </java-exec>
+                </config>
+              </generator>
+              <resources>
+                <labels>
+                  <service>
+                    <expose>true</expose>
+                  </service>
+                </labels>
+              </resources>
+            </configuration>
+          </plugin>
+
+          <plugin>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>2.19.1</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
