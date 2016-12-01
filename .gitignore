@@ -41,8 +41,4 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 .gitignore
-simple-http-it/src/test/resources/
-simple-http/.vertx/
-simple-http/src/main/fabric8/
-
 .vertx
