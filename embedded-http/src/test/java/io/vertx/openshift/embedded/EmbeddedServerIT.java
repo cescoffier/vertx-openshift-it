@@ -3,7 +3,6 @@ package io.vertx.openshift.embedded;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.openshift.api.model.Route;
 import io.fabric8.openshift.client.OpenShiftClient;
-import io.restassured.RestAssured;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -56,7 +55,6 @@ public class EmbeddedServerIT {
     }
 
     @Test
-    @Ignore
     public void testAppProvisionsRunningPods() throws Exception {
         assertThat(client).deployments().pods().isPodReadyForPeriod();
     }
@@ -91,7 +89,7 @@ public class EmbeddedServerIT {
     }
 
 
-    public URL url() {
+    private URL url() {
         try {
             return new URL("http://" + route.getSpec().getHost());
         } catch (MalformedURLException e) {
