@@ -14,26 +14,21 @@
   <artifactId>simple-http</artifactId>
 
   <properties>
-    <main.verticle>io.vertx.starter.MainVerticle</main.verticle>
-
-    <fabric8.service.simple-http.name>simple-http</fabric8.service.simple-http.name>
-    <fabric8.service.simple-http.port>80</fabric8.service.simple-http.port>
-    <fabric8.service.simple-http.containerPort>8080</fabric8.service.simple-http.containerPort>
-    <fabric8.service.simple-http.type>LoadBalancer</fabric8.service.simple-http.type>
-    <fabric8.label.service-type>http-endpoint</fabric8.label.service-type>
-
+    <main.verticle>io.vertx.openshift.http.MainVerticle</main.verticle>
   </properties>
 
   <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-      </plugin>
-
-      <plugin>
         <groupId>io.fabric8</groupId>
-        <artifactId>fabric8-maven-plugin</artifactId>
+        <artifactId>vertx-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>

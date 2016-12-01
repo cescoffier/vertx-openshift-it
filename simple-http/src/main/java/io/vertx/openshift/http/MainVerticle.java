@@ -1,4 +1,4 @@
-package io.vertx.starter;
+package io.vertx.openshift.http;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.MultiMap;
