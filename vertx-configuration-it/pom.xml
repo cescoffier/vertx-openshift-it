@@ -6,18 +6,16 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-  <groupId>io.vertx.openshift</groupId>
-  <artifactId>vertx-openshift-it</artifactId>
-  <version>1.0-SNAPSHOT</version>
+    <groupId>io.vertx.openshift</groupId>
+    <artifactId>vertx-openshift-it</artifactId>
+    <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>vertx-service-configuration-it</artifactId>
-  <packaging>pom</packaging>
+  <artifactId>http-endpoint-config</artifactId>
 
-  <modules>
-    <module>http-endpoint-using-configuration</module>
-    <module>configuration-it</module>
-  </modules>
+  <properties>
+    <main.verticle>io.vertx.openshift.it.ConfigurableHttpVerticle</main.verticle>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -34,10 +32,22 @@
       <artifactId>vertx-configuration-kubernetes-configmap</artifactId>
       <version>3.4.0-SNAPSHOT</version>
     </dependency>
-    <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>vertx-service-discovery-bridge-kubernetes</artifactId>
-    </dependency>
   </dependencies>
+
+  <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+
+    <plugins>
+      <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>vertx-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

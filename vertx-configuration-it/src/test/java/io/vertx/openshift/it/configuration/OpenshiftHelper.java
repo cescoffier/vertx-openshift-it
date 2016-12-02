@@ -1,4 +1,4 @@
-package io.vertx.openshift.it;
+package io.vertx.openshift.it.configuration;
 
 import java.io.File;
 import java.io.IOException;
