@@ -175,7 +175,6 @@
               <goals>
                 <goal>package</goal>
               </goals>
-              <phase>verify</phase>
             </execution>
           </executions>
         </plugin>
