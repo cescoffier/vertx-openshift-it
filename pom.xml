@@ -41,6 +41,7 @@
 
   <modules>
     <module>simple-http-it</module>
+    <module>http2-it</module>
     <module>embedded-http-it</module>
     <module>vertx-service-discovery-it</module>
     <module>jdbc</module>
