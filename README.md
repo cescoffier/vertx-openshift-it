@@ -1,5 +1,6 @@
 # Vert.x Integration Test for OpenShift
 
+**Important**: You need the latest (DEV) version of the vertx-maven-plugin from: https://github.com/fabric8io/vertx-maven-plugin
 
 ## Embedded HTTP
 
@@ -30,4 +31,13 @@ cd vertx-service-discovery-it
 mvn clean install -Popenshift
 ```
 
+## JDBC
 
+Test the Async JDBC Client against a PosgreSQL database running in OpenShift.
+
+**Need the `oc` command line in the `PATH`**
+
+```
+cd vertx-service-discovery-it
+mvn clean install -Popenshift
+```
