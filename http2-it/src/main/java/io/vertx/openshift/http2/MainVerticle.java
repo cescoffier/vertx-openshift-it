@@ -17,8 +17,10 @@ public class MainVerticle extends AbstractVerticle {
       vertx.createHttpServer(new HttpServerOptions().
         setUseAlpn(true).
         setSsl(true).
-        setPemKeyCertOptions(new PemKeyCertOptions().setKeyPath("server-key.pem").setCertPath("server-cert.pem")
-        ));
+        setPemKeyCertOptions(
+          new PemKeyCertOptions().setKeyPath("server-key.pem").setCertPath("server-cert.pem")
+        )
+      );
 
     server.requestHandler(req -> {
       req.response().putHeader("content-type", "text/html").end("<html><body>" +
