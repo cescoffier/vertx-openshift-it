@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import static com.jayway.awaitility.Awaitility.await;
 import static io.fabric8.kubernetes.assertions.internal.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
-import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 

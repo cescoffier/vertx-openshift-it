@@ -2,6 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -12,30 +13,44 @@
 
   <artifactId>jdbc-it</artifactId>
 
+  <properties>
+    <main.verticle>io.vertx.openshift.it.MyMainVerticle</main.verticle>
+  </properties>
+
   <dependencies>
     <dependency>
-      <groupId>com.jayway.restassured</groupId>
-      <artifactId>rest-assured</artifactId>
-      <version>2.9.0</version>
-      <scope>test</scope>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-sql-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-jdbc-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>9.4.1212</version>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-core</artifactId>
+      <version>4.0.3</version>
     </dependency>
   </dependencies>
 
   <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+
     <plugins>
       <plugin>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.19.1</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
+        <groupId>io.fabric8</groupId>
+        <artifactId>vertx-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
-
 </project>
