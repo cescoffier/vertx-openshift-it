@@ -1,7 +1,5 @@
 # Vert.x Integration Test for OpenShift
 
-**Important**: You need the latest (DEV) version of the vertx-maven-plugin from: https://github.com/fabric8io/vertx-maven-plugin
-
 ## Embedded HTTP
 
 Check the embedded case. An embedded HTTP server is started is started and tested.
