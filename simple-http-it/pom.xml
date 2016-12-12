@@ -14,7 +14,7 @@
   <artifactId>simple-http</artifactId>
 
   <properties>
-    <main.verticle>io.vertx.openshift.http.MainVerticle</main.verticle>
+    <vertx.verticle>io.vertx.openshift.http.MainVerticle</vertx.verticle>
   </properties>
 
   <build>

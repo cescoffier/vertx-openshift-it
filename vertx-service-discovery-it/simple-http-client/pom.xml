@@ -13,7 +13,7 @@
   <artifactId>simple-http-client</artifactId>
 
   <properties>
-    <main.verticle>io.vertx.openshift.it.MainVerticle</main.verticle>
+    <vertx.verticle>io.vertx.openshift.it.MainVerticle</vertx.verticle>
   </properties>
 
   <build>

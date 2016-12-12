@@ -13,7 +13,7 @@
   <artifactId>http2-it</artifactId>
 
   <properties>
-    <main.verticle>io.vertx.openshift.http2.MainVerticle</main.verticle>
+    <vertx.verticle>io.vertx.openshift.http2.MainVerticle</vertx.verticle>
   </properties>
 
   <dependencies>

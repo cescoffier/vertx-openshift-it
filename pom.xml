@@ -156,11 +156,7 @@
         <plugin>
           <groupId>io.fabric8</groupId>
           <artifactId>vertx-maven-plugin</artifactId>
-          <version>0.1-SNAPSHOT</version>
-          <configuration>
-            <verticle>${main.verticle}</verticle>
-            <launcher>io.vertx.core.Launcher</launcher>
-          </configuration>
+          <version>1.0.0</version>
           <executions>
             <execution>
               <id>vmp</id>

@@ -14,7 +14,7 @@
   <description>A simple application embedding Vert.x</description>
 
   <properties>
-    <main.class>io.vertx.openshift.embedded.Main</main.class>
+    <vertx.launcher>io.vertx.openshift.embedded.Main</vertx.launcher>
   </properties>
 
   <build>
@@ -29,9 +29,6 @@
       <plugin>
         <groupId>io.fabric8</groupId>
         <artifactId>vertx-maven-plugin</artifactId>
-        <configuration>
-          <launcher>${main.class}</launcher>
-        </configuration>
       </plugin>
     </plugins>
   </build>
