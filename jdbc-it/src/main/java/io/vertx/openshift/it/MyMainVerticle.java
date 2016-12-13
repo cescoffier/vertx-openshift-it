@@ -62,6 +62,9 @@ public class MyMainVerticle extends AbstractVerticle {
     TransactionsTest transactionsTest = new TransactionsTest(jdbcClient);
     router.route(transactionsTest.getPath()).handler(transactionsTest);
 
+    DDLTest ddlTest = new DDLTest(jdbcClient);
+    router.route(ddlTest.getPath()).handler(ddlTest);
+
     /* === */
 
     vertx.createHttpServer(new HttpServerOptions().setPort(8080))

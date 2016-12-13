@@ -135,6 +135,13 @@ public class JdbcIT {
       .statusCode(200);
   }
 
+  @Test
+  public void testDdl() {
+    RestAssured.get(url("/ddl")).then()
+      .assertThat()
+      .statusCode(200);
+  }
+
   private URL url() {
     try {
       return new URL("http://" + route.getSpec().getHost());
