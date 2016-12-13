@@ -95,3 +95,14 @@ CREATE TABLE DEFINITION (
   ID   BIGSERIAL    NOT NULL PRIMARY KEY,
   NAME VARCHAR(100) NOT NULL
 );
+
+-- Used for special datatypes test
+
+CREATE TABLE ITEM (
+  ID         BIGSERIAL                NOT NULL PRIMARY KEY,
+  CID        UUID                     NOT NULL UNIQUE,
+  NAME       VARCHAR(100)             NOT NULL UNIQUE,
+  CREATED_ON DATE                     NOT NULL,
+  CREATED_AT TIME                     NOT NULL,
+  CREATED    TIMESTAMP WITH TIME ZONE NOT NULL
+);

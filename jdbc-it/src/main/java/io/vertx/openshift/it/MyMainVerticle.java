@@ -29,7 +29,8 @@ public class MyMainVerticle extends AbstractVerticle {
       .put("url", JDBC_URL)
       .put("driver_class", "org.postgresql.Driver")
       .put("user", JDBC_USER)
-      .put("password", JDBC_PASSWORD);
+      .put("password", JDBC_PASSWORD)
+      .put("castUUID", true);
 
     jdbcClient = JDBCClient.createNonShared(vertx, config);
 
@@ -64,6 +65,9 @@ public class MyMainVerticle extends AbstractVerticle {
 
     DDLTest ddlTest = new DDLTest(jdbcClient);
     router.route(ddlTest.getPath()).handler(ddlTest);
+
+    SpecialDatatypesTest specialDatatypesTest = new SpecialDatatypesTest(jdbcClient);
+    router.route(specialDatatypesTest.getPath()).handler(specialDatatypesTest);
 
     /* === */
 
