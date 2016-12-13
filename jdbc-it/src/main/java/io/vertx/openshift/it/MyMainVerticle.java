@@ -59,6 +59,9 @@ public class MyMainVerticle extends AbstractVerticle {
     StreamingResultsTest streamingResultsTest = new StreamingResultsTest(jdbcClient);
     router.route(streamingResultsTest.getPath()).handler(streamingResultsTest);
 
+    TransactionsTest transactionsTest = new TransactionsTest(jdbcClient);
+    router.route(transactionsTest.getPath()).handler(transactionsTest);
+
     /* === */
 
     vertx.createHttpServer(new HttpServerOptions().setPort(8080))

@@ -15,10 +15,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
-import static com.jayway.awaitility.Awaitility.await;
-import static io.fabric8.kubernetes.assertions.internal.Assertions.assertThat;
-import static io.restassured.RestAssured.get;
-import static io.vertx.openshift.jdbc.OpenshiftHelper.oc_execute;
+import static com.jayway.awaitility.Awaitility.*;
+import static io.fabric8.kubernetes.assertions.internal.Assertions.*;
+import static io.restassured.RestAssured.*;
+import static io.vertx.openshift.jdbc.OpenshiftHelper.*;
 
 /**
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
@@ -124,6 +124,13 @@ public class JdbcIT {
   @Test
   public void testStreamingResults() {
     RestAssured.get(url("/streaming_results")).then()
+      .assertThat()
+      .statusCode(200);
+  }
+
+  @Test
+  public void testTransactions() {
+    RestAssured.get(url("/transactions")).then()
       .assertThat()
       .statusCode(200);
   }
