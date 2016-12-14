@@ -17,6 +17,15 @@
     <vertx.launcher>io.vertx.openshift.embedded.Main</vertx.launcher>
   </properties>
 
+  <dependencies>
+    <dependency>
+      <groupId>io.vertx.openshift</groupId>
+      <artifactId>vertx-it-utils</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
   <build>
     <testResources>
       <testResource>

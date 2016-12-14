@@ -40,6 +40,7 @@
   </properties>
 
   <modules>
+    <module>vertx-it-utils</module>
     <module>simple-http-it</module>
     <module>http2-it</module>
     <module>embedded-http-it</module>
