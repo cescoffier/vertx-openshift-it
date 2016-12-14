@@ -3,6 +3,7 @@ package io.vertx.it.openshift.utils;
 import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.openshift.api.model.DeploymentConfig;
 import io.fabric8.openshift.api.model.Route;
@@ -10,7 +11,9 @@ import io.fabric8.openshift.client.OpenShiftClient;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -39,7 +42,7 @@ public class Kube {
 
     Route existing = oc.routes().withName(svc).get();
     if (existing != null && deleteIfExist) {
-      oc.routes().delete(existing);
+      oc.routes().withName(name(existing)).delete();
     }
 
     if (existing != null && !deleteIfExist) {
@@ -50,6 +53,39 @@ public class Kube {
       .withNewMetadata().withName(svc).endMetadata()
       .withNewSpec()
       .withNewTo().withName(svc).withKind("Service").endTo()
+      .endSpec()
+      .done();
+  }
+
+  public static Service createServiceIfNeeded(KubernetesClient client, String name, String type) {
+    Objects.requireNonNull(name);
+
+    Service service = client.services().withName(name).get();
+    if (service != null) {
+      return service;
+    }
+
+    Map<String, String> labels = new HashMap<>();
+    if (type != null) {
+      labels.put("service-type", type);
+    }
+
+    labels.put("name", name);
+
+    return client.services().createNew()
+      .withNewMetadata()
+      .withName(name)
+      .withLabels(labels)
+      .endMetadata()
+      .withNewSpec()
+      .addNewPort()
+      .withProtocol("TCP")
+      .withPort(80)
+      .withNewTargetPort(8080)
+      .endPort()
+      .addToSelector("name", name)
+      .withType("ClusterIP")
+      .withSessionAffinity("None")
       .endSpec()
       .done();
   }
@@ -74,7 +110,7 @@ public class Kube {
 
   public static boolean isRouteServed(Route route) {
     try {
-      return get(urlForRoute(route)).getStatusCode() == 200;
+      return get(urlForRoute(route)).getStatusCode() < 500;
     } catch (Exception e) {
       return false;
     }
@@ -87,6 +123,10 @@ public class Kube {
     if (config == null) {
       fail("Unable to find the deployment config " + name);
       return null;
+    }
+
+    if (config.getSpec().getReplicas() == number) {
+      return config;
     }
 
     config = oc.deploymentConfigs().withName(name)
@@ -119,5 +159,24 @@ public class Kube {
       // Ignore
     }
   }
+
+  public static void awaitUntilRouteIsServed(Route route) {
+    await().atMost(3, TimeUnit.MINUTES).until(() -> Kube.isRouteServed(route));
+  }
+
+  public static void awaitUntilAllPodsAreReady(KubernetesClient client) {
+    await().atMost(1, TimeUnit.MINUTES).until(() -> {
+      List<Pod> items = client.pods().list().getItems();
+      for (Pod pod : items) {
+        if (!pod.getMetadata().getName().endsWith("-build")) {
+          if (!KubernetesHelper.isPodReady(pod)) {
+            return false;
+          }
+        }
+      }
+      return true;
+    });
+  }
+
 
 }
