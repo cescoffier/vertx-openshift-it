@@ -57,7 +57,7 @@ public class ClientCreationTest implements Handler<RoutingContext> {
       rc.addBodyEndHandler(v -> jdbcClient.close());
 
       jdbcClient.getConnection(ar -> {
-        if (!ar.succeeded()) {
+        if (ar.failed()) {
           fail(rc, ar.cause());
           return;
         }

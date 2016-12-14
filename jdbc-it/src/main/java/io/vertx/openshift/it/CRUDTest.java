@@ -28,7 +28,7 @@ public class CRUDTest implements Handler<RoutingContext> {
   @Override
   public void handle(RoutingContext rc) {
     jdbcClient.getConnection(ar -> {
-      if (!ar.succeeded()) {
+      if (ar.failed()) {
         fail(rc, ar.cause());
         return;
       }
@@ -40,7 +40,7 @@ public class CRUDTest implements Handler<RoutingContext> {
 
       String calypso = "Calypso";
       connection.updateWithParams("insert into ship (name) values (?)", new JsonArray().add(calypso), ires -> {
-        if (!ires.succeeded()) {
+        if (ires.failed()) {
           fail(rc, ires.cause());
           return;
         }
@@ -53,7 +53,7 @@ public class CRUDTest implements Handler<RoutingContext> {
 
         Long calypsoId = insertResult.getKeys().getLong(0);
         connection.queryWithParams("select name from ship where id = ?", new JsonArray().add(calypsoId), sres -> {
-          if (!sres.succeeded()) {
+          if (sres.failed()) {
             fail(rc, sres.cause());
             return;
           }
@@ -65,7 +65,7 @@ public class CRUDTest implements Handler<RoutingContext> {
           }
 
           connection.updateWithParams("update ship set name = ? where id = ?", new JsonArray().add("Alcyone").add(calypsoId), ures -> {
-            if (!ures.succeeded()) {
+            if (ures.failed()) {
               fail(rc, ures.cause());
               return;
             }
@@ -77,7 +77,7 @@ public class CRUDTest implements Handler<RoutingContext> {
             }
 
             connection.updateWithParams("delete from ship where id = ?", new JsonArray().add(calypsoId), dres -> {
-              if (!dres.succeeded()) {
+              if (dres.failed()) {
                 fail(rc, dres.cause());
                 return;
               }

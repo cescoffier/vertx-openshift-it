@@ -27,7 +27,7 @@ public class QueryWithParamsTest implements Handler<RoutingContext> {
   @Override
   public void handle(RoutingContext rc) {
     jdbcClient.getConnection(ar -> {
-      if (!ar.succeeded()) {
+      if (ar.failed()) {
         fail(rc, ar.cause());
         return;
       }
@@ -38,7 +38,7 @@ public class QueryWithParamsTest implements Handler<RoutingContext> {
       });
 
       connection.queryWithParams("select name from person where id=?", new JsonArray().add(2), res -> {
-        if (!res.succeeded()) {
+        if (res.failed()) {
           fail(rc, res.cause());
           return;
         }

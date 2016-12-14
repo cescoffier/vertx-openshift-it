@@ -30,7 +30,7 @@ public class BinaryTest implements Handler<RoutingContext> {
   @Override
   public void handle(RoutingContext rc) {
     jdbcClient.getConnection(ar -> {
-      if (!ar.succeeded()) {
+      if (ar.failed()) {
         fail(rc, ar.cause());
         return;
       }
@@ -49,7 +49,7 @@ public class BinaryTest implements Handler<RoutingContext> {
         .add(imageName)
         .add(imageContent);
       connection.updateWithParams(sqlInsert, paramsInsert, ires -> {
-        if (!ires.succeeded()) {
+        if (ires.failed()) {
           fail(rc, ires.cause());
           return;
         }
@@ -58,7 +58,7 @@ public class BinaryTest implements Handler<RoutingContext> {
 
         String sqlSelect = "select name, content from image where id = ?";
         connection.queryWithParams(sqlSelect, new JsonArray().add(imageId), sres -> {
-          if (!sres.succeeded()) {
+          if (sres.failed()) {
             fail(rc, sres.cause());
             return;
           }

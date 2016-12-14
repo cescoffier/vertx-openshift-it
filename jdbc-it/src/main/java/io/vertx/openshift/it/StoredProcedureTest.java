@@ -33,7 +33,7 @@ public class StoredProcedureTest implements Handler<RoutingContext> {
   @Override
   public void handle(RoutingContext rc) {
     jdbcClient.getConnection(ar -> {
-      if (!ar.succeeded()) {
+      if (ar.failed()) {
         fail(rc, ar.cause());
         return;
       }
@@ -45,7 +45,7 @@ public class StoredProcedureTest implements Handler<RoutingContext> {
 
       String statsFunc = "{ call animal_stats(?, ?, ?) }";
       connection.callWithParams(statsFunc, new JsonArray().add(false), new JsonArray().addNull().add("BIGINT").add("REAL"), sres -> {
-        if (!sres.succeeded()) {
+        if (sres.failed()) {
           fail(rc, sres.cause());
           return;
         }
@@ -76,7 +76,7 @@ public class StoredProcedureTest implements Handler<RoutingContext> {
 
         String loadFunc = "{ call load_animals(?) }";
         connection.callWithParams(loadFunc, new JsonArray().add(true), new JsonArray(), lres -> {
-          if (!lres.succeeded()) {
+          if (lres.failed()) {
             fail(rc, lres.cause());
             return;
           }

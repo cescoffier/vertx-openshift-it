@@ -28,7 +28,7 @@ public class TextQueryTest implements Handler<RoutingContext> {
   @Override
   public void handle(RoutingContext rc) {
     jdbcClient.getConnection(ar -> {
-      if (!ar.succeeded()) {
+      if (ar.failed()) {
         fail(rc, ar.cause());
         return;
       }
@@ -39,7 +39,7 @@ public class TextQueryTest implements Handler<RoutingContext> {
       });
 
       connection.query("select 24/2 as test_column", res -> {
-        if (!res.succeeded()) {
+        if (res.failed()) {
           fail(rc, res.cause());
           return;
         }

@@ -32,7 +32,7 @@ public class BatchUpdatesTest implements Handler<RoutingContext> {
   @Override
   public void handle(RoutingContext rc) {
     jdbcClient.getConnection(ar -> {
-      if (!ar.succeeded()) {
+      if (ar.failed()) {
         fail(rc, ar.cause());
         return;
       }
@@ -52,7 +52,7 @@ public class BatchUpdatesTest implements Handler<RoutingContext> {
         .map(name -> "insert into city (name, members_count) values('" + name + "', 0)")
         .collect(toList());
       connection.batch(inserts, ires -> {
-        if (!ires.succeeded()) {
+        if (ires.failed()) {
           fail(rc, ires.cause());
           return;
         }
@@ -67,7 +67,7 @@ public class BatchUpdatesTest implements Handler<RoutingContext> {
           .map(e -> new JsonArray().add(e.getValue()).add(e.getKey()))
           .collect(toList());
         connection.batchWithParams("update city set members_count = ? where name = ?", args, ures -> {
-          if (!ures.succeeded()) {
+          if (ures.failed()) {
             fail(rc, ures.cause());
             return;
           }

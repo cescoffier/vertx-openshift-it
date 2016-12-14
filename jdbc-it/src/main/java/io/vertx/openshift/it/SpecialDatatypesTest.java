@@ -32,7 +32,7 @@ public class SpecialDatatypesTest implements Handler<RoutingContext> {
   @Override
   public void handle(RoutingContext rc) {
     jdbcClient.getConnection(ar -> {
-      if (!ar.succeeded()) {
+      if (ar.failed()) {
         fail(rc, ar.cause());
         return;
       }
@@ -55,14 +55,14 @@ public class SpecialDatatypesTest implements Handler<RoutingContext> {
         .add(zonedDateTime.toLocalTime().toString())
         .add(instant);
       connection.updateWithParams(sqlInsert, paramsInsert, ires -> {
-        if (!ires.succeeded()) {
+        if (ires.failed()) {
           fail(rc, ires.cause());
           return;
         }
 
         String sqlSelect = "select cid,created_on,created_at,created from item where cid = ?";
         connection.queryWithParams(sqlSelect, new JsonArray().add(uuid), sres -> {
-          if (!sres.succeeded()) {
+          if (sres.failed()) {
             fail(rc, sres.cause());
             return;
           }

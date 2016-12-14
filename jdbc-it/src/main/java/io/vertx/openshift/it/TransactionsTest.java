@@ -26,7 +26,7 @@ public class TransactionsTest implements Handler<RoutingContext> {
   @Override
   public void handle(RoutingContext rc) {
     jdbcClient.getConnection(ar -> {
-      if (!ar.succeeded()) {
+      if (ar.failed()) {
         fail(rc, ar.cause());
         return;
       }
@@ -37,19 +37,19 @@ public class TransactionsTest implements Handler<RoutingContext> {
       });
 
       connection.setAutoCommit(false, acres -> {
-        if (!acres.succeeded()) {
+        if (acres.failed()) {
           fail(rc, acres.cause());
           return;
         }
 
         connection.updateWithParams("delete from cake where name = ?", new JsonArray().add("black forest"), dres -> {
-          if (!dres.succeeded()) {
+          if (dres.failed()) {
             fail(rc, dres.cause());
             return;
           }
 
           connection.query("select count(*) as count from cake", cres -> {
-            if (!cres.succeeded()) {
+            if (cres.failed()) {
               fail(rc, cres.cause());
               return;
             }
@@ -59,7 +59,7 @@ public class TransactionsTest implements Handler<RoutingContext> {
             }
 
             connection.rollback(rres -> {
-              if (!rres.succeeded()) {
+              if (rres.failed()) {
                 fail(rc, rres.cause());
                 return;
               }

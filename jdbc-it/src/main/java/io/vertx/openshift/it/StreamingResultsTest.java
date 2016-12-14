@@ -34,7 +34,7 @@ public class StreamingResultsTest implements Handler<RoutingContext> {
   @Override
   public void handle(RoutingContext rc) {
     jdbcClient.getConnection(ar -> {
-      if (!ar.succeeded()) {
+      if (ar.failed()) {
         fail(rc, ar.cause());
         return;
       }
@@ -46,7 +46,7 @@ public class StreamingResultsTest implements Handler<RoutingContext> {
 
       FileSystem fileSystem = rc.vertx().fileSystem();
       fileSystem.open("db/migration/strings", new OpenOptions(), ores -> {
-        if (!ores.succeeded()) {
+        if (ores.failed()) {
           fail(rc, ores.cause());
           return;
         }
@@ -62,13 +62,13 @@ public class StreamingResultsTest implements Handler<RoutingContext> {
             .map(value -> "insert into random_string (value) values ('" + value + "')")
             .collect(toList());
           connection.batch(statements, ires -> {
-            if (!ires.succeeded()) {
+            if (ires.failed()) {
               fail(rc, ires.cause());
               return;
             }
 
             connection.queryStream("select value from random_string", sres -> {
-              if (!sres.succeeded()) {
+              if (sres.failed()) {
                 fail(rc, sres.cause());
                 return;
               }

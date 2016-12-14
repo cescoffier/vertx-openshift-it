@@ -27,7 +27,7 @@ public class UpdateWithParamsTest implements Handler<RoutingContext> {
   @Override
   public void handle(RoutingContext rc) {
     jdbcClient.getConnection(ar -> {
-      if (!ar.succeeded()) {
+      if (ar.failed()) {
         fail(rc, ar.cause());
         return;
       }
@@ -38,7 +38,7 @@ public class UpdateWithParamsTest implements Handler<RoutingContext> {
       });
 
       connection.updateWithParams("update car set name = ? where name = ?", new JsonArray().add("chick hicks").add("martin"), ures -> {
-        if (!ures.succeeded()) {
+        if (ures.failed()) {
           fail(rc, ures.cause());
           return;
         }

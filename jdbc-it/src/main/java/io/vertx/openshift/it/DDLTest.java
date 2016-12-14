@@ -26,7 +26,7 @@ public class DDLTest implements Handler<RoutingContext> {
   @Override
   public void handle(RoutingContext rc) {
     jdbcClient.getConnection(ar -> {
-      if (!ar.succeeded()) {
+      if (ar.failed()) {
         fail(rc, ar.cause());
         return;
       }
@@ -38,13 +38,13 @@ public class DDLTest implements Handler<RoutingContext> {
 
       String sql = "alter table definition add constraint name_unique unique (name)";
       connection.execute(sql, execute -> {
-        if (!execute.succeeded()) {
+        if (execute.failed()) {
           fail(rc, execute.cause());
           return;
         }
 
         connection.updateWithParams("insert into definition (name) values (?)", new JsonArray().add("def"), ires -> {
-          if (!ires.succeeded()) {
+          if (ires.failed()) {
             fail(rc, ires.cause());
             return;
           }
