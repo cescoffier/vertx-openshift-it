@@ -17,6 +17,15 @@
     <vertx.verticle>io.vertx.openshift.http.MainVerticle</vertx.verticle>
   </properties>
 
+  <dependencies>
+    <dependency>
+      <groupId>io.vertx.openshift</groupId>
+      <artifactId>vertx-it-utils</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
   <build>
     <testResources>
       <testResource>

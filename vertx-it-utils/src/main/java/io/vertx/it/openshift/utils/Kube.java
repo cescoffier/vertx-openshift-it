@@ -59,7 +59,16 @@ public class Kube {
       return new URL("http://" + Objects.requireNonNull(route).getSpec().getHost());
     } catch (MalformedURLException e) {
       fail("Unable to compute the url for route " + name(route), e);
-      return null;
+      throw new IllegalArgumentException(e);
+    }
+  }
+
+  public static URL urlForRoute(Route route, String path) {
+    try {
+      return new URL("http://" + route.getSpec().getHost() + path);
+    } catch (MalformedURLException e) {
+      fail("Unable to compute the url for route " + name(route), e);
+      throw new IllegalArgumentException(e);
     }
   }
 
@@ -101,6 +110,14 @@ public class Kube {
     List<Pod> pods = oc(client).pods().list().getItems();
     return pods.stream().filter(pod -> name(pod).startsWith(name) && !name(pod).endsWith("-build"))
       .collect(Collectors.toList());
+  }
+
+  public static void sleep(long time) {
+    try {
+      Thread.sleep(time);
+    } catch (InterruptedException e) {
+      // Ignore
+    }
   }
 
 }
