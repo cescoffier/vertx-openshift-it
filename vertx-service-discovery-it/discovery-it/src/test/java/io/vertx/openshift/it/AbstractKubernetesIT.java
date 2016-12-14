@@ -51,6 +51,11 @@ public class AbstractKubernetesIT {
   public Route expose(OpenShiftClient oc, Service service) {
     String name = service.getMetadata().getName();
 
+    Route route = oc.routes().withName(name).get();
+    if (route != null) {
+      return route;
+    }
+
     return oc.routes().createNew()
         .withNewMetadata().withName(name).endMetadata()
         .withNewSpec()
@@ -82,7 +87,7 @@ public class AbstractKubernetesIT {
         .withPort(80)
         .withNewTargetPort(8080)
         .endPort()
-        .addToSelector("project", project)
+        .addToSelector("name", project)
         .withType("ClusterIP")
         .withSessionAffinity("None")
         .endSpec()

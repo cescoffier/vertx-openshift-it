@@ -1,19 +1,22 @@
 package io.vertx.openshift.it;
 
+import com.google.common.collect.ImmutableMap;
 import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Service;
-import io.fabric8.kubernetes.api.model.extensions.Deployment;
 import io.fabric8.openshift.api.model.DeploymentConfig;
+import io.fabric8.openshift.api.model.ImageStream;
 import io.fabric8.openshift.api.model.Route;
+import org.apache.commons.io.FileUtils;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,22 +39,23 @@ import static org.hamcrest.Matchers.notNullValue;
 @RunAsClient
 public class ServiceDiscoveryIT extends AbstractKubernetesIT {
 
+  private final String NAMESPACE = "vertx-service-discovery-it";
+
   private Route route;
   private Route endpointRoute;
 
-  //TODO the descriptors contains a hardcoded IP from openshift.
 
   @Before
-  public void prepare() throws FileNotFoundException, InterruptedException {
+  public void prepare() throws IOException, InterruptedException {
+//    cleanup();
     initializeServiceAccount();
     endpointRoute = initializeHttpEndpoint();
     route = initializeHttpClient();
 
-
     System.out.println(url(route));
     System.out.println(url(endpointRoute));
 
-    awaitUntilAllPodsAreReady();
+//    awaitUntilAllPodsAreReady();
     awaitUntilRouteIsServed(endpointRoute);
     awaitUntilRouteIsServed(route);
 
@@ -70,10 +74,12 @@ public class ServiceDiscoveryIT extends AbstractKubernetesIT {
 
   private void awaitUntilAllPodsAreReady() {
     await().atMost(2, TimeUnit.MINUTES).until(() -> {
-      List<Pod> items = client.pods().list().getItems();
+      List<Pod> items = client.pods().inNamespace(NAMESPACE).list().getItems();
       for (Pod pod : items) {
-        if (!KubernetesHelper.isPodReady(pod)) {
-          return false;
+        if (! pod.getMetadata().getName().endsWith("-build")) {
+          if (!KubernetesHelper.isPodReady(pod)) {
+            return false;
+          }
         }
       }
       return true;
@@ -89,20 +95,22 @@ public class ServiceDiscoveryIT extends AbstractKubernetesIT {
       "-n", "default");
   }
 
-  public Route initializeHttpEndpoint() throws FileNotFoundException {
+  public Route initializeHttpEndpoint() throws IOException {
     String name = "simple-http-endpoint";
 
+    ImageStream stream = findImageStream(name, NAMESPACE);
+    assertThat(stream).isNotNull();
+
+    File file = filter("src/test/resources/descriptors/http-endpoint-dc.json",
+      ImmutableMap.of("image", stream.getStatus().getDockerImageRepository()));
+
+    String name2 = deploy(file);
+    assertThat(name).isEqualTo(name2);
 
     DeploymentConfig deployment = oc.deploymentConfigs().withName(name).get();
-    if (deployment == null) {
-      deployment = oc.deploymentConfigs().load(new FileInputStream("src/test/resources/descriptors/" + name + "-dc" +
-        ".yml")).get();
-      oc.deploymentConfigs().create(deployment);
-    } else {
-      if (deployment.getSpec().getReplicas() == 0) {
-        oc.deploymentConfigs().withName(name(deployment))
-          .edit().editSpec().withReplicas(1).endSpec().done();
-      }
+    if (deployment.getSpec().getReplicas() != 1) {
+      oc.deploymentConfigs().withName(name(deployment))
+        .edit().editSpec().withReplicas(1).endSpec().done();
     }
 
     Service endpoint = client.services().withName(name).get();
@@ -114,14 +122,17 @@ public class ServiceDiscoveryIT extends AbstractKubernetesIT {
     }
   }
 
-  public Route initializeHttpClient() throws FileNotFoundException {
+  public Route initializeHttpClient() throws IOException {
     String name = "simple-http-client";
 
-    Deployment deployment = client.extensions().deployments().withName(name).get();
-    if (deployment == null) {
-      deployment = client.extensions().deployments().load(new FileInputStream("src/test/resources/descriptors/" + name + "-deployment.yml")).get();
-      client.extensions().deployments().create(deployment);
-    }
+    ImageStream stream = findImageStream(name, NAMESPACE);
+    assertThat(stream).isNotNull();
+
+    File file = filter("src/test/resources/descriptors/http-client-dc.json",
+      ImmutableMap.of("image", stream.getStatus().getDockerImageRepository()));
+
+    String name2 = deploy(file);
+    assertThat(name).isEqualTo(name2);
 
     Service endpoint = client.services().withName(name).get();
     if (endpoint == null) {
@@ -168,7 +179,10 @@ public class ServiceDiscoveryIT extends AbstractKubernetesIT {
     oc.deploymentConfigs().withName("simple-http-endpoint").edit()
       .editSpec().withReplicas(0).endSpec().done();
 
-    await().atMost(1, TimeUnit.MINUTES).until(() -> client.pods().list().getItems().size() == 1);
+    await().atMost(1, TimeUnit.MINUTES).until(() -> {
+      List<Pod> items = client.pods().inNamespace(NAMESPACE).list().getItems();
+      return items.stream().filter(KubernetesHelper::isPodRunning).count() == 1;
+    });
 
     String uuid = UUID.randomUUID().toString();
     given().queryParam("message", uuid)
@@ -181,7 +195,10 @@ public class ServiceDiscoveryIT extends AbstractKubernetesIT {
     oc.deploymentConfigs().withName("simple-http-endpoint").edit()
       .editSpec().withReplicas(0).endSpec().done();
 
-    await().atMost(1, TimeUnit.MINUTES).until(() -> client.pods().list().getItems().size() == 1);
+    await().atMost(1, TimeUnit.MINUTES).until(() -> {
+      List<Pod> items = client.pods().inNamespace(NAMESPACE).list().getItems();
+      return items.stream().filter(KubernetesHelper::isPodRunning).count() == 1;
+    });
 
     String uuid = UUID.randomUUID().toString();
     given().queryParam("message", uuid)
@@ -194,7 +211,10 @@ public class ServiceDiscoveryIT extends AbstractKubernetesIT {
     oc.deploymentConfigs().withName("simple-http-endpoint").edit()
       .editSpec().withReplicas(0).endSpec().done();
 
-    await().atMost(1, TimeUnit.MINUTES).until(() -> client.pods().list().getItems().size() == 1);
+    await().atMost(1, TimeUnit.MINUTES).until(() -> {
+      List<Pod> items = client.pods().inNamespace(NAMESPACE).list().getItems();
+      return items.stream().filter(KubernetesHelper::isPodRunning).count() == 1;
+    });
 
     String uuid = UUID.randomUUID().toString();
     given().queryParam("message", uuid)
@@ -207,8 +227,10 @@ public class ServiceDiscoveryIT extends AbstractKubernetesIT {
     oc.deploymentConfigs().withName("simple-http-endpoint").edit()
       .editSpec().withReplicas(2).endSpec().done();
 
-    await().atMost(3, TimeUnit.MINUTES)
-      .until(() -> client.pods().list().getItems().size() == 3);
+    await().atMost(1, TimeUnit.MINUTES).until(() -> {
+      List<Pod> items = client.pods().inNamespace(NAMESPACE).list().getItems();
+      return items.stream().filter(KubernetesHelper::isPodRunning).count() == 3;
+    });
 
     awaitUntilAllPodsAreReady();
 
@@ -272,6 +294,58 @@ public class ServiceDiscoveryIT extends AbstractKubernetesIT {
     }
 
     assertThat(hosts).hasSize(2);
+  }
+
+  private File filter(String path, ImmutableMap<String, String> image) throws IOException {
+    File input = new File(path);
+    assertThat(input).isFile();
+    assertThat(image).isNotNull();
+
+    File tmp = File.createTempFile("openshift-it", ".json");
+    String content = FileUtils.readFileToString(input);
+
+    for (String key : image.keySet()) {
+      content = content.replace("${" + key + "}", image.get(key));
+    }
+
+    FileUtils.write(tmp, content);
+
+    return tmp;
+  }
+
+  private String deploy(File input) throws IOException {
+    assertThat(input).isFile();
+    byte[] bytes = FileUtils.readFileToByteArray(input);
+    try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes)) {
+      DeploymentConfig deploymentConfig = oc.deploymentConfigs().load(bis).get();
+      assertThat(deploymentConfig).isNotNull();
+      if (oc.deploymentConfigs().withName(deploymentConfig.getMetadata().getName()).get() != null) {
+        System.out.println("Skipping the creation of dc/" + deploymentConfig.getMetadata().getName());
+        return deploymentConfig.getMetadata().getName();
+      }
+
+      oc.deploymentConfigs().create(deploymentConfig);
+      oc_execute("deploy", deploymentConfig.getMetadata().getName(), "--latest", "-n", oc.getNamespace());
+      return deploymentConfig.getMetadata().getName();
+    }
+  }
+
+  private ImageStream findImageStream(String name, String ns) {
+    List<ImageStream> items = oc.imageStreams().inNamespace(ns).list().getItems();
+    for (ImageStream item : items) {
+      if (item.getMetadata().getName().equalsIgnoreCase(name)) {
+        return item;
+      }
+    }
+
+    return null;
+  }
+
+  private void cleanup() {
+    oc.deploymentConfigs().inNamespace(NAMESPACE).delete();
+    oc.pods().inNamespace(NAMESPACE).delete();
+    oc.services().inNamespace(NAMESPACE).delete();
+    oc.replicationControllers().inNamespace(NAMESPACE).delete();
   }
 
 

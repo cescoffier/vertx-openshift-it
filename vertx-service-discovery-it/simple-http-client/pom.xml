@@ -13,6 +13,7 @@
   <artifactId>simple-http-client</artifactId>
 
   <properties>
+    <fabric8.namespace>vertx-service-discovery-it</fabric8.namespace>
     <vertx.verticle>io.vertx.openshift.it.MainVerticle</vertx.verticle>
   </properties>
 

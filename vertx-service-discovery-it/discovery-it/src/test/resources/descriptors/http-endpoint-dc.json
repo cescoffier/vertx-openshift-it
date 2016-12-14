@@ -1,0 +1,55 @@
+{
+  "kind": "DeploymentConfig",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "simple-http-endpoint"
+  },
+  "spec": {
+    "template": {
+      "metadata": {
+        "labels": {
+          "name": "simple-http-endpoint"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "simple-http-endpoint",
+            "image": "${image}",
+            "ports": [
+              {
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "replicas": 1,
+    "selector": {
+      "name": "simple-http-endpoint"
+    },
+    "triggers": [
+      {
+        "type": "ConfigChange"
+      },
+      {
+        "type": "ImageChange",
+        "imageChangeParams": {
+          "automatic": true,
+          "containerNames": [
+            "simple-http-endpoint"
+          ],
+          "from": {
+            "kind": "ImageStreamTag",
+            "name": "simple-http-endpoint:latest"
+          }
+        }
+      }
+    ],
+    "strategy": {
+      "type": "Rolling"
+    }
+  }
+}

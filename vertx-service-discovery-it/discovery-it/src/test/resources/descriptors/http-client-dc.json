@@ -1,0 +1,55 @@
+{
+  "kind": "DeploymentConfig",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "simple-http-client"
+  },
+  "spec": {
+    "template": {
+      "metadata": {
+        "labels": {
+          "name": "simple-http-client"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "simple-http-client",
+            "image": "${image}",
+            "ports": [
+              {
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "replicas": 1,
+    "selector": {
+      "name": "simple-http-client"
+    },
+    "triggers": [
+      {
+        "type": "ConfigChange"
+      },
+      {
+        "type": "ImageChange",
+        "imageChangeParams": {
+          "automatic": true,
+          "containerNames": [
+            "simple-http-client"
+          ],
+          "from": {
+            "kind": "ImageStreamTag",
+            "name": "simple-http-client:latest"
+          }
+        }
+      }
+    ],
+    "strategy": {
+      "type": "Rolling"
+    }
+  }
+}
