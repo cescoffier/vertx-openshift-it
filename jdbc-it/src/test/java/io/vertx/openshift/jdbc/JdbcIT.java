@@ -155,6 +155,13 @@ public class JdbcIT {
       .statusCode(200);
   }
 
+  @Test
+  public void testClientCreation() {
+    RestAssured.get(url("/client_creation")).then()
+      .assertThat()
+      .statusCode(200);
+  }
+
   private URL url() {
     try {
       return new URL("http://" + route.getSpec().getHost());

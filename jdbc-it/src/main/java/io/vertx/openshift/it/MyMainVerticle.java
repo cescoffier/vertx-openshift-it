@@ -72,6 +72,9 @@ public class MyMainVerticle extends AbstractVerticle {
     BinaryTest binaryTest = new BinaryTest(jdbcClient);
     router.route(binaryTest.getPath()).handler(binaryTest);
 
+    ClientCreationTest clientCreationTest = new ClientCreationTest(vertx, config);
+    router.route(clientCreationTest.getPath()).handler(clientCreationTest);
+
     /* === */
 
     vertx.createHttpServer(new HttpServerOptions().setPort(8080))
