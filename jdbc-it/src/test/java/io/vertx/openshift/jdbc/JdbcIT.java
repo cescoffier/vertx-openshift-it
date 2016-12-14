@@ -80,7 +80,6 @@ public class JdbcIT {
 
   @Test
   public void testTextQuery() {
-
     RestAssured.get(url("/text_query")).then()
       .assertThat()
       .statusCode(200);
@@ -131,6 +130,20 @@ public class JdbcIT {
   @Test
   public void testTransactions() {
     RestAssured.get(url("/transactions")).then()
+      .assertThat()
+      .statusCode(200);
+  }
+
+  @Test
+  public void testSpecialDatatypes() {
+    RestAssured.get(url("/special_datatypes")).then()
+      .assertThat()
+      .statusCode(200);
+  }
+
+  @Test
+  public void testBinary() {
+    RestAssured.get(url("/binary")).then()
       .assertThat()
       .statusCode(200);
   }

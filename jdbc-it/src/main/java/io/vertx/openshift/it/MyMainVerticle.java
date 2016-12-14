@@ -69,6 +69,9 @@ public class MyMainVerticle extends AbstractVerticle {
     SpecialDatatypesTest specialDatatypesTest = new SpecialDatatypesTest(jdbcClient);
     router.route(specialDatatypesTest.getPath()).handler(specialDatatypesTest);
 
+    BinaryTest binaryTest = new BinaryTest(jdbcClient);
+    router.route(binaryTest.getPath()).handler(binaryTest);
+
     /* === */
 
     vertx.createHttpServer(new HttpServerOptions().setPort(8080))
