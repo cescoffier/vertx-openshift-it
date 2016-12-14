@@ -71,4 +71,5 @@ mvn clean install -Popenshift
 6. Go to the project you want to test
 7. `mvn clean install -Popenshift`
 8. Go grab a coffee
-9. If the S2I was not yet provisioned, you may have to retry a couple of times because of timeout 
+9. If the S2I was not yet provisioned, you may have to retry a couple of times because of timeout
+10. Once done, `script/delete-project.sh`
