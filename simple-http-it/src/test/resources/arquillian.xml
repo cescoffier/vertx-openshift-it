@@ -4,6 +4,7 @@
                http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
 
   <extension qualifier="kubernetes">
+    <!--<property name="namespace.use.existing">vertx-it</property>-->
     <property name="env.config.url">file:${project.basedir}/target/classes/META-INF/fabric8/openshift.yml</property>
   </extension>
 </arquillian>

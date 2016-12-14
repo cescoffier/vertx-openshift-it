@@ -36,6 +36,11 @@
       <artifactId>flyway-core</artifactId>
       <version>4.0.3</version>
     </dependency>
+    <dependency>
+      <groupId>io.vertx.openshift</groupId>
+      <artifactId>vertx-it-utils</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

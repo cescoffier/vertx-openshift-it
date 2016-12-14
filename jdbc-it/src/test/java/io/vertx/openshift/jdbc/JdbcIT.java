@@ -3,7 +3,6 @@ package io.vertx.openshift.jdbc;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.openshift.api.model.Route;
 import io.fabric8.openshift.client.OpenShiftClient;
-import io.restassured.RestAssured;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -13,12 +12,14 @@ import org.junit.runner.RunWith;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.concurrent.TimeUnit;
 
-import static com.jayway.awaitility.Awaitility.*;
-import static io.fabric8.kubernetes.assertions.internal.Assertions.*;
-import static io.restassured.RestAssured.*;
-import static io.vertx.openshift.jdbc.OpenshiftHelper.*;
+import static io.fabric8.kubernetes.assertions.internal.Assertions.assertThat;
+import static io.restassured.RestAssured.get;
+import static io.vertx.it.openshift.utils.Ensure.ensureThat;
+import static io.vertx.it.openshift.utils.Kube.awaitUntilPodIsReady;
+import static io.vertx.it.openshift.utils.Kube.awaitUntilRouteIsServed;
+import static io.vertx.it.openshift.utils.Kube.oc;
+import static io.vertx.openshift.jdbc.OpenshiftHelper.oc_execute;
 
 /**
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
@@ -33,15 +34,15 @@ public class JdbcIT {
   private KubernetesClient client;
 
   private Route route;
-  private OpenShiftClient oc;
 
   @Before
   public void initialize() {
-    oc = client.adapt(OpenShiftClient.class);
+    OpenShiftClient oc = oc(client);
 
 
     // If not created, start the posgresSQL
     if (oc.services().withName("postgres").get() == null) {
+      System.out.println("Deploying postgres");
       // Start PostGres SQL
       // oc new-app openshift/postgresql-92-centos7 \
       //-e POSTGRESQL_USER=user \
@@ -55,7 +56,13 @@ public class JdbcIT {
         "-e", "POSTGRESQL_PASSWORD=password",
         "--name=postgres"
       );
-      oc_execute("project", "default");
+      String existing = System.getenv("NAMESPACE_USE_EXISTING");
+      if (existing == null) {
+        oc_execute("project", "default");
+      }
+    } else {
+      System.out.println("Postgres already deployed");
+      awaitUntilPodIsReady(client, "postgres");
     }
 
     // The route is exposed using .vagrant.f8 suffix, delegate to openshift to
@@ -73,101 +80,116 @@ public class JdbcIT {
     assertThat(route).isNotNull();
     this.route = route;
 
-    await().atMost(10, TimeUnit.MINUTES).until(this::isServed);
+    awaitUntilRouteIsServed(route);
 
-    RestAssured.get(url("/init")).then().assertThat().statusCode(200);
+    get(url("/init")).then().assertThat().statusCode(200);
   }
 
   @Test
   public void testTextQuery() {
-    RestAssured.get(url("/text_query")).then()
-      .assertThat()
-      .statusCode(200);
+    ensureThat("we can execute a text query", () ->
+      get(url("/text_query")).then()
+        .assertThat()
+        .statusCode(200));
   }
 
   @Test
   public void testQueryWithParams() {
-    RestAssured.get(url("/query_with_params")).then()
+    ensureThat("we can execute a query with parameters", () ->
+      get(url("/query_with_params")).then()
       .assertThat()
-      .statusCode(200);
+      .statusCode(200)
+    );
   }
 
   @Test
   public void testCRUD() {
-    RestAssured.get(url("/crud")).then()
+    ensureThat("we can execute a CRUD actions", () ->
+      get(url("/crud")).then()
       .assertThat()
-      .statusCode(200);
+      .statusCode(200)
+    );
   }
 
   @Test
   public void testUpdateWithParams() {
-    RestAssured.get(url("/update_with_params")).then()
+    ensureThat("we can execute an update with parameters", () ->
+      get(url("/update_with_params")).then()
       .assertThat()
-      .statusCode(200);
+      .statusCode(200)
+    );
   }
 
   @Test
   public void testStoredProcedure() {
-    RestAssured.get(url("/stored_procedure")).then()
+    ensureThat("we can execute a stored procedure", () ->
+      get(url("/stored_procedure")).then()
       .assertThat()
-      .statusCode(200);
+      .statusCode(200)
+    );
   }
 
   @Test
   public void testBatchUpdates() {
-    RestAssured.get(url("/batch_updates")).then()
+    ensureThat("we can execute updates in batch", () ->
+      get(url("/batch_updates")).then()
       .assertThat()
-      .statusCode(200);
+      .statusCode(200)
+    );
   }
 
   @Test
   public void testStreamingResults() {
-    RestAssured.get(url("/streaming_results")).then()
+    ensureThat("we can execute read the results as a stream", () ->
+      get(url("/streaming_results")).then()
       .assertThat()
-      .statusCode(200);
+      .statusCode(200)
+    );
   }
 
   @Test
   public void testTransactions() {
-    RestAssured.get(url("/transactions")).then()
+    ensureThat("we can execute transactions", () ->
+      get(url("/transactions")).then()
       .assertThat()
-      .statusCode(200);
+      .statusCode(200)
+    );
   }
 
   @Test
   public void testSpecialDatatypes() {
-    RestAssured.get(url("/special_datatypes")).then()
+    ensureThat("we can used special data types", () ->
+      get(url("/special_datatypes")).then()
       .assertThat()
-      .statusCode(200);
+      .statusCode(200)
+    );
   }
 
   @Test
   public void testBinary() {
-    RestAssured.get(url("/binary")).then()
+    ensureThat("we can execute retrieve binary data", () ->
+      get(url("/binary")).then()
       .assertThat()
-      .statusCode(200);
+      .statusCode(200)
+    );
   }
 
   @Test
   public void testDdl() {
-    RestAssured.get(url("/ddl")).then()
+    ensureThat("we can use DDL", () ->
+      get(url("/ddl")).then()
       .assertThat()
-      .statusCode(200);
+      .statusCode(200)
+    );
   }
 
   @Test
   public void testClientCreation() {
-    RestAssured.get(url("/client_creation")).then()
+    ensureThat("we can create a JDBC client", () ->
+      get(url("/client_creation")).then()
       .assertThat()
-      .statusCode(200);
-  }
-
-  private URL url() {
-    try {
-      return new URL("http://" + route.getSpec().getHost());
-    } catch (MalformedURLException e) {
-      throw new RuntimeException(e);
-    }
+      .statusCode(200)
+    );
   }
 
   private URL url(String path) {
@@ -178,11 +200,4 @@ public class JdbcIT {
     }
   }
 
-  private boolean isServed() {
-    try {
-      return get(url()).getStatusCode() == 200;
-    } catch (Exception e) {
-      return false;
-    }
-  }
 }

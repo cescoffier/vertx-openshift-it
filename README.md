@@ -59,3 +59,16 @@ Test the Async JDBC Client against a PosgreSQL database running in OpenShift.
 cd vertx-service-discovery-it
 mvn clean install -Popenshift
 ```
+
+
+## Running on Openshift Online
+
+1. Login to Openshift online with `oc`
+2. Ensure you don't have any project created
+3. Run `script/create-project.sh`
+4. Execute `export NAMESPACE_USE_EXISTING=vertx-it`
+5. Execute `export USE_OPENSHIFT_ONLINE=true`
+6. Go to the project you want to test
+7. `mvn clean install -Popenshift`
+8. Go grab a coffee
+9. If the S2I was not yet provisioned, you may have to retry a couple of times because of timeout 

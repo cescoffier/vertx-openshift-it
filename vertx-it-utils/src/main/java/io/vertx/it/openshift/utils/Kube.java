@@ -1,5 +1,6 @@
 package io.vertx.it.openshift.utils;
 
+import com.jayway.awaitility.Duration;
 import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -134,12 +135,12 @@ public class Kube {
 
     if (number == 0) {
       // Wait until no pods
-      await().atMost(1, TimeUnit.MINUTES).until(() -> getPodsForDeploymentConfig(client, name).size() == 0);
+      await().atMost(duration(2)).until(() -> getPodsForDeploymentConfig(client, name).size() == 0);
     } else {
       // Wait until the right number of pods
-      await().atMost(1, TimeUnit.MINUTES).until(() -> getPodsForDeploymentConfig(client, name).size() == number);
+      await().atMost(duration(2)).until(() -> getPodsForDeploymentConfig(client, name).size() == number);
       // Wait for readiness
-      await().atMost(1, TimeUnit.MINUTES).until(() ->
+      await().atMost(duration(2)).until(() ->
         getPodsForDeploymentConfig(client, name).stream().filter(KubernetesHelper::isPodReady).count() == number);
     }
 
@@ -161,11 +162,26 @@ public class Kube {
   }
 
   public static void awaitUntilRouteIsServed(Route route) {
-    await().atMost(3, TimeUnit.MINUTES).until(() -> Kube.isRouteServed(route));
+    await().atMost(duration(2)).until(() -> Kube.isRouteServed(route));
+  }
+
+  public static void awaitUntilPodIsReady(KubernetesClient client, String name) {
+    await().atMost(duration(1)).until(() -> {
+      List<Pod> items = client.pods().list().getItems();
+      for (Pod pod : items) {
+        String podName = name(pod);
+        if (podName.startsWith(name) && !podName.endsWith("-build")) {
+          if (!KubernetesHelper.isPodReady(pod)) {
+            return false;
+          }
+        }
+      }
+      return true;
+    });
   }
 
   public static void awaitUntilAllPodsAreReady(KubernetesClient client) {
-    await().atMost(1, TimeUnit.MINUTES).until(() -> {
+    await().atMost(duration(1)).until(() -> {
       List<Pod> items = client.pods().list().getItems();
       for (Pod pod : items) {
         if (!pod.getMetadata().getName().endsWith("-build")) {
@@ -176,6 +192,18 @@ public class Kube {
       }
       return true;
     });
+  }
+
+  public static Duration duration(int minutes) {
+    String online = System.getenv("USE_OPENSHIFT_ONLINE");
+
+    if (online != null) {
+      minutes = minutes * 5;
+    }
+
+    return new Duration(minutes, TimeUnit.MINUTES);
+
+
   }
 
 

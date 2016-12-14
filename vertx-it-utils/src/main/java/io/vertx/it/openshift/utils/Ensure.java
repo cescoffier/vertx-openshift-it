@@ -10,6 +10,7 @@ import static org.assertj.core.api.Fail.fail;
 public class Ensure {
 
   public static  <T> T ensureThat(String msg, Callable<T> callable) {
+    System.out.println("Ensuring that " + msg);
     try {
       return callable.call();
     } catch (Throwable t) {
@@ -19,6 +20,7 @@ public class Ensure {
   }
 
   public static void ensureThat(String msg, Runnable runnable) {
+    System.out.println("Ensuring that " + msg);
     try {
       runnable.run();
     } catch (Throwable t) {
