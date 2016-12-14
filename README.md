@@ -21,12 +21,15 @@ mvn clean verify -Popenshift
 ## Service Discovery
 
 **Need the `oc` command line in the `PATH`**
+**These tests use a specific project (`vertx-discovery-it`) 
 
 Test the Vert.x service discovery.
 
 ```
 cd vertx-service-discovery-it
+./create-project.sh
 mvn clean install -Popenshift
+./delete-project.sh
 ```
 
 ## JDBC
