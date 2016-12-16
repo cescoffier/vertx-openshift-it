@@ -9,6 +9,7 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.openshift.api.model.DeploymentConfig;
 import io.fabric8.openshift.api.model.Route;
 import io.fabric8.openshift.client.OpenShiftClient;
+import io.restassured.response.Response;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static com.jayway.awaitility.Awaitility.await;
@@ -117,6 +119,19 @@ public class Kube {
     }
   }
 
+  public static boolean isRouteServed(Route route, String path, AtomicReference<String> resp) {
+    try {
+      Response response = get(urlForRoute(route, path));
+      if (response.getStatusCode() < 500) {
+        resp.set(response.asString());
+        return true;
+      }
+      return false;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
   public static DeploymentConfig setReplicasAndWait(KubernetesClient client, String name, int number) {
     OpenShiftClient oc = oc(client);
 
@@ -163,6 +178,15 @@ public class Kube {
 
   public static void awaitUntilRouteIsServed(Route route) {
     await().atMost(duration(2)).until(() -> Kube.isRouteServed(route));
+  }
+
+  public static String awaitUntilRouteIsServed(Route route, String path) {
+    AtomicReference<String> resp = new AtomicReference<>();
+    await().atMost(duration(2)).until(() -> {
+      Kube.isRouteServed(route, path, resp);
+    });
+
+    return resp.get();
   }
 
   public static void awaitUntilPodIsReady(KubernetesClient client, String name) {

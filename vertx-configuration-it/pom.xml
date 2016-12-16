@@ -14,10 +14,16 @@
   <artifactId>http-endpoint-config</artifactId>
 
   <properties>
-    <main.verticle>io.vertx.openshift.it.ConfigurableHttpVerticle</main.verticle>
+    <vertx.verticle>io.vertx.openshift.it.ConfigurableHttpVerticle</vertx.verticle>
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>io.vertx.openshift</groupId>
+      <artifactId>vertx-it-utils</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-service-discovery</artifactId>

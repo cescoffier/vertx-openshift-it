@@ -28,9 +28,11 @@ public class OC {
       executor.setExitValues(new int[] {0, 1, 2});
       executor.execute(commandLine);
 
-      System.out.println("====");
-      System.out.println(output);
-      System.out.println("====");
+      if (! output.toString().isEmpty()) {
+        System.out.println("====");
+        System.out.println(output);
+        System.out.println("====");
+      }
 
       return output.toString();
     } catch (IOException e) {

@@ -60,12 +60,20 @@ cd vertx-service-discovery-it
 mvn clean install -Popenshift
 ```
 
+## Configuration
+
+**Need the `oc` command line in the `PATH`**
+
+```bash
+cd vertx-configuration-it
+mvn clean install -Popenshift
+```
 
 ## Running on Openshift Online
 
 1. Login to Openshift online with `oc`
 2. Ensure you don't have any project created
-3. Run `script/create-project.sh`
+3. Run `scripts/create-project.sh`
 4. Execute `export NAMESPACE_USE_EXISTING=vertx-it`
 5. Execute `export USE_OPENSHIFT_ONLINE=true`
 6. Go to the project you want to test

@@ -8,3 +8,5 @@ oc delete dc --all
 oc delete pods --all
 oc delete bc --all
 oc delete is --all
+oc delete configmap --all
+oc delete template --all
