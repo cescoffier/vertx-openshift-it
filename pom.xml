@@ -27,9 +27,9 @@
     <rest-assured.version>3.0.1</rest-assured.version>
     <junit.version>4.12</junit.version>
 
-    <fabric8.maven.plugin.version>3.2.7</fabric8.maven.plugin.version>
+    <fabric8.maven.plugin.version>3.2.8</fabric8.maven.plugin.version>
     <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
-    <vertx-maven-plugin.version>0.1.2</vertx-maven-plugin.version>
+    <vertx-maven-plugin.version>1.0.1</vertx-maven-plugin.version>
 
     <!-- Docker configuration -->
     <docker.group.name>vertx-openshift-it</docker.group.name>
