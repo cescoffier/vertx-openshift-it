@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>io.vertx.openshift</groupId>
+    <artifactId>vertx-openshift-it</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>vertx-healthcheck-it</artifactId>
+
+  <properties>
+    <vertx.verticle>io.vertx.openshift.it.HealthCheckHttpVerticle</vertx.verticle>
+
+    <vertx.health.path>/health</vertx.health.path>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.vertx.openshift</groupId>
+      <artifactId>vertx-it-utils</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>me.escoffier.vertx.healthchecks</groupId>
+      <artifactId>vertx-health-checks</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+
+    <plugins>
+      <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>vertx-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

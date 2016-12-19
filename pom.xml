@@ -27,7 +27,7 @@
     <rest-assured.version>3.0.1</rest-assured.version>
     <junit.version>4.12</junit.version>
 
-    <fabric8.maven.plugin.version>3.2.8</fabric8.maven.plugin.version>
+    <fabric8.maven.plugin.version>3.2.9</fabric8.maven.plugin.version>
     <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
     <vertx-maven-plugin.version>1.0.1</vertx-maven-plugin.version>
 
@@ -47,6 +47,7 @@
     <module>vertx-service-discovery-it</module>
     <module>jdbc-it</module>
     <module>vertx-configuration-it</module>
+    <module>vertx-healthcheck-it</module>
   </modules>
 
   <dependencyManagement>
