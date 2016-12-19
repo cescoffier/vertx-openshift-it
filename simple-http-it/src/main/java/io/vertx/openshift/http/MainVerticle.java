@@ -29,6 +29,7 @@ public class MainVerticle extends AbstractVerticle {
             break;
           case "/host":
             ok(response).end(System.getenv("HOSTNAME"));
+            break;
           case "/form":
             response.setChunked(true);
             req.setExpectMultipart(true);

@@ -21,8 +21,8 @@
     <fabric8.skip>false</fabric8.skip>
 
     <vertx.version>3.4.0-SNAPSHOT</vertx.version>
-    <slf4j.version>1.7.21</slf4j.version>
-    <fabric8.version>2.2.176</fabric8.version>
+    <slf4j.version>1.7.22</slf4j.version>
+    <fabric8.version>2.2.184</fabric8.version>
     <assertj.version>3.5.2</assertj.version>
     <rest-assured.version>3.0.1</rest-assured.version>
     <junit.version>4.12</junit.version>
@@ -149,13 +149,13 @@
     <dependency>
       <groupId>io.fabric8</groupId>
       <artifactId>kubernetes-client</artifactId>
-      <version>1.4.21</version>
+      <version>1.4.27</version>
     </dependency>
 
     <dependency>
       <groupId>io.fabric8</groupId>
       <artifactId>openshift-client</artifactId>
-      <version>1.4.21</version>
+      <version>1.4.27</version>
     </dependency>
   </dependencies>
 
@@ -242,13 +242,6 @@
             </executions>
             <configuration>
               <skip>${fabric8.skip}</skip>
-              <generator>
-                <config>
-                  <java-exec>
-                    <mainClass>${main.class}</mainClass>
-                  </java-exec>
-                </config>
-              </generator>
               <resources>
                 <labels>
                   <service>
