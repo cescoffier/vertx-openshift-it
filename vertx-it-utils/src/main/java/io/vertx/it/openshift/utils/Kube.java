@@ -31,6 +31,8 @@ import static org.assertj.core.api.Fail.fail;
  */
 public class Kube {
 
+  private static final int DEFAULT_WAIT_TIME = 3;
+
   public static String name(HasMetadata object) {
     String name = object.getMetadata().getName();
     return Objects.requireNonNull(name);
@@ -150,12 +152,12 @@ public class Kube {
 
     if (number == 0) {
       // Wait until no pods
-      await().atMost(duration(2)).until(() -> getPodsForDeploymentConfig(client, name).size() == 0);
+      await().atMost(duration()).until(() -> getPodsForDeploymentConfig(client, name).size() == 0);
     } else {
       // Wait until the right number of pods
-      await().atMost(duration(2)).until(() -> getPodsForDeploymentConfig(client, name).size() == number);
+      await().atMost(duration()).until(() -> getPodsForDeploymentConfig(client, name).size() == number);
       // Wait for readiness
-      await().atMost(duration(2)).until(() ->
+      await().atMost(duration()).until(() ->
         getPodsForDeploymentConfig(client, name).stream().filter(KubernetesHelper::isPodReady).count() == number);
     }
 
@@ -177,12 +179,12 @@ public class Kube {
   }
 
   public static void awaitUntilRouteIsServed(Route route) {
-    await().atMost(duration(2)).until(() -> Kube.isRouteServed(route));
+    await().atMost(duration()).until(() -> Kube.isRouteServed(route));
   }
 
   public static String awaitUntilRouteIsServed(Route route, String path) {
     AtomicReference<String> resp = new AtomicReference<>();
-    await().atMost(duration(2)).until(() -> {
+    await().atMost(duration()).until(() -> {
       Kube.isRouteServed(route, path, resp);
     });
 
@@ -190,7 +192,7 @@ public class Kube {
   }
 
   public static void awaitUntilPodIsReady(KubernetesClient client, String name) {
-    await().atMost(duration(1)).until(() -> {
+    await().atMost(duration()).until(() -> {
       List<Pod> items = client.pods().list().getItems();
       for (Pod pod : items) {
         String podName = name(pod);
@@ -205,7 +207,7 @@ public class Kube {
   }
 
   public static void awaitUntilAllPodsAreReady(KubernetesClient client) {
-    await().atMost(duration(1)).until(() -> {
+    await().atMost(duration()).until(() -> {
       List<Pod> items = client.pods().list().getItems();
       for (Pod pod : items) {
         if (!pod.getMetadata().getName().endsWith("-build")) {
@@ -216,6 +218,10 @@ public class Kube {
       }
       return true;
     });
+  }
+
+  public static Duration duration() {
+    return duration(DEFAULT_WAIT_TIME);
   }
 
   public static Duration duration(int minutes) {

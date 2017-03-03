@@ -56,7 +56,7 @@ Test the Async JDBC Client against a PosgreSQL database running in OpenShift.
 **Need the `oc` command line in the `PATH`**
 
 ```bash
-cd vertx-service-discovery-it
+cd jdbc-it
 mvn clean install -Popenshift
 ```
 
