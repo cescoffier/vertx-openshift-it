@@ -10,6 +10,7 @@ import io.vertx.it.openshift.utils.OC;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.jayway.awaitility.Awaitility.await;
-import static io.restassured.RestAssured.get;
 import static io.vertx.it.openshift.utils.Ensure.ensureThat;
 import static io.vertx.it.openshift.utils.Kube.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,6 +34,7 @@ public class ConfigurationIT {
   DefaultKubernetesClient client;
 
   private OpenShiftClient oc;
+
 
   private Route route;
   private ConfigMap config;
@@ -116,4 +117,12 @@ public class ConfigurationIT {
     OC.execute("policy", "add-role-to-group", "view",
       "system:serviceaccounts", "-n", client.getNamespace());
   }
+
+  @After
+  public void removeServiceAccount() {
+    OC.execute("policy", "remove-role-to-user", "view", "admin", "-n", client.getNamespace());
+    OC.execute("policy", "remove-role-to-group", "view",
+      "system:serviceaccounts", "-n", client.getNamespace());
+  }
+
 }
