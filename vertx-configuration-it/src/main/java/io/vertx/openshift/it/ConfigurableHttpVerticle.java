@@ -1,11 +1,11 @@
 package io.vertx.openshift.it;
 
+import io.vertx.config.ConfigRetriever;
+import io.vertx.config.ConfigRetrieverOptions;
+import io.vertx.config.ConfigStoreOptions;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.configuration.ConfigurationRetriever;
-import io.vertx.ext.configuration.ConfigurationRetrieverOptions;
-import io.vertx.ext.configuration.ConfigurationStoreOptions;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 
@@ -14,26 +14,25 @@ import io.vertx.ext.web.RoutingContext;
  */
 public class ConfigurableHttpVerticle extends AbstractVerticle {
 
-  private ConfigurationRetriever retriever;
-  private JsonObject configuration;
+  private ConfigRetriever retriever;
+  private JsonObject Config;
 
   @Override
   public void start() throws Exception {
-    retriever = initializeConfiguration();
+    retriever = initializeConfig();
 
-    retriever.getConfigurationFuture()
-      .setHandler(res -> {
+    retriever.getConfig(res -> {
         if (res.failed()) {
-          throw new RuntimeException("Unable to retrieve the configuration", res.cause());
+          throw new RuntimeException("Unable to retrieve the Config", res.cause());
         }
 
-        configuration = res.result();
-        if (configuration == null) {
-          configuration = new JsonObject();
+      Config = res.result();
+      if (Config == null) {
+        Config = new JsonObject();
         }
         retriever.listen(change -> {
-          configuration = change.getNewConfiguration();
-          System.out.println("New configuration:\n" + configuration.encodePrettily());
+          Config = change.getNewConfiguration();
+          System.out.println("New Config:\n" + Config.encodePrettily());
         });
 
 
@@ -60,21 +59,21 @@ public class ConfigurableHttpVerticle extends AbstractVerticle {
   private void printAll(RoutingContext rc) {
     rc.response()
       .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-      .end(configuration.copy().put("trace", "1").encodePrettily());
+      .end(Config.copy().put("trace", "1").encodePrettily());
   }
 
-  private ConfigurationRetriever initializeConfiguration() {
-    ConfigurationStoreOptions cm = new ConfigurationStoreOptions()
+  private ConfigRetriever initializeConfig() {
+    ConfigStoreOptions cm = new ConfigStoreOptions()
       .setType("configmap")
       .setConfig(new JsonObject()
         .put("name", "my-config-map")
       );
 
-    ConfigurationStoreOptions sys = new ConfigurationStoreOptions().setType("sys");
-    ConfigurationStoreOptions env = new ConfigurationStoreOptions().setType("env");
+    ConfigStoreOptions sys = new ConfigStoreOptions().setType("sys");
+    ConfigStoreOptions env = new ConfigStoreOptions().setType("env");
 
-    return ConfigurationRetriever.create(vertx,
-      new ConfigurationRetrieverOptions()
+    return ConfigRetriever.create(vertx,
+      new ConfigRetrieverOptions()
         .addStore(cm)
         .addStore(sys)
         .addStore(env)
