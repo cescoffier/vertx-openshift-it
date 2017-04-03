@@ -20,12 +20,16 @@
     <main.class>io.vertx.core.Launcher</main.class>
     <fabric8.skip>false</fabric8.skip>
 
-    <vertx.version>3.4.0-SNAPSHOT</vertx.version>
+    <vertx.version>3.4.1</vertx.version>
     <slf4j.version>1.7.22</slf4j.version>
     <fabric8.version>2.2.184</fabric8.version>
     <assertj.version>3.5.2</assertj.version>
     <rest-assured.version>3.0.1</rest-assured.version>
     <junit.version>4.12</junit.version>
+    <release.candidate.repository>
+      http://download-node-02.eng.bos.redhat.com/brewroot/repos/jws-3.1-rhel-7-build/latest/maven/
+    </release.candidate.repository>
+    <snapshot.repository>https://oss.sonatype.org/content/repositories/snapshots/</snapshot.repository>
 
     <fabric8.maven.plugin.version>3.2.8</fabric8.maven.plugin.version>
     <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
@@ -195,7 +199,7 @@
     <repository>
       <id>redhat-build</id>
       <name>Red Hat builds Repository</name>
-      <url>http://download-node-02.eng.bos.redhat.com/brewroot/repos/jws-3.1-rhel-7-build/latest/maven/</url>
+      <url>${release.candidate.repository}</url>
       <layout>default</layout>
       <releases>
         <enabled>true</enabled>
@@ -209,7 +213,7 @@
     <repository>
       <id>oss.snapshots</id>
       <name>OSS Snapshots</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+      <url>${snapshot.repository}</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
