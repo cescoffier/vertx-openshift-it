@@ -13,6 +13,16 @@ import java.io.IOException;
  */
 public class OC {
 
+  public static void initializeServiceAccount(String namespace) {
+    // oc policy add-role-to-user view -z default -n CURRENT_NAMESPACE
+    OC.execute("policy", "add-role-to-user", "view", "-z", "default", "-n", namespace);
+  }
+
+  public static void removeServiceAccount(String namespace) {
+    // oc policy remove-role-from-user view -z default -n CURRENT_NAMESPACE
+    OC.execute("policy", "remove-role-from-user", "view", "-z", "default", "-n", namespace);
+  }
+
   public static String execute(String... args) {
     File oc_executable = find();
 

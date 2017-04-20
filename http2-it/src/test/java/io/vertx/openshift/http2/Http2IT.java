@@ -1,63 +1,38 @@
 package io.vertx.openshift.http2;
 
-import io.fabric8.kubernetes.assertions.Assertions;
-import io.fabric8.kubernetes.client.KubernetesClient;
-import io.fabric8.openshift.api.model.Route;
-import io.fabric8.openshift.client.OpenShiftClient;
-import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpClientOptions;
-import io.vertx.core.http.HttpVersion;
-import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.test.api.ArquillianResource;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-
-import static com.jayway.awaitility.Awaitility.await;
-import static io.fabric8.kubernetes.assertions.internal.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
+import static com.jayway.awaitility.Awaitility.await;
+
+import static io.vertx.it.openshift.utils.Kube.securedUrlForRoute;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+
+import io.fabric8.kubernetes.assertions.Assertions;
+import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpClientOptions;
+import io.vertx.core.http.HttpVersion;
+import io.vertx.it.openshift.utils.AbstractTestClass;
+
 /**
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
+ * @author Slavomir Krupa
  */
-@RunWith(Arquillian.class)
-@RunAsClient
-public class Http2IT {
+public class Http2IT extends AbstractTestClass {
 
   private static final String NAME = "http2-it";
 
-  @ArquillianResource
-  private KubernetesClient client;
+  @BeforeClass
+  public static void initialize() throws IOException {
+    deployAndAwaitStart();
 
-  private Route route;
-  private OpenShiftClient oc;
-
-  @Before
-  public void initialize() {
-    oc = client.adapt(OpenShiftClient.class);
-    // The route is exposed using .vagrant.f8 suffix, delegate to openshift to
-    // get a public URL
-    oc.routes()
-      .withName(NAME).delete();
-
-    Route route = oc.routes().createNew()
-      .withNewMetadata().withName(NAME).endMetadata()
-      .withNewSpec()
-      .withNewTo().withName(NAME).withKind("Service").endTo()
-      .withNewTls().withTermination("passthrough").endTls()
-      .endSpec()
-      .done();
-
-    assertThat(route).isNotNull();
-    this.route = route;
   }
 
   @Test
@@ -74,11 +49,12 @@ public class Http2IT {
 
     Vertx vertx = Vertx.vertx();
 
-    System.out.println("Host: " + url().getHost());
+    final String host = securedUrlForRoute(client.routes().withName(NAME).get()).getHost();
+    System.out.println("Host: " + host);
     System.out.println("Port: " + 443);
 
     vertx.createHttpClient(options)
-      .getNow(443, url().getHost(), "/",
+      .getNow(443, host, "/",
         resp -> {
           System.out.println("Got response " + resp.statusCode() + " with protocol " + resp.version());
           resp.bodyHandler(body -> {
@@ -93,12 +69,4 @@ public class Http2IT {
       .contains("Hello from vert.x!");
   }
 
-
-  private URL url() {
-    try {
-      return new URL("https://" + route.getSpec().getHost());
-    } catch (MalformedURLException e) {
-      throw new RuntimeException(e);
-    }
-  }
 }

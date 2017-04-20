@@ -40,6 +40,7 @@
       <groupId>io.vertx.openshift</groupId>
       <artifactId>vertx-it-utils</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
