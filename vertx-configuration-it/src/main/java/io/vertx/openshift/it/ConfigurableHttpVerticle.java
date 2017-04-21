@@ -69,6 +69,32 @@ public class ConfigurableHttpVerticle extends AbstractVerticle {
         .put("name", "my-config-map")
       );
 
+    ConfigStoreOptions httpStore = new ConfigStoreOptions()
+      .setType("http")
+      .setConfig(new JsonObject()
+        .put("host", "localhost").put("port", 8081).put("path", "/conf"));
+
+    ConfigStoreOptions propertiesFile = new ConfigStoreOptions()
+      .setType("file")
+      .setFormat("properties")
+      .setConfig(new JsonObject()
+        .put("path", "my-config.properties")
+      );
+
+    ConfigStoreOptions jsonFile = new ConfigStoreOptions()
+      .setType("file")
+      .setFormat("json")
+      .setConfig(new JsonObject()
+        .put("path", "my-config.json")
+      );
+
+    ConfigStoreOptions ymlFile = new ConfigStoreOptions()
+      .setType("file")
+      .setFormat("yaml")
+      .setConfig(new JsonObject()
+        .put("path", "my-config.yml")
+      );
+
     ConfigStoreOptions sys = new ConfigStoreOptions().setType("sys");
     ConfigStoreOptions env = new ConfigStoreOptions().setType("env");
 
@@ -77,6 +103,10 @@ public class ConfigurableHttpVerticle extends AbstractVerticle {
         .addStore(cm)
         .addStore(sys)
         .addStore(env)
+//        .addStore(httpStore)  // Uncomment if you provide a http config, otherwise it will throw an exception
+        .addStore(propertiesFile)
+        .addStore(jsonFile)
+        .addStore(ymlFile)
     );
   }
 }
