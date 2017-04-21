@@ -1,0 +1,18 @@
+---
+http.port: 8080
+ymlExampleOption: An YML example option
+map.items: {
+  mapItem1: Overwrites value in JSON config file,
+  mapItem2: 0
+}
+objects:
+  - attr1: Lorem
+    attr2: Ipsum
+    attr3: 758
+    attr4: null
+  - attr1: This
+    attr2: is
+    attr3: 49
+    attr4: YAML
+toBeOverwritten: This is defined in YAML file.
+

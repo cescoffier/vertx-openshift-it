@@ -1,0 +1,12 @@
+{
+  "bar" : "${example.bar}",
+  "jsonExampleOption" : "A JSON example option",
+  "someRandomNumber" : 54,
+  "map.items" : {
+    "mapItem1" : "li1",
+    "mapItem2" : 86,
+    "mapItem3" : true,
+    "mapItem4" : null
+  },
+  "toBeOverwritten" : "This is defined in JSON file."
+}
