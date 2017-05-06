@@ -11,10 +11,13 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>simple-http-it</artifactId>
+  <artifactId>vertx-healthcheck-it</artifactId>
 
   <properties>
-    <vertx.verticle>io.vertx.openshift.http.MainVerticle</vertx.verticle>
+    <vertx.verticle>io.vertx.openshift.it.MainVerticle</vertx.verticle>
+    <vertx.health.path>/isAlive</vertx.health.path>
+    <vertx.health.readiness.path>/start</vertx.health.readiness.path>
+    <vertx.health.port>8088</vertx.health.port>
   </properties>
 
   <dependencies>
@@ -23,6 +26,10 @@
       <artifactId>vertx-it-utils</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-health-check</artifactId>
     </dependency>
   </dependencies>
 
@@ -34,7 +41,12 @@
       </testResource>
     </testResources>
 
-
+    <plugins>
+      <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>vertx-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
   </build>
 
 </project>

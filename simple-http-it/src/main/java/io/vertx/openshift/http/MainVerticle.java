@@ -6,6 +6,8 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
 
+import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
+
 public class MainVerticle extends AbstractVerticle {
 
   @Override
@@ -28,7 +30,7 @@ public class MainVerticle extends AbstractVerticle {
             json(ok(response)).end(headersToJson(req.headers()).encode());
             break;
           case "/host":
-            ok(response).end(System.getenv("HOSTNAME"));
+            ok(response).putHeader(CONTENT_TYPE, "text/plain").end(System.getenv("HOSTNAME"));
             break;
           case "/form":
             response.setChunked(true);

@@ -1,15 +1,12 @@
 package io.vertx.it.openshift.utils;
 
+import static org.assertj.core.api.Fail.fail;
+
+import static com.jayway.awaitility.Awaitility.await;
+import static com.jayway.restassured.RestAssured.get;
+
 import com.jayway.awaitility.Duration;
-import io.fabric8.kubernetes.api.KubernetesHelper;
-import io.fabric8.kubernetes.api.model.HasMetadata;
-import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.Service;
-import io.fabric8.kubernetes.client.KubernetesClient;
-import io.fabric8.openshift.api.model.DeploymentConfig;
-import io.fabric8.openshift.api.model.Route;
-import io.fabric8.openshift.client.OpenShiftClient;
-import io.restassured.response.Response;
+import com.jayway.restassured.response.Response;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -21,9 +18,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import static com.jayway.awaitility.Awaitility.await;
-import static io.restassured.RestAssured.get;
-import static org.assertj.core.api.Fail.fail;
+import io.fabric8.kubernetes.api.KubernetesHelper;
+import io.fabric8.kubernetes.api.model.HasMetadata;
+import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.Service;
+import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.openshift.api.model.DeploymentConfig;
+import io.fabric8.openshift.api.model.Route;
+import io.fabric8.openshift.client.OpenShiftClient;
 
 
 /**
@@ -95,9 +97,19 @@ public class Kube {
       .done();
   }
 
+
+  public static URL securedUrlForRoute(Route route) {
+    return urlForRoute("https://", route);
+  }
+
   public static URL urlForRoute(Route route) {
+    return urlForRoute("http://", route);
+  }
+
+
+  private static URL urlForRoute(String protocol, Route route) {
     try {
-      return new URL("http://" + Objects.requireNonNull(route).getSpec().getHost());
+      return new URL(protocol + Objects.requireNonNull(route).getSpec().getHost());
     } catch (MalformedURLException e) {
       fail("Unable to compute the url for route " + name(route), e);
       throw new IllegalArgumentException(e);

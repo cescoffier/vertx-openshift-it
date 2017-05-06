@@ -1,18 +1,26 @@
 package io.vertx.openshift.http;
 
-import io.fabric8.kubernetes.client.KubernetesClient;
-import io.fabric8.openshift.api.model.Route;
-import okhttp3.*;
-import okhttp3.ws.WebSocket;
-import okhttp3.ws.WebSocketCall;
-import okhttp3.ws.WebSocketListener;
-import okio.Buffer;
-import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.test.api.ArquillianResource;
-import org.junit.Before;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+
+import static com.jayway.awaitility.Awaitility.await;
+import static com.jayway.restassured.RestAssured.get;
+import static com.jayway.restassured.RestAssured.given;
+
+import static io.fabric8.kubernetes.assertions.Assertions.assertThat;
+import static io.vertx.it.openshift.utils.Ensure.ensureThat;
+import static io.vertx.it.openshift.utils.Kube.setReplicasAndWait;
+import static io.vertx.it.openshift.utils.Kube.sleep;
+import static okhttp3.ws.WebSocket.TEXT;
+
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.assertj.core.api.Assertions;
+
+import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.response.Response;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -23,81 +31,69 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.jayway.awaitility.Awaitility.await;
-import static io.fabric8.kubernetes.assertions.Assertions.assertThat;
-import static io.restassured.RestAssured.get;
-import static io.restassured.RestAssured.given;
-import static io.vertx.it.openshift.utils.Ensure.ensureThat;
-import static io.vertx.it.openshift.utils.Kube.*;
-import static okhttp3.ws.WebSocket.TEXT;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
+import io.vertx.it.openshift.utils.AbstractTestClass;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import okhttp3.ws.WebSocket;
+import okhttp3.ws.WebSocketCall;
+import okhttp3.ws.WebSocketListener;
+import okio.Buffer;
 
 
 /**
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-@RunWith(Arquillian.class)
-@RunAsClient
-public class SimpleHttpIT {
+public class SimpleHttpIT extends AbstractTestClass {
 
-  private static final String NAME = "simple-http";
 
-  @ArquillianResource
-  private KubernetesClient client;
 
-  private Route route;
+  @BeforeClass
+  public static void initialize() throws IOException {
+    deployAndAwaitStartWithRoute();
+    await("route should be eventually served").atMost(5, TimeUnit.MINUTES).catchUncaughtExceptions().until(() -> get().getStatusCode() < 500);
+  }
 
-  @Before
-  public void initialize() {
-    // The route is exposed using .vagrant.f8 suffix, delegate to openshift to
-    // get a public URL
-    route = createRouteForService(client, NAME, true);
-    assertThat(route).isNotNull();
+
+  @Test
+  public void stabilityTest() throws Exception {
+    ensureThat("the pod is ready and stay ready for a bit",
+      () -> assertThat(deploymentAssistant.client()).deployments().pods().isPodReadyForPeriod());
+    await("That one pod is present.").atMost(1, TimeUnit.MINUTES).catchUncaughtExceptions().until(
+      () ->
+        assertThat(deploymentAssistant.client()).pods().runningStatus().hasSize(1));
   }
 
   @Test
   public void testRoot() throws Exception {
-    ensureThat("the pod is ready and stay ready for a bit",
-      () -> assertThat(client).deployments().pods().isPodReadyForPeriod());
-
-    ensureThat("the route is served correctly", () ->
-      await().atMost(1, TimeUnit.MINUTES).until(() -> isRouteServed(route)));
-
     ensureThat("the HTTP response is the expected one", () ->
-      get(urlForRoute(route)).then().assertThat().statusCode(200)
-        .body(containsString("Hello Vert.x!"))
+      get().then().assertThat().statusCode(200)
+        .body(equalTo("Hello Vert.x!"))
     );
   }
 
   @Test
   public void testHeaders() throws Exception {
-    ensureThat("the route is served correctly", () ->
-      await().atMost(1, TimeUnit.MINUTES).until(() -> isRouteServed(route)));
-
     ensureThat("the HTTP response has the expected headers", () ->
       given()
         .header("id", "abc")
         .param("key", "NuDVhdsfYmNkDLOZQ")
         .when()
-        .get(urlForRoute(route, "/headers"))
+        .get("/headers"))
         .then()
-        .assertThat().statusCode(200).body("id", is("abc"))
-    );
+      .assertThat().statusCode(200).body("id", is("abc"));
+
   }
 
   @Test
   public void testForm() throws Exception {
-    ensureThat("the route is served correctly", () ->
-      await().atMost(1, TimeUnit.MINUTES).until(() -> isRouteServed(route)));
-
     ensureThat("the HTTP server can receive forms", () ->
       given()
         .formParam("name", "Vert.x")
         .formParam("org", "Eclipse")
         .when()
-        .post(urlForRoute(route, "/form"))
+        .post("/form")
         .then()
         .assertThat().statusCode(200)
         .body("org", is("Eclipse"))
@@ -107,42 +103,35 @@ public class SimpleHttpIT {
 
   @Test
   public void testWrittenFile() throws Exception {
-    ensureThat("the route is served correctly",
-      () -> await().atMost(1, TimeUnit.MINUTES).until(() -> isRouteServed(route)));
 
     ensureThat("the HTTP server can write into a file", () ->
-      get(urlForRoute(route, "/write"))
+      get("/write"))
         .then()
-        .assertThat().statusCode(200)
-    );
+      .assertThat().statusCode(200);
 
     ensureThat("the written file can be read", () ->
-      get(urlForRoute(route, "/tmp"))
+      get("/tmp"))
         .then()
         .assertThat().statusCode(200)
-        .body(containsString("hello"))
-    );
+      .body(containsString("hello"));
   }
 
   @Test
   public void testWithWebSocket() throws MalformedURLException {
-    ensureThat("the route is served correctly",
-      () -> await().atMost(1, TimeUnit.MINUTES).until(() -> isRouteServed(route)));
-
     ensureThat("the websocket connection works", () -> {
       OkHttpClient client = new OkHttpClient.Builder()
         .readTimeout(0, TimeUnit.MILLISECONDS)
         .build();
 
       Request request = new Request.Builder()
-        .url(urlForRoute(route, "/ws"))
+        .url(RestAssured.baseURI + "/ws")
         .build();
 
       AtomicBoolean close = new AtomicBoolean();
       List<String> messages = new ArrayList<>();
       WebSocketCall.create(client, request).enqueue(new WebSocketListener() {
         @Override
-        public void onOpen(WebSocket webSocket, Response response) {
+        public void onOpen(WebSocket webSocket, okhttp3.Response response) {
           try {
             webSocket.sendMessage(RequestBody.create(TEXT, "Hello..."));
             webSocket.sendMessage(RequestBody.create(TEXT, "...World!"));
@@ -154,7 +143,7 @@ public class SimpleHttpIT {
         }
 
         @Override
-        public void onFailure(IOException e, Response response) {
+        public void onFailure(IOException e, okhttp3.Response response) {
 
         }
 
@@ -175,7 +164,7 @@ public class SimpleHttpIT {
       });
 
       await().untilAtomic(close, is(true));
-      assertThat(messages).hasSize(2)
+      Assertions.assertThat(messages).hasSize(2)
         .contains("Hello...", "...World!");
     });
   }
@@ -183,35 +172,35 @@ public class SimpleHttpIT {
 
   @Test
   public void testIncreasingReplicas() throws Exception {
-    setReplicasAndWait(client, NAME, 2);
+    setReplicasAndWait(deploymentAssistant.client(), deploymentAssistant.applicationName(), 2);
 
     Set<String> hosts = new HashSet<>();
 
     ensureThat("the server side routing does the load balancing correctly", () -> {
       for (int i = 0; i < 500; i++) {
-        io.restassured.response.Response response = get(urlForRoute(route, "/host"));
+        Response response = get("/host");
         if (response.statusCode() == 200) {
           hosts.add(response.asString());
         }
         sleep(100);
       }
 
-      assertThat(hosts).hasSize(2);
+      Assertions.assertThat(hosts).hasSize(2);
     });
 
-    setReplicasAndWait(client, NAME, 1);
+    setReplicasAndWait(deploymentAssistant.client(), deploymentAssistant.applicationName(), 1);
 
     hosts.clear();
 
     ensureThat("the service side routing does target the same pod when only one is available", () -> {
       for (int i = 0; i < 100; i++) {
-        io.restassured.response.Response response = get(urlForRoute(route, "/host"));
+        Response response = get("/host");
         if (response.statusCode() == 200) {
           hosts.add(response.asString());
         }
         sleep(100);
       }
-      assertThat(hosts).hasSize(1);
+      Assertions.assertThat(hosts).hasSize(1);
     });
 
   }

@@ -10,13 +10,12 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>embedded-http</artifactId>
+  <artifactId>embedded-http-it</artifactId>
   <description>A simple application embedding Vert.x</description>
 
   <properties>
     <vertx.launcher>io.vertx.openshift.embedded.Main</vertx.launcher>
   </properties>
-
   <dependencies>
     <dependency>
       <groupId>io.vertx.openshift</groupId>
@@ -25,6 +24,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
 
   <build>
     <testResources>
