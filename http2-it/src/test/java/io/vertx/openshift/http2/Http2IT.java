@@ -37,7 +37,7 @@ public class Http2IT extends AbstractTestClass {
 
   @Test
   public void test() throws Exception {
-    Assertions.assertThat(client).deployments().pods().isPodReadyForPeriod();
+    Assertions.assertThat(client).deployments().pods().isPodReadyForPeriod(60000, 60000);
 
     AtomicReference<String> response = new AtomicReference<>();
 

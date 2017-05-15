@@ -12,12 +12,11 @@ public class MainVerticle extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-
     HttpServer server =
-      vertx.createHttpServer(new HttpServerOptions().
-        setUseAlpn(true).
-        setSsl(true).
-        setPemKeyCertOptions(
+      vertx.createHttpServer(new HttpServerOptions()
+        .setUseAlpn(true)
+        .setSsl(true)
+        .setPemKeyCertOptions(
           new PemKeyCertOptions().setKeyPath("server-key.pem").setCertPath("server-cert.pem")
         )
       );
