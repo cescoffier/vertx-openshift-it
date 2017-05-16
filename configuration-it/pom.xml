@@ -12,7 +12,6 @@
 
   <properties>
     <vertx.verticle>io.vertx.openshift.it.ConfigurableHttpVerticle</vertx.verticle>
-    <vertx.version>3.4.2-SNAPSHOT</vertx.version>
     <example.foo>foo</example.foo>
     <example.bar>bar</example.bar>
   </properties>
@@ -31,17 +30,14 @@
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-config</artifactId>
-      <version>${vertx.version}</version>
     </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-config-yaml</artifactId>
-      <version>${vertx.version}</version>
     </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-config-kubernetes-configmap</artifactId>
-      <version>${vertx.version}</version>
     </dependency>
   </dependencies>
 
