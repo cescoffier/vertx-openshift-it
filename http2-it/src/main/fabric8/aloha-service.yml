@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: aloha
+spec:
+  ports:
+  - name: aloha-http
+    port: 80
+    protocol: TCP
+    targetPort: 8081
+  selector:
+    project:  ${project.artifactId}

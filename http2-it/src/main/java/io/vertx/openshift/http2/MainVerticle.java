@@ -12,20 +12,7 @@ public class MainVerticle extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    HttpServer server =
-      vertx.createHttpServer(new HttpServerOptions()
-        .setUseAlpn(true)
-        .setSsl(true)
-        .setPemKeyCertOptions(
-          new PemKeyCertOptions().setKeyPath("server-key.pem").setCertPath("server-cert.pem")
-        )
-      );
-
-    server.requestHandler(req -> {
-      req.response().putHeader("content-type", "text/html").end("<html><body>" +
-        "<h1>Hello from vert.x!</h1>" +
-        "<p>version = " + req.version() + "</p>" +
-        "</body></html>");
-    }).listen(8080);
+    vertx.deployVerticle(AlohaH2CVerticle.class.getName());
+    vertx.deployVerticle(HelloHttp2Verticle.class.getName());
   }
 }
