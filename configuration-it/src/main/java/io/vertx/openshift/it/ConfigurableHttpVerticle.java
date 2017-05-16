@@ -66,6 +66,7 @@ public class ConfigurableHttpVerticle extends AbstractVerticle {
       .setType("configmap")
       .setConfig(new JsonObject()
         .put("name", "my-config-map")
+//        .put("optional", false)
       );
 
     ConfigStoreOptions httpStore = new ConfigStoreOptions()
