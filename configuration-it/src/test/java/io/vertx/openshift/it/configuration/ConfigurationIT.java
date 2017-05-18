@@ -1,13 +1,11 @@
 package io.vertx.openshift.it.configuration;
 
 import static com.jayway.awaitility.Awaitility.await;
-import static com.jayway.restassured.RestAssured.defaultParser;
 import static com.jayway.restassured.RestAssured.get;
 
 import static io.vertx.it.openshift.utils.Ensure.ensureThat;
 
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
