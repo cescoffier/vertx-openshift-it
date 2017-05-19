@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: aloha
+  name: hello
 spec:
   ports:
-  - name: aloha
+  - name: hello
     port: 80
     protocol: TCP
-    targetPort: 8081
+    targetPort: 8082
   selector:
-    project:  ${project.artifactId}
+    project: ${project.artifactId}

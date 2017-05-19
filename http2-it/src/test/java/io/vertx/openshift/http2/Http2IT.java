@@ -1,9 +1,15 @@
 package io.vertx.openshift.http2;
 
 import io.fabric8.kubernetes.assertions.Assertions;
+import io.fabric8.openshift.client.OpenShiftClient;
+import io.grpc.ManagedChannel;
+import io.grpc.examples.helloworld.GreeterGrpc;
+import io.grpc.examples.helloworld.HelloRequest;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpVersion;
+import io.vertx.core.net.JksOptions;
+import io.vertx.grpc.VertxChannelBuilder;
 import io.vertx.it.openshift.utils.AbstractTestClass;
 import org.junit.*;
 
@@ -91,7 +97,7 @@ public class Http2IT extends AbstractTestClass {
     System.out.println("Host: " + host);
 
     vertx.createHttpClient(options)
-      .getNow(80, host, "/front",
+      .getNow(80, host, "/aloha",
         resp -> {
           System.out.println("Got H2C response " + resp.statusCode() + " with protocol " + resp.version());
           resp.bodyHandler(body -> {
@@ -116,7 +122,8 @@ public class Http2IT extends AbstractTestClass {
     AtomicReference<String> response = new AtomicReference<>();
 
     HttpClientOptions options = new HttpClientOptions()
-      .setProtocolVersion(HttpVersion.HTTP_2);
+      .setProtocolVersion(HttpVersion.HTTP_2)
+      .setHttp2ClearTextUpgrade(false);
 
     final String host = securedUrlForRoute(client.routes().withName("aloha").get()).getHost();
     System.out.println("Host: " + host);
@@ -134,6 +141,45 @@ public class Http2IT extends AbstractTestClass {
 
     assertThat(response.get())
       .contains("Aloha HTTP_2");
+  }
+
+  @Test
+  public void testGRPC() throws Exception {
+    Assertions.assertThat(client).deployments().pods().isPodReadyForPeriod();
+
+
+    String host = securedUrlForRoute(client.routes().withName("hello").get()).getHost();
+    System.out.println("Host: " + host);
+    System.out.println("Port: " + 443);
+
+
+    ManagedChannel channel = VertxChannelBuilder.forAddress(vertx, host, 443)
+      .useSsl(options -> {
+          options
+            .setSsl(true)
+            .setUseAlpn(true)
+            .setTrustAll(true);
+        }
+      )
+      .build();
+
+    GreeterGrpc.GreeterVertxStub stub = GreeterGrpc.newVertxStub(channel);
+    HelloRequest request = HelloRequest.newBuilder().setName("OpenShift").build();
+    AtomicReference<String> result = new AtomicReference<>();
+    System.out.println("Sending request...");
+    stub.sayHello(request, asyncResponse -> {
+      System.out.println("Got result");
+      if (asyncResponse.succeeded()) {
+        System.out.println("Succeeded " + asyncResponse.result().getMessage());
+        result.set(asyncResponse.result().getMessage());
+      } else {
+        asyncResponse.cause().printStackTrace();
+      }
+    });
+
+    await().atMost(5, TimeUnit.MINUTES).untilAtomic(result, is(notNullValue()));
+
+    assertThat(result.get()).contains("Hello OpenShift");
   }
 
 }
