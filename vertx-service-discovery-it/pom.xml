@@ -6,19 +6,23 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-  <groupId>io.vertx.openshift</groupId>
-  <artifactId>vertx-openshift-it</artifactId>
-  <version>1.0-SNAPSHOT</version>
+    <groupId>io.vertx.openshift</groupId>
+    <artifactId>vertx-openshift-it</artifactId>
+    <version>1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>vertx-service-discovery-it</artifactId>
   <packaging>pom</packaging>
 
   <modules>
-    <module>simple-http-endpoint</module>
-    <module>simple-http-client</module>
-    <module>discovery-it</module>
+    <module>discovery-gateway</module>
+    <module>some-http-services</module>
+    <module>service-discovery-it</module>
   </modules>
+
+  <properties>
+    <fabric8.skip>true</fabric8.skip>
+  </properties>
 
   <dependencies>
     <dependency>

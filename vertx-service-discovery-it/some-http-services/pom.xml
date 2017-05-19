@@ -10,11 +10,12 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>simple-http-client</artifactId>
+  <artifactId>some-http-services</artifactId>
 
   <properties>
-    <fabric8.namespace>vertx-service-discovery-it</fabric8.namespace>
-    <vertx.verticle>io.vertx.openshift.it.MainVerticle</vertx.verticle>
+    <fabric8.skip>false</fabric8.skip>
+    <vertx.verticle>io.vertx.openshift.it.HttpVerticle</vertx.verticle>
+    <vertx.health.path>/</vertx.health.path>
   </properties>
 
   <build>
@@ -25,4 +26,5 @@
       </plugin>
     </plugins>
   </build>
+
 </project>
