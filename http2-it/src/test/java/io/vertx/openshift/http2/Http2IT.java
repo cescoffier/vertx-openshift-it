@@ -1,22 +1,29 @@
 package io.vertx.openshift.http2;
 
-import io.fabric8.kubernetes.assertions.Assertions;
-import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpClientOptions;
-import io.vertx.core.http.HttpVersion;
-import io.vertx.it.openshift.utils.AbstractTestClass;
-import org.junit.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+
+import static com.jayway.awaitility.Awaitility.await;
+
+import static io.vertx.it.openshift.utils.Kube.securedUrlForRoute;
+import static io.vertx.it.openshift.utils.Kube.urlForRoute;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.jayway.awaitility.Awaitility.await;
-import static io.vertx.it.openshift.utils.Kube.securedUrlForRoute;
-import static io.vertx.it.openshift.utils.Kube.urlForRoute;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import io.fabric8.kubernetes.assertions.Assertions;
+import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpClientOptions;
+import io.vertx.core.http.HttpVersion;
+import io.vertx.it.openshift.utils.AbstractTestClass;
 
 /**
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
@@ -69,7 +76,7 @@ public class Http2IT extends AbstractTestClass {
             response.set(body.toString("ISO-8859-1"));
           });
         });
-    await().atMost(5, TimeUnit.MINUTES).untilAtomic(response, is(notNullValue()));
+    await().atMost(1, TimeUnit.MINUTES).untilAtomic(response, is(notNullValue()));
 
     assertThat(response.get())
       .contains("version = HTTP_2")
@@ -99,7 +106,7 @@ public class Http2IT extends AbstractTestClass {
             response.set(body.toString("ISO-8859-1"));
           });
         });
-    await().atMost(5, TimeUnit.MINUTES).untilAtomic(response, is(notNullValue()));
+    await().atMost(1, TimeUnit.MINUTES).untilAtomic(response, is(notNullValue()));
 
     assertThat(response.get())
       .startsWith("Aloha HTTP_2");
@@ -130,7 +137,7 @@ public class Http2IT extends AbstractTestClass {
             response.set(body.toString("ISO-8859-1"));
           });
         });
-    await().atMost(5, TimeUnit.MINUTES).untilAtomic(response, is(notNullValue()));
+    await().atMost(1, TimeUnit.MINUTES).untilAtomic(response, is(notNullValue()));
 
     assertThat(response.get())
       .contains("Aloha HTTP_2");
