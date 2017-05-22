@@ -11,7 +11,7 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>vertx-healthcheck-it</artifactId>
+  <artifactId>healthcheck-it</artifactId>
 
   <properties>
     <vertx.verticle>io.vertx.openshift.it.MainVerticle</vertx.verticle>

@@ -8,7 +8,7 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>vertx-configuration-it</artifactId>
+  <artifactId>configuration-it</artifactId>
 
   <properties>
     <vertx.verticle>io.vertx.openshift.it.ConfigurableHttpVerticle</vertx.verticle>
