@@ -27,7 +27,7 @@
     <rest-assured.version>2.9.0</rest-assured.version>
     <junit.version>4.12</junit.version>
     <release.candidate.repository>
-      http://download-node-02.eng.bos.redhat.com/brewroot/repos/jws-3.1-rhel-7-build/latest/maven/
+      https://maven.repository.redhat.com/earlyaccess/all/
     </release.candidate.repository>
     <snapshot.repository>https://oss.sonatype.org/content/repositories/snapshots/</snapshot.repository>
     <fabric8.maven.plugin.version>3.2.28</fabric8.maven.plugin.version>
@@ -196,6 +196,20 @@
         <enabled>false</enabled>
       </snapshots>
     </repository>
+    <repository>
+      <id>redhat-ga</id>
+      <name>MRRC</name>
+      <url>https://maven.repository.redhat.com/ga/</url>
+      <layout>default</layout>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+
 
     <repository>
       <id>oss.snapshots</id>
@@ -230,6 +244,16 @@
       </releases>
       <snapshots>
         <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>MRRC</id>
+      <url>https://maven.repository.redhat.com/ga/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
