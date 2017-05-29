@@ -61,6 +61,8 @@ public class GatewayVerticle extends AbstractVerticle {
     router.get("/ref/http").handler(this::invokeHttpServiceWithRef);
     router.get("/ref/web").handler(this::invokeWebServiceWithRef);
 
+    router.put("/webclient").handler(this::webclient);
+
     ServiceDiscovery.create(vertx, discovery -> {
       this.discovery = discovery;
 
@@ -87,6 +89,12 @@ public class GatewayVerticle extends AbstractVerticle {
           .listen(8080);
       }).subscribe();
     });
+  }
+
+  private void webclient(RoutingContext routingContext) {
+    String url = routingContext.request().getParam("url");
+    final HttpClient httpClient = vertx.createHttpClient(new HttpClientOptions().setDefaultHost(url).setKeepAlive(false));
+    forward(routingContext, httpClient, true);
   }
 
   private void checkDbWithDns(RoutingContext rc) {

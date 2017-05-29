@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedMap;
@@ -225,6 +226,18 @@ public class ServiceDiscoveryIT extends AbstractTestClass {
         .then().assertThat().statusCode(500));
 
 
+  }
+
+  @Test
+  public void testWebClientDNSResolution() throws Exception {
+    // https://groups.google.com/forum/#!topic/vertx/K1y_bsYSMPM
+    final URL url = urlForRoute(client.routes().withName("some-http-services").get());
+    String uuid = UUID.randomUUID().toString();
+    ensureThat("you can call a remote URL from webclient", () ->
+      given().queryParam("message", uuid)
+        .queryParam("url", url)
+        .put(urlForRoute(route, "/webclient"))
+        .then().assertThat().statusCode(200));
   }
 
   @Test
