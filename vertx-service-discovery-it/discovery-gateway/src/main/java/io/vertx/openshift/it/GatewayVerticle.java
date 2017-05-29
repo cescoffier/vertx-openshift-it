@@ -166,7 +166,10 @@ public class GatewayVerticle extends AbstractVerticle {
       }
     })
       .setTimeout(3000)
-      .exceptionHandler(t -> rc.response().setStatusCode(503).end(t.getMessage()))
+      .exceptionHandler(t -> {
+        t.printStackTrace();
+        rc.response().setStatusCode(503).end(t.getMessage());
+      })
       .end();
   }
 

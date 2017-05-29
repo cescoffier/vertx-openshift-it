@@ -1,26 +1,37 @@
 package io.vertx.openshift.it;
 
-import io.fabric8.kubernetes.api.model.Service;
-import io.fabric8.openshift.api.model.Route;
-import io.vertx.it.openshift.utils.AbstractTestClass;
-import io.vertx.it.openshift.utils.OC;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+
+import static com.jayway.awaitility.Awaitility.await;
+import static com.jayway.restassured.RestAssured.get;
+import static com.jayway.restassured.RestAssured.given;
+
+import static io.vertx.it.openshift.utils.Ensure.ensureThat;
+import static io.vertx.it.openshift.utils.Kube.awaitUntilAllPodsAreReady;
+import static io.vertx.it.openshift.utils.Kube.setReplicasAndWait;
+import static io.vertx.it.openshift.utils.Kube.sleep;
+import static io.vertx.it.openshift.utils.Kube.urlForRoute;
+
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static com.jayway.awaitility.Awaitility.await;
-import static com.jayway.restassured.RestAssured.get;
-import static com.jayway.restassured.RestAssured.given;
-import static io.vertx.it.openshift.utils.Ensure.ensureThat;
-import static io.vertx.it.openshift.utils.Kube.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-
+import io.fabric8.kubernetes.api.model.Service;
+import io.fabric8.openshift.api.model.Route;
+import io.vertx.it.openshift.utils.AbstractTestClass;
+import io.vertx.it.openshift.utils.OC;
+import io.vertx.it.openshift.utils.OpenShiftHelper;
 
 /**
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
@@ -28,6 +39,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 public class ServiceDiscoveryIT extends AbstractTestClass {
 
   private static Route route;
+  private static OpenShiftHelper someServiceHelper;
 
   @BeforeClass
   public static void initialize() throws IOException {
@@ -55,12 +67,22 @@ public class ServiceDiscoveryIT extends AbstractTestClass {
 
         get(urlForRoute(route, "/health")).then().statusCode(200);
       }));
+    someServiceHelper = new OpenShiftHelper(client, "some-http-services");
   }
 
   private static void initializeServiceAccount() {
     OC.execute("policy", "add-role-to-user", "view", "admin", "-n", client.getNamespace());
     OC.execute("policy", "add-role-to-user", "view", "-n", client.getNamespace(), "-z", "default");
     OC.execute("policy", "add-role-to-group", "view", "system:serviceaccounts", "-n", client.getNamespace());
+  }
+
+  @Before
+  public void resetReplicasCount() {
+    someServiceHelper.setReplicasAndWait(1);
+    await().atMost(5, TimeUnit.MINUTES).until(() -> {
+      get(urlForRoute(client.routes().withName("some-http-services").get()))
+        .then().assertThat().statusCode(200);
+    });
   }
 
 
@@ -178,18 +200,11 @@ public class ServiceDiscoveryIT extends AbstractTestClass {
       given().queryParam("message", uuid)
         .get(urlForRoute(route, "/dns/web"))
         .then().assertThat().statusCode(500));
-
-    setReplicasAndWait(client, "some-http-services", 1);
-    await().atMost(1, TimeUnit.MINUTES).until(() -> {
-      get(urlForRoute(client.routes().withName("some-http-services").get()))
-        .then().assertThat().statusCode(200);
-    });
   }
 
   @Test
   public void testMissingServiceWithDiscovery() throws Exception {
-    setReplicasAndWait(client, "some-http-services", 0);
-
+    someServiceHelper.setReplicasAndWait(0);
     String uuid = UUID.randomUUID().toString();
     ensureThat("you cannot call a missing service using service discovery", () ->
       given().queryParam("message", uuid)
@@ -197,16 +212,11 @@ public class ServiceDiscoveryIT extends AbstractTestClass {
         .then().assertThat().statusCode(503)
     );
 
-    setReplicasAndWait(client, "some-http-services", 1);
-    await().atMost(1, TimeUnit.MINUTES).until(() -> {
-      get(urlForRoute(client.routes().withName("some-http-services").get()))
-        .then().assertThat().statusCode(200);
-    });
   }
 
   @Test
   public void testMissingServiceWithRef() throws Exception {
-    setReplicasAndWait(client, "some-http-services", 0);
+    someServiceHelper.setReplicasAndWait(0);
 
     String uuid = UUID.randomUUID().toString();
     ensureThat("you cannot call a missing service using a service reference", () ->
@@ -214,18 +224,13 @@ public class ServiceDiscoveryIT extends AbstractTestClass {
         .get(urlForRoute(route, "/ref/web"))
         .then().assertThat().statusCode(500));
 
-    setReplicasAndWait(client, "some-http-services", 1);
-    await().atMost(1, TimeUnit.MINUTES).until(() -> {
-      get(urlForRoute(client.routes().withName("some-http-services").get()))
-        .then().assertThat().statusCode(200);
-    });
 
   }
 
   @Test
   public void testServerSideRoutingWithHttpClient() throws Exception {
     ensureThat("two replicas can be created and everyone is fine", () -> {
-      setReplicasAndWait(client, "some-http-services", 2);
+      someServiceHelper.setReplicasAndWait(2);
       awaitUntilAllPodsAreReady(client);
     });
 
@@ -244,7 +249,7 @@ public class ServiceDiscoveryIT extends AbstractTestClass {
         sleep(100);
       }
 
-      assertThat(hosts).hasSize(2);
+      softly.assertThat(hosts).hasSize(2);
     });
 
     hosts.clear();
@@ -262,7 +267,7 @@ public class ServiceDiscoveryIT extends AbstractTestClass {
           sleep(100);
         }
       });
-    assertThat(hosts).hasSize(2);
+    softly.assertThat(hosts).hasSize(2);
 
     hosts.clear();
     ensureThat("the server side routing is working correctly when accessed using service discovery and Web clients",
@@ -278,7 +283,7 @@ public class ServiceDiscoveryIT extends AbstractTestClass {
           sleep(100);
         }
       });
-    assertThat(hosts).hasSize(2);
+    softly.assertThat(hosts).hasSize(2);
 
     hosts.clear();
 
@@ -294,7 +299,7 @@ public class ServiceDiscoveryIT extends AbstractTestClass {
         sleep(100);
       }
 
-      assertThat(hosts).hasSize(2);
+      softly.assertThat(hosts).hasSize(2);
     });
 
     hosts.clear();
@@ -310,7 +315,7 @@ public class ServiceDiscoveryIT extends AbstractTestClass {
         sleep(100);
       }
 
-      assertThat(hosts).hasSize(2);
+      softly.assertThat(hosts).hasSize(2);
     });
 
   }
