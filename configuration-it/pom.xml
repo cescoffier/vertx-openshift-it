@@ -14,6 +14,7 @@
     <vertx.verticle>io.vertx.openshift.it.ConfigurableHttpVerticle</vertx.verticle>
     <example.foo>foo</example.foo>
     <example.bar>bar</example.bar>
+    <vertx.health.path>/all</vertx.health.path>
   </properties>
 
   <dependencies>

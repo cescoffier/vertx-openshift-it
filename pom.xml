@@ -33,12 +33,13 @@
     <fabric8.maven.plugin.version>3.2.28</fabric8.maven.plugin.version>
     <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
     <vertx-maven-plugin.version>1.0.1</vertx-maven-plugin.version>
+    <kubernetes.client.version>1.4.35</kubernetes.client.version>
 
     <!-- Docker configuration -->
     <docker.group.name>vertx-openshift-it</docker.group.name>
     <fabric8.dockerUser>vertx-openshift-it</fabric8.dockerUser>
     <docker.image>${docker.group.name}/${project.artifactId}:${project.version}</docker.image>
-    <vertx.health.path></vertx.health.path>
+    <vertx.health.path>/</vertx.health.path>
 
     <awaitility.version>1.7.0</awaitility.version>
 
@@ -52,6 +53,7 @@
     <module>jdbc-it</module>
     <module>configuration-it</module>
     <module>healthcheck-it</module>
+    <module>vertx-service-discovery-it</module>
   </modules>
 
   <dependencyManagement>
@@ -100,12 +102,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>io.openshift</groupId>
-      <artifactId>openshift-test-utils</artifactId>
-      <version>2</version>
-    </dependency>
-
-    <dependency>
       <groupId>io.fabric8</groupId>
       <artifactId>kubernetes-assertions</artifactId>
       <scope>test</scope>
@@ -114,12 +110,12 @@
     <dependency>
       <groupId>io.fabric8</groupId>
       <artifactId>kubernetes-client</artifactId>
-      <version>1.4.35</version>
+      <version>${kubernetes.client.version}</version>
     </dependency>
     <dependency>
       <groupId>io.fabric8</groupId>
       <artifactId>openshift-client</artifactId>
-      <version>1.4.35</version>
+      <version>${kubernetes.client.version}</version>
     </dependency>
 
     <dependency>

@@ -20,7 +20,6 @@ import java.util.SortedMap;
 import java.util.concurrent.TimeUnit;
 
 import io.fabric8.openshift.client.OpenShiftClient;
-import io.openshift.booster.test.OpenShiftTestAssistant;
 
 /**
  * @author Slavomír Krupa (slavomir.krupa@gmail.com)
@@ -45,11 +44,16 @@ public class AbstractTestClass {
 
 
   public static void deployAndAwaitStartWithRoute(SortedMap<String, File> otherDeployments, String pathSuffix) throws IOException {
+
     deployAndAwaitStart(otherDeployments);
     await(String.format("the route is accessible at %s%s .", RestAssured.baseURI, pathSuffix))
       .atMost(3, TimeUnit.MINUTES)
       .catchUncaughtExceptions()
       .until(() -> get(pathSuffix).statusCode() <= 204);
+  }
+
+  private static void deleteDeployPods() {
+    client.pods().list().getItems().stream().filter(p -> p.getMetadata().getName().endsWith("-deploy")).map(p -> client.pods().delete(p));
   }
 
   public static void deployAndAwaitStart() throws IOException {
@@ -68,5 +72,6 @@ public class AbstractTestClass {
   @AfterClass
   public static void cleanup() {
     deploymentAssistant.cleanup();
+    deleteDeployPods();
   }
 }

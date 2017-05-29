@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import io.fabric8.kubernetes.api.model.DoneableConfigMap;
 import io.vertx.it.openshift.utils.AbstractTestClass;
 import io.vertx.it.openshift.utils.OC;
 
@@ -34,8 +35,14 @@ public class ConfigurationIT extends AbstractTestClass {
   }
 
   private static void createOrEditConfigMap(Map<String, String> content) {
-    client.configMaps().createOrReplaceWithNew()
-      .withNewMetadata().withName(CONFIG_MAP).endMetadata()
+    DoneableConfigMap cfgMap;
+    if (client.configMaps().withName(CONFIG_MAP).get() != null) {
+      cfgMap = client.configMaps().withName(CONFIG_MAP).edit();
+    } else {
+      cfgMap = client.configMaps().createNew();
+    }
+
+    cfgMap.withNewMetadata().withName(CONFIG_MAP).endMetadata()
       .withData(content)
       .done();
   }
@@ -50,7 +57,7 @@ public class ConfigurationIT extends AbstractTestClass {
       final JsonPath response = get("/all").getBody().jsonPath();
       softly.assertThat(response.getDouble("date")).isNotNull().isPositive();
       softly.assertThat(response.getString("key")).isEqualTo("value");
-      softly.assertThat(response.getString("HOSTNAME")).startsWith("vertx-configuration-it");
+      softly.assertThat(response.getString("HOSTNAME")).startsWith("configuration-it");
       softly.assertThat(response.getString("KUBERNETES_NAMESPACE")).isEqualToIgnoringCase(client.getNamespace());
       softly.assertThat(response.getInt("'http.port'")).isNotNull().isNotNegative();
       softly.assertThat(response.getString("propertiesExampleOption")).isEqualTo("A properties example option");
@@ -80,7 +87,7 @@ public class ConfigurationIT extends AbstractTestClass {
       softly.assertThat(response.getDouble("date")).isNotNull().isPositive();
       softly.assertThat(response.getString("key")).isEqualTo("value-2");
       softly.assertThat(response.getString("yet")).isEqualTo("another");
-      softly.assertThat(response.getString("HOSTNAME")).startsWith("vertx-configuration-it");
+      softly.assertThat(response.getString("HOSTNAME")).startsWith("configuration-it");
       softly.assertThat(response.getString("KUBERNETES_NAMESPACE")).isEqualToIgnoringCase(client.getNamespace());
       softly.assertThat(response.getInt("'http.port'")).isNotNull().isNotNegative();
       softly.assertThat(response.getString("propertiesExampleOption")).isEqualTo("A properties example option");
