@@ -54,6 +54,7 @@
     <module>configuration-it</module>
     <module>healthcheck-it</module>
     <module>vertx-service-discovery-it</module>
+    <module>sockjs-it</module>
   </modules>
 
   <dependencyManagement>

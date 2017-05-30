@@ -1,4 +1,4 @@
-package io.vertx.openshift.it.configuration;
+package io.vertx.openshift.it.health;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
