@@ -29,7 +29,7 @@ import io.fabric8.openshift.api.model.Route;
 import io.fabric8.openshift.client.OpenShiftClient;
 
 /**
- * @author Slavomír Krupa (slavomir.krupa@gmail.com)
+ *  @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class OpenShiftTestAssistant {
 
