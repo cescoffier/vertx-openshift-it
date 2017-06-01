@@ -1,5 +1,8 @@
 package io.vertx.openshift.it;
 
+import static io.vertx.openshift.it.HealthCheckHttpVerticle.REAL_CHECKS_THROW_EXCEPTION;
+import static io.vertx.openshift.it.HealthCheckHttpVerticle.REAL_CHECKS_TIMEOUT;
+
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.ext.healthchecks.HealthCheckHandler;
@@ -12,6 +15,8 @@ import io.vertx.ext.web.Router;
  */
 public class RealHealthCheckHttpVerticle extends AbstractVerticle {
 
+  public static final String KILL = "kill";
+
   @Override
   public void start(Future<Void> future) throws Exception {
     Router internalRouter = Router.router(vertx);
@@ -22,11 +27,23 @@ public class RealHealthCheckHttpVerticle extends AbstractVerticle {
     internalRouter.get("/isAlive").handler(globalHealthChecksHandler);
     internalRouter.get("/start").handler(globalHealthChecksHandler);
 
-    vertx.eventBus().consumer("kill",
+    vertx.eventBus().consumer(KILL,
       m -> globalHealthChecks.register(
         m.body().toString(),
         f -> f.fail(m.body().toString())
       )
+    );
+    vertx.eventBus().consumer(REAL_CHECKS_TIMEOUT,
+      m -> globalHealthChecks.register(REAL_CHECKS_TIMEOUT,
+        f -> {
+        })
+    );
+
+    vertx.eventBus().consumer(REAL_CHECKS_THROW_EXCEPTION,
+      m -> globalHealthChecks.register(REAL_CHECKS_THROW_EXCEPTION,
+        f -> {
+          throw new IllegalArgumentException();
+        })
     );
 
     vertx.createHttpServer()

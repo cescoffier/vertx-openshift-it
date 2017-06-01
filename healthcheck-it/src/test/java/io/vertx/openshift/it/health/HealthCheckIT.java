@@ -10,6 +10,7 @@ import static io.vertx.it.openshift.utils.Ensure.ensureThat;
 import static io.vertx.openshift.it.HealthCheckHttpVerticle.CHECKS_CONTENT_KO;
 import static io.vertx.openshift.it.HealthCheckHttpVerticle.CHECKS_CONTENT_OK;
 import static io.vertx.openshift.it.HealthCheckHttpVerticle.CHECKS_OK;
+import static io.vertx.openshift.it.HealthCheckHttpVerticle.REAL_CHECKS_TIMEOUT;
 import static io.vertx.openshift.it.HealthCheckHttpVerticle.RESET;
 
 import org.junit.After;
@@ -25,6 +26,7 @@ import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.Probe;
 import io.fabric8.openshift.api.model.DeploymentConfig;
 import io.vertx.it.openshift.utils.AbstractTestClass;
+import io.vertx.openshift.it.HealthCheckHttpVerticle;
 
 public class HealthCheckIT extends AbstractTestClass {
 
@@ -150,6 +152,39 @@ public class HealthCheckIT extends AbstractTestClass {
       await().atMost(4, TimeUnit.MINUTES).catchUncaughtExceptions().until(() -> get(HEALTH).getStatusCode() == 204)
     );
   }
+
+  @Test
+  public void testRealHealthCheckTimeoutRestartPod() {
+    ensureThat("server can be killed", () -> {
+      get(REAL_CHECKS_TIMEOUT).then().statusCode(200);
+    });
+    ensureThat("killed server does not affect testing healthcheck", () -> {
+      get(HEALTH).then().statusCode(204);
+    });
+    ensureThat("pod should be suspected by kubernetes.", () ->
+      await().atMost(4, TimeUnit.MINUTES).catchUncaughtExceptions().until(() -> get(HEALTH).getStatusCode() != 204)
+    );
+    ensureThat("new pod should be started", () ->
+      await().atMost(4, TimeUnit.MINUTES).catchUncaughtExceptions().until(() -> get(HEALTH).getStatusCode() == 204)
+    );
+  }
+
+  @Test
+  public void testRealHealthCheckExceptionRestartPod() {
+    ensureThat("server can be killed", () -> {
+      get(HealthCheckHttpVerticle.REAL_CHECKS_THROW_EXCEPTION).then().statusCode(200);
+    });
+    ensureThat("killed server does not affect testing healthcheck", () -> {
+      get(HEALTH).then().statusCode(204);
+    });
+    ensureThat("pod should be suspected by kubernetes.", () ->
+      await().atMost(4, TimeUnit.MINUTES).catchUncaughtExceptions().until(() -> get(HEALTH).getStatusCode() != 204)
+    );
+    ensureThat("new pod should be started", () ->
+      await().atMost(4, TimeUnit.MINUTES).catchUncaughtExceptions().until(() -> get(HEALTH).getStatusCode() == 204)
+    );
+  }
+
 
   @Test
   public void testWithBothProcedure() throws InterruptedException {

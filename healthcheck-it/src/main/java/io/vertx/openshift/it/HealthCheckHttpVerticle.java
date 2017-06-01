@@ -18,6 +18,8 @@ public class HealthCheckHttpVerticle extends AbstractVerticle {
   public static final String RESET = "/checks/reset";
   public static final String CHECKS_OK = "checks/ok";
   public static final String CHECKS_KO = "checks/ko";
+  public static final String REAL_CHECKS_TIMEOUT = "checks/timeout";
+  public static final String REAL_CHECKS_THROW_EXCEPTION = "checks/throw_exception";
   public static final String CHECKS_CONTENT_OK = "checks/content/ok";
   public static final String CHECKS_CONTENT_KO = "checks/content/ko";
   public static final String EVENTBUS_CHECKS = "eventbus_checks";
@@ -59,6 +61,17 @@ public class HealthCheckHttpVerticle extends AbstractVerticle {
         rc.response().end(json.encodePrettily());
       });
     });
+
+    router.get("/" + REAL_CHECKS_THROW_EXCEPTION).handler(rc -> {
+        eventBus.publish(REAL_CHECKS_THROW_EXCEPTION, null);
+        respondOk(rc);
+      }
+    );
+    router.get("/" + REAL_CHECKS_TIMEOUT).handler(rc -> {
+        eventBus.publish(REAL_CHECKS_TIMEOUT, null);
+        respondOk(rc);
+      }
+    );
     router.get("/killOne").handler(rc -> {
         eventBus.send("kill", "kill");
         respondOk(rc);
