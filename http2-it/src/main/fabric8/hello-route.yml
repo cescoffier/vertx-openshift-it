@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Route
+metadata:
+  name: hello
+spec:
+  port:
+    targetPort: 8082
+  to:
+    kind: Service
+    name: hello
+  tls:
+    termination: passthrough
