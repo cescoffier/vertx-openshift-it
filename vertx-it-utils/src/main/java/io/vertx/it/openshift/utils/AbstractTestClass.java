@@ -53,7 +53,8 @@ public class AbstractTestClass {
   }
 
   private static void deleteDeployPods() {
-    client.pods().list().getItems().stream().filter(p -> p.getMetadata().getName().endsWith("-deploy")).map(p -> client.pods().delete(p));
+    client.pods().list().getItems().stream().filter(p -> p.getMetadata().getName().endsWith("-deploy")).forEach(
+      p -> client.pods().delete(p));
   }
 
   public static void deployAndAwaitStart() throws IOException {

@@ -20,6 +20,7 @@
     <dependency>
       <groupId>io.fabric8</groupId>
       <artifactId>kubernetes-api</artifactId>
+      <version>${kubernetes.api.version}</version>
     </dependency>
 
     <dependency>
@@ -36,7 +37,13 @@
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-java</artifactId>
-      <version>2.52.0</version>
+      <version>3.4.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.openshift</groupId>
+      <artifactId>openshift-test-utils</artifactId>
+      <version>2</version>
     </dependency>
   </dependencies>
 

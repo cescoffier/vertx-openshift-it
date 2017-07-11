@@ -29,6 +29,10 @@ import io.fabric8.openshift.api.model.Route;
 import io.fabric8.openshift.client.OpenShiftClient;
 
 /**
+ * TODO Switch to the booster one, however we have a kubernetes client conflict.
+ * Caused by: java.lang.NoSuchMethodError: io.fabric8.openshift.client.OpenShiftClient.load(Ljava/io/InputStream;)
+ * Lio/fabric8/kubernetes/client/dsl/NamespaceListVisitFromServerGetDeleteRecreateWaitApplicable;
+ *
  *  @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class OpenShiftTestAssistant {
