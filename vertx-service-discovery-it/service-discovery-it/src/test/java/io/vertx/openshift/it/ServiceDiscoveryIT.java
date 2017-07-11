@@ -1,19 +1,10 @@
 package io.vertx.openshift.it;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-
-import static com.jayway.awaitility.Awaitility.await;
-import static com.jayway.restassured.RestAssured.get;
-import static com.jayway.restassured.RestAssured.given;
-
-import static io.vertx.it.openshift.utils.Ensure.ensureThat;
-import static io.vertx.it.openshift.utils.Kube.awaitUntilAllPodsAreReady;
-import static io.vertx.it.openshift.utils.Kube.setReplicasAndWait;
-import static io.vertx.it.openshift.utils.Kube.sleep;
-import static io.vertx.it.openshift.utils.Kube.urlForRoute;
-
+import io.fabric8.kubernetes.api.model.Service;
+import io.fabric8.openshift.api.model.Route;
+import io.vertx.it.openshift.utils.AbstractTestClass;
+import io.vertx.it.openshift.utils.OC;
+import io.vertx.it.openshift.utils.OpenShiftHelper;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -21,18 +12,17 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import io.fabric8.kubernetes.api.model.Service;
-import io.fabric8.openshift.api.model.Route;
-import io.vertx.it.openshift.utils.AbstractTestClass;
-import io.vertx.it.openshift.utils.OC;
-import io.vertx.it.openshift.utils.OpenShiftHelper;
+import static com.jayway.awaitility.Awaitility.await;
+import static com.jayway.restassured.RestAssured.get;
+import static com.jayway.restassured.RestAssured.given;
+import static io.vertx.it.openshift.utils.Ensure.ensureThat;
+import static io.vertx.it.openshift.utils.Kube.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
 
 /**
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
@@ -235,7 +225,7 @@ public class ServiceDiscoveryIT extends AbstractTestClass {
     String uuid = UUID.randomUUID().toString();
     ensureThat("you can call a remote URL from webclient", () ->
       given().queryParam("message", uuid)
-        .queryParam("url", url)
+        .queryParam("host", url.getHost())
         .put(urlForRoute(route, "/webclient"))
         .then().assertThat().statusCode(200));
   }

@@ -38,8 +38,10 @@ public class GatewayVerticle extends AbstractVerticle {
   @Override
   public void start() throws Exception {
 
-    dnsClient = vertx.createHttpClient(new HttpClientOptions().setDefaultHost(ENDPOINT_NAME).setKeepAlive(false));
-    dnsWeb = WebClient.create(vertx, new WebClientOptions().setDefaultHost(ENDPOINT_NAME).setKeepAlive(false));
+    dnsClient = vertx.createHttpClient(new HttpClientOptions().setDefaultHost(ENDPOINT_NAME).setDefaultPort(8080)
+      .setKeepAlive(false));
+    dnsWeb = WebClient.create(vertx, new WebClientOptions().setDefaultHost(ENDPOINT_NAME).setDefaultPort(8080)
+      .setKeepAlive(false));
     dnsDatabase = JDBCClient.createShared(vertx, new JsonObject()
       .put("url", "jdbc:postgresql://my-database:5432/my_data")
       .put("driver_class", "org.postgresql.Driver")
@@ -62,6 +64,7 @@ public class GatewayVerticle extends AbstractVerticle {
     router.get("/ref/web").handler(this::invokeWebServiceWithRef);
 
     router.put("/webclient").handler(this::webclient);
+
 
     ServiceDiscovery.create(vertx, discovery -> {
       this.discovery = discovery;
@@ -92,8 +95,8 @@ public class GatewayVerticle extends AbstractVerticle {
   }
 
   private void webclient(RoutingContext routingContext) {
-    String url = routingContext.request().getParam("url");
-    final HttpClient httpClient = vertx.createHttpClient(new HttpClientOptions().setDefaultHost(url).setKeepAlive(false));
+    String host = routingContext.request().getParam("host");
+    final HttpClient httpClient = vertx.createHttpClient(new HttpClientOptions().setDefaultHost(host).setKeepAlive(false));
     forward(routingContext, httpClient, true);
   }
 
