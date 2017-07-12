@@ -4,7 +4,6 @@ If you want to use Minishift for testing, run:
 
 ```bash
 minishift start --cpus=4 --memory=8192 \
-  --deploy-registry=true --deploy-router=true \
   --vm-driver=virtualbox
 
 eval $(minishift docker-env)
