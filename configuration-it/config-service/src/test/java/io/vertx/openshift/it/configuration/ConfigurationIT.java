@@ -22,10 +22,16 @@ import io.vertx.it.openshift.utils.OC;
 
 public class ConfigurationIT extends AbstractTestClass {
 
+  private static final String CONFIG_SERVICE_APP = "config-service";
+  private static final String HTTP_SERVICE_APP = "http-service";
+
   public static final String CONFIG_MAP = "my-config-map";
   public static final ImmutableMap<String, String> DEFAULT_MAP = ImmutableMap.of(
     "key", "value",
     "date", Long.toString(System.currentTimeMillis()));
+
+  private static String configBaseUri;
+  private static String httpBaseUri;
 
   @BeforeClass
   public static void initialize() throws IOException {
@@ -122,4 +128,5 @@ public class ConfigurationIT extends AbstractTestClass {
     client.configMaps().withName(CONFIG_MAP).withGracePeriod(0).delete();
     OC.removeServiceAccount(client.getNamespace());
   }
+
 }

@@ -8,6 +8,8 @@ import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.client.WebClient;
+import io.vertx.ext.web.client.WebClientOptions;
 
 /**
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
@@ -16,10 +18,13 @@ public class ConfigurableHttpVerticle extends AbstractVerticle {
 
   private ConfigRetriever retriever;
   private JsonObject Config;
+  private WebClient client;
 
   @Override
   public void start() throws Exception {
     retriever = initializeConfig();
+
+    client = WebClient.create(vertx, new WebClientOptions().setDefaultHost("http-service"));
 
     retriever.getConfig(res -> {
         if (res.failed()) {
@@ -72,7 +77,7 @@ public class ConfigurableHttpVerticle extends AbstractVerticle {
     ConfigStoreOptions httpStore = new ConfigStoreOptions()
       .setType("http")
       .setConfig(new JsonObject()
-        .put("host", "localhost").put("port", 8081).put("path", "/conf"));
+        .put("defaultHost", "http-service").put("defaultPort", 8080).put("path", "/conf"));
 
     ConfigStoreOptions propertiesFile = new ConfigStoreOptions()
       .setType("file")
@@ -103,7 +108,7 @@ public class ConfigurableHttpVerticle extends AbstractVerticle {
         .addStore(cm)
         .addStore(sys)
         .addStore(env)
-//        .addStore(httpStore)  // Uncomment if you provide a http config, otherwise it will throw an exception
+        .addStore(httpStore)  // Uncomment if you provide a http config, otherwise it will throw an exception
         .addStore(propertiesFile)
         .addStore(jsonFile)
         .addStore(ymlFile)
