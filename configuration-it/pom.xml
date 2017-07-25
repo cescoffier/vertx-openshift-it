@@ -43,23 +43,23 @@
   </dependencies>
 
   <build>
-    <resources>
-      <resource>
-        <directory>config-service/src/main/resources</directory>
-        <filtering>true</filtering>
-      </resource>
-    </resources>
-    <testResources>
-      <testResource>
-        <directory>config-service/src/test/resources</directory>
-        <filtering>true</filtering>
-      </testResource>
-    </testResources>
-
     <plugins>
       <plugin>
         <groupId>io.fabric8</groupId>
         <artifactId>vertx-maven-plugin</artifactId>
+        <version>${vertx-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>vmp</id>
+            <goals>
+              <goal>initialize</goal>
+              <goal>package</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <redeploy>true</redeploy>
+        </configuration>
       </plugin>
     </plugins>
   </build>

@@ -78,6 +78,11 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <dependency>
+        <groupId>io.fabric8</groupId>
+        <artifactId>kubernetes-api</artifactId>
+        <version>${kubernetes.api.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

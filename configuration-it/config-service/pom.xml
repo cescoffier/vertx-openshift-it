@@ -10,9 +10,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>io.vertx.openshift</groupId>
     <artifactId>config-service</artifactId>
-    <version>1.0-SNAPSHOT</version>
 
   <properties>
     <vertx.verticle>io.vertx.openshift.it.ConfigurableHttpVerticle</vertx.verticle>
@@ -33,4 +31,19 @@
             <scope>runtime</scope>
         </dependency>
     </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+  </build>
 </project>

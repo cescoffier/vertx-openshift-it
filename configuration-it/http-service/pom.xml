@@ -10,12 +10,25 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>io.vertx.openshift</groupId>
     <artifactId>http-service</artifactId>
-    <version>1.0-SNAPSHOT</version>
 
     <properties>
       <vertx.verticle>io.vertx.openshift.it.HttpConfigDeployment</vertx.verticle>
       <vertx.health.path>/conf</vertx.health.path>
     </properties>
+
+    <build>
+      <resources>
+        <resource>
+          <directory>src/main/resources</directory>
+          <filtering>true</filtering>
+        </resource>
+      </resources>
+      <testResources>
+        <testResource>
+          <directory>src/test/resources</directory>
+          <filtering>true</filtering>
+        </testResource>
+      </testResources>
+    </build>
 </project>

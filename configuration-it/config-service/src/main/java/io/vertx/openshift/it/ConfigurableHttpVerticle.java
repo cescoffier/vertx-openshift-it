@@ -18,13 +18,12 @@ public class ConfigurableHttpVerticle extends AbstractVerticle {
 
   private ConfigRetriever retriever;
   private JsonObject Config;
-  private WebClient client;
 
   @Override
   public void start() throws Exception {
     retriever = initializeConfig();
 
-    client = WebClient.create(vertx, new WebClientOptions().setDefaultHost("http-service"));
+    System.out.println("\nSo far so good, configs have been initialized...\n");
 
     retriever.getConfig(res -> {
         if (res.failed()) {
@@ -77,7 +76,7 @@ public class ConfigurableHttpVerticle extends AbstractVerticle {
     ConfigStoreOptions httpStore = new ConfigStoreOptions()
       .setType("http")
       .setConfig(new JsonObject()
-        .put("defaultHost", "http-service").put("defaultPort", 8080).put("path", "/conf"));
+        .put("host", "http-service").put("port", 8080).put("path", "/conf"));
 
     ConfigStoreOptions propertiesFile = new ConfigStoreOptions()
       .setType("file")

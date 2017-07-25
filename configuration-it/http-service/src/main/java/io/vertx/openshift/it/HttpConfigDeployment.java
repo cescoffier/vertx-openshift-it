@@ -15,7 +15,7 @@ import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 
 public class HttpConfigDeployment extends AbstractVerticle {
 
-  private static final String template = "This is http config !";
+  private static final String template = "Congratulations, you have just served a configuration over HTTP !";
 
   @Override
   public void start(Future<Void> future) {
@@ -23,7 +23,7 @@ public class HttpConfigDeployment extends AbstractVerticle {
     Router router = Router.router(vertx);
 
     router.get("/conf").handler(this::config);
-    router.get("/").handler(StaticHandler.create());
+    router.get("/*").handler(StaticHandler.create());
 
     // Create the HTTP server and pass the "accept" method to the request handler.
     vertx
@@ -44,7 +44,7 @@ public class HttpConfigDeployment extends AbstractVerticle {
 
   private void config(RoutingContext rc) {
     JsonObject jsonObject = new JsonObject()
-      .put("content", template);
+      .put("http-config-content", template);
 
     rc.response().putHeader(CONTENT_TYPE, "application/json; charset=utf-8")
       .end(jsonObject.encodePrettily());
