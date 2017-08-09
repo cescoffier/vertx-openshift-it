@@ -68,6 +68,7 @@
     <module>healthcheck-it</module>
     <module>vertx-service-discovery-it</module>
     <module>sockjs-it</module>
+    <module>vertx-cluster-manager-it</module>
   </modules>
 
   <dependencyManagement>
