@@ -5,31 +5,29 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-      <groupId>io.vertx.openshift</groupId>
-      <artifactId>configuration-it</artifactId>
-      <version>1.0-SNAPSHOT</version>
+    <groupId>io.vertx.openshift</groupId>
+    <artifactId>configuration-it</artifactId>
+    <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>config-service</artifactId>
+  <artifactId>eventbus-service</artifactId>
 
   <properties>
-    <vertx.verticle>io.vertx.openshift.it.ConfigurableHttpVerticle</vertx.verticle>
-    <vertx.health.path>/all</vertx.health.path>
+    <vertx.verticle>io.vertx.openshift.it.EventBusPublish</vertx.verticle>
+    <vertx.health.path>/</vertx.health.path>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>io.vertx</groupId>
-      <artifactId>vertx-web-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.vertx</groupId>
       <artifactId>vertx-hazelcast</artifactId>
     </dependency>
+
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-service-discovery-bridge-kubernetes</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -44,12 +42,6 @@
         <filtering>true</filtering>
       </resource>
     </resources>
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-      </testResource>
-    </testResources>
   </build>
 
   <profiles>

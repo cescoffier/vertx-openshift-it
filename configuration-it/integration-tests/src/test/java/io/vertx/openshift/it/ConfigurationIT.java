@@ -1,4 +1,4 @@
-package io.vertx.openshift.it.configuration;
+package io.vertx.openshift.it;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static com.jayway.restassured.RestAssured.get;
@@ -6,6 +6,8 @@ import static com.jayway.restassured.RestAssured.get;
 import static io.vertx.it.openshift.utils.Ensure.ensureThat;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.jayway.restassured.RestAssured;
+import io.fabric8.kubernetes.api.model.Pod;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.DoneableConfigMap;
@@ -28,23 +31,50 @@ import io.vertx.it.openshift.utils.AbstractTestClass;
 import io.vertx.it.openshift.utils.OC;
 
 public class ConfigurationIT extends AbstractTestClass {
-  private static final String HTTP_SERVICE_APP = "http-service";
   private static final String HTTP_CONFIG_EXPECTED_STRING = "Congratulations, you have just served a configuration over HTTP !";
+  private static final String EVENT_BUS_EXPECTED_STRING = "Hello configuration from the event bus !";
 
   public static final String CONFIG_MAP = "my-config-map";
   public static final ImmutableMap<String, String> DEFAULT_MAP = ImmutableMap.of(
     "key", "value",
     "date", Long.toString(System.currentTimeMillis()));
 
-  private static String httpBaseUri;
-
   @BeforeClass
   public static void initialize() throws IOException {
-//    httpBaseUri = deployApp(HTTP_SERVICE_APP, System.getProperty("httpServiceTemplate"));
+    String eventbusBaseUri, httpBaseUri, configBaseUri;
+    String eventbusServiceApp = "eventbus-service";
+    String httpServiceApp = "http-service";
+    String configServiceApp = "config-service";
 
     createOrEditConfigMap(DEFAULT_MAP);
     OC.initializeServiceAccount(client.getNamespace());
-    deployAndAwaitStartWithRoute("/all");
+    OC.initializeSystemServiceAccount(client.getNamespace());
+
+    eventbusBaseUri = deployApp(eventbusServiceApp, System.getProperty("eventbusServiceTemplate"));
+
+    httpBaseUri = deployApp(httpServiceApp, System.getProperty("httpServiceTemplate"));
+
+    configBaseUri = deployApp(configServiceApp, System.getProperty("configServiceTemplate"));
+
+    await().atMost(5, TimeUnit.MINUTES).until(() -> {
+      List<Pod> list = client.pods().inNamespace(deploymentAssistant.project()).list().getItems();
+      return list.stream()
+        .filter(pod -> pod.getMetadata().getName().startsWith(eventbusServiceApp)
+          || pod.getMetadata().getName().startsWith(httpServiceApp)
+          || pod.getMetadata().getName().startsWith(configServiceApp))
+        .filter(pod -> "running".equalsIgnoreCase(pod.getStatus().getPhase())).collect(Collectors.toList()).size() >= 3;
+    });
+
+    System.out.println("Pods running, waiting for probes...");
+
+    await("Pods running, waiting for probes...").pollInterval(1, TimeUnit.SECONDS).atMost(6, TimeUnit.MINUTES).catchUncaughtExceptions().until(() ->
+      get(configBaseUri + "/all").getStatusCode() == 200
+      && get(eventbusBaseUri + "/eventbus").getStatusCode() == 200
+      && get(httpBaseUri + "/conf").getStatusCode() == 200
+    );
+
+    // System.out.println(get(eventbusBaseUri + "/eventbus").statusCode()); // Call get to publish a message on the event bus, see line 74
+    RestAssured.baseURI = configBaseUri;
   }
 
   private static void createOrEditConfigMap(Map<String, String> content) {
@@ -79,6 +109,8 @@ public class ConfigurationIT extends AbstractTestClass {
       softly.assertThat(response.getString("'map.items'.mapItem1")).isEqualTo("Overwrites value in JSON config file");
       softly.assertThat(response.getInt("'map.items'.mapItem2")).isEqualTo(0);
       softly.assertThat(response.getString("http-config-content")).isEqualTo(HTTP_CONFIG_EXPECTED_STRING);
+//      softly.assertThat(response.getString("dirConfigKey2")).isEqualTo("How to achieve perfection");
+      softly.assertThat(response.getString("event-bus")).isEqualTo(EVENT_BUS_EXPECTED_STRING);
     });
   }
 
@@ -110,6 +142,8 @@ public class ConfigurationIT extends AbstractTestClass {
       softly.assertThat(response.getString("'map.items'.mapItem1")).isEqualTo("Overwrites value in JSON config file");
       softly.assertThat(response.getInt("'map.items'.mapItem2")).isEqualTo(0);
       softly.assertThat(response.getString("http-config-content")).isEqualTo(HTTP_CONFIG_EXPECTED_STRING);
+//      softly.assertThat(response.getString("dirConfigKey2")).isEqualTo("How to achieve perfection");
+      softly.assertThat(response.getString("event-bus")).isEqualTo(EVENT_BUS_EXPECTED_STRING);
     });
 
     createOrEditConfigMap(DEFAULT_MAP);
@@ -136,6 +170,7 @@ public class ConfigurationIT extends AbstractTestClass {
   public static void clean() {
     client.configMaps().withName(CONFIG_MAP).withGracePeriod(0).delete();
     OC.removeServiceAccount(client.getNamespace());
+    OC.removeSystemServiceAccount(client.getNamespace());
   }
 
 

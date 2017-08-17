@@ -18,9 +18,17 @@ public class OC {
     OC.execute("policy", "add-role-to-user", "view", "-z", "default", "-n", namespace);
   }
 
+  public static void initializeSystemServiceAccount(String namespace) {
+    OC.execute("policy", "add-role-to-group", "view", "system:serviceaccounts", "-n", namespace);
+  }
+
   public static void removeServiceAccount(String namespace) {
     // oc policy remove-role-from-user view -z default -n CURRENT_NAMESPACE
     OC.execute("policy", "remove-role-from-user", "view", "-z", "default", "-n", namespace);
+  }
+
+  public static void removeSystemServiceAccount(String namespace) {
+    OC.execute("policy", "remove-role-from-group", "view", "system:serviceaccounts", "-n", namespace);
   }
 
   public static String execute(String... args) {
