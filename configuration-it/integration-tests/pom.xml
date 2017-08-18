@@ -11,19 +11,11 @@
   </parent>
 
   <artifactId>integration-tests</artifactId>
+  <description>OpenShift integration tests for Vert.x configuration stores</description>
 
   <properties>
     <vertx.health.path>/</vertx.health.path>
   </properties>
-
-  <build>
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-      </testResource>
-    </testResources>
-  </build>
 
   <profiles>
     <profile>
