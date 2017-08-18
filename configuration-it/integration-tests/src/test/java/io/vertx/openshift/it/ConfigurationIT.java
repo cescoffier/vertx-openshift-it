@@ -73,7 +73,6 @@ public class ConfigurationIT extends AbstractTestClass {
       && get(httpBaseUri + "/conf").getStatusCode() == 200
     );
 
-    // System.out.println(get(eventbusBaseUri + "/eventbus").statusCode()); // Call get to publish a message on the event bus, see line 74
     RestAssured.baseURI = configBaseUri;
   }
 
