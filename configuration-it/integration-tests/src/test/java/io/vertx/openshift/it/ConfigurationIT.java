@@ -31,11 +31,11 @@ import io.vertx.it.openshift.utils.AbstractTestClass;
 import io.vertx.it.openshift.utils.OC;
 
 public class ConfigurationIT extends AbstractTestClass {
-  private static final String HTTP_CONFIG_EXPECTED_STRING = "Congratulations, you have just served a configuration over HTTP !";
-  private static final String EVENT_BUS_EXPECTED_STRING = "Hello configuration from the event bus !";
+  private final String HTTP_CONFIG_EXPECTED_STRING = "Congratulations, you have just served a configuration over HTTP !";
+  private final String EVENT_BUS_EXPECTED_STRING = "Hello configuration from the event bus !";
 
-  public static final String CONFIG_MAP = "my-config-map";
-  public static final ImmutableMap<String, String> DEFAULT_MAP = ImmutableMap.of(
+  private static final String CONFIG_MAP = "my-config-map";
+  private static final ImmutableMap<String, String> DEFAULT_MAP = ImmutableMap.of(
     "key", "value",
     "date", Long.toString(System.currentTimeMillis()));
 
@@ -73,6 +73,8 @@ public class ConfigurationIT extends AbstractTestClass {
       && get(httpBaseUri + "/conf").getStatusCode() == 200
     );
 
+    get(eventbusBaseUri + "/eventbus"); // Just in case, to call event bus publish
+
     RestAssured.baseURI = configBaseUri;
   }
 
@@ -93,7 +95,8 @@ public class ConfigurationIT extends AbstractTestClass {
   public void testRetrievingConfig() throws InterruptedException {
 
     ensureThat("we can retrieve the application configuration", () -> {
-      get("/all").then().statusCode(200);
+      await().atMost(2, TimeUnit.MINUTES).until(() ->
+        get("/all").getBody().jsonPath().getString("eventBus") != null); // So event bus config store has some time to load
     });
     ensureThat("the configuration is the expected configuration", () -> {
       final JsonPath response = get("/all").getBody().jsonPath();
@@ -107,9 +110,9 @@ public class ConfigurationIT extends AbstractTestClass {
       softly.assertThat(response.getString("toBeOverwritten")).isEqualTo("This is defined in YAML file.");
       softly.assertThat(response.getString("'map.items'.mapItem1")).isEqualTo("Overwrites value in JSON config file");
       softly.assertThat(response.getInt("'map.items'.mapItem2")).isEqualTo(0);
-      softly.assertThat(response.getString("http-config-content")).isEqualTo(HTTP_CONFIG_EXPECTED_STRING);
+      softly.assertThat(response.getString("httpConfigContent")).isEqualTo(HTTP_CONFIG_EXPECTED_STRING);
 //      softly.assertThat(response.getString("dirConfigKey2")).isEqualTo("How to achieve perfection");
-      softly.assertThat(response.getString("event-bus")).isEqualTo(EVENT_BUS_EXPECTED_STRING);
+      softly.assertThat(response.getString("eventBus")).isEqualTo(EVENT_BUS_EXPECTED_STRING);
     });
   }
 
@@ -140,9 +143,9 @@ public class ConfigurationIT extends AbstractTestClass {
       softly.assertThat(response.getString("toBeOverwritten")).isEqualTo("This is defined in YAML file.");
       softly.assertThat(response.getString("'map.items'.mapItem1")).isEqualTo("Overwrites value in JSON config file");
       softly.assertThat(response.getInt("'map.items'.mapItem2")).isEqualTo(0);
-      softly.assertThat(response.getString("http-config-content")).isEqualTo(HTTP_CONFIG_EXPECTED_STRING);
+      softly.assertThat(response.getString("httpConfigContent")).isEqualTo(HTTP_CONFIG_EXPECTED_STRING);
 //      softly.assertThat(response.getString("dirConfigKey2")).isEqualTo("How to achieve perfection");
-      softly.assertThat(response.getString("event-bus")).isEqualTo(EVENT_BUS_EXPECTED_STRING);
+      softly.assertThat(response.getString("eventBus")).isEqualTo(EVENT_BUS_EXPECTED_STRING);
     });
 
     createOrEditConfigMap(DEFAULT_MAP);

@@ -122,7 +122,7 @@ public class ConfigurableHttpVerticle extends AbstractVerticle {
         .addStore(cm)
         .addStore(sys)
         .addStore(env)
-        .addStore(httpStore)  // Uncomment if you provide a http config, otherwise it will throw an exception
+        .addStore(httpStore)
         .addStore(propertiesFile)
         .addStore(eb)
         .addStore(dir)

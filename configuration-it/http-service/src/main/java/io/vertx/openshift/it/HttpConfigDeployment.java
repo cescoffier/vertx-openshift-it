@@ -61,8 +61,8 @@ public class HttpConfigDeployment extends AbstractVerticle {
   private void config(RoutingContext rc) {
     String httpTemplate = "Congratulations, you have just served a configuration over HTTP !";
     JsonObject jsonObject = new JsonObject()
-      .put("http-config-content", httpTemplate)
-      .put("event-bus-msg-content", eventbusContent);
+      .put("httpConfigContent", httpTemplate)
+      .put("eventBusMessageContent", eventbusContent);
 
     rc.response().putHeader(CONTENT_TYPE, "application/json; charset=utf-8")
       .end(jsonObject.encodePrettily());

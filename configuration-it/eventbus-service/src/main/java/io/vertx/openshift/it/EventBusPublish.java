@@ -54,7 +54,7 @@ public class EventBusPublish extends AbstractVerticle {
     }
     String reply = "Hello configuration from " + msg + " !";
 
-    JsonObject message = new JsonObject().put("event-bus", reply);
+    JsonObject message = new JsonObject().put("eventBus", reply);
     eventBus.publish("event-bus-config", message);
 
     rc.response().putHeader(CONTENT_TYPE, "application/json; charset=utf-8")
