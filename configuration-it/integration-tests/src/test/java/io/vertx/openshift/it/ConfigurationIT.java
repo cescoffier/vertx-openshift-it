@@ -67,7 +67,7 @@ public class ConfigurationIT extends AbstractTestClass {
 
     System.out.println("Pods running, waiting for probes...");
 
-    await("Pods running, waiting for probes...").pollInterval(1, TimeUnit.SECONDS).atMost(6, TimeUnit.MINUTES).catchUncaughtExceptions().until(() ->
+    await("Pods running, waiting for probes...").pollInterval(1, TimeUnit.SECONDS).atMost(10, TimeUnit.MINUTES).catchUncaughtExceptions().until(() ->
       get(configBaseUri + "/all").getStatusCode() == 200
       && get(eventbusBaseUri + "/eventbus").getStatusCode() == 200
       && get(httpBaseUri + "/conf").getStatusCode() == 200
