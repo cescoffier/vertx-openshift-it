@@ -38,6 +38,7 @@
             <configuration>
               <resources>
                 <env>
+                  <!-- TODO switch to Infinispan cluster manager -->
                   <JAVA_ARGS>-cp ../hazelcast-config -cluster</JAVA_ARGS>
                 </env>
               </resources>
