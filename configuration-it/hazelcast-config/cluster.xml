@@ -38,7 +38,9 @@
         <multicast-port>54327</multicast-port>
       </multicast>
 
-      <tcp-ip enabled="false"/>
+      <tcp-ip enabled="true">
+        <interface>192.168.1.*</interface>
+      </tcp-ip>
       <discovery-strategies>
         <discovery-strategy enabled="true"
                             class="io.vertx.servicediscovery.hazelcast.HazelcastKubernetesDiscoveryStrategy">
