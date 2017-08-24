@@ -38,7 +38,6 @@ public class EventBusPublish extends AbstractVerticle {
           if (ar.succeeded()) {
             eventBus.publish("event-bus-config", new JsonObject().put("event-bus", eventBusTemplate));
             System.out.println("Server starter on port " + ar.result().actualPort());
-            System.out.println("Clustered vert.x: " + vertx.isClustered());
           } else {
             System.out.println("Unable to start server: " + ar.cause().getMessage());
           }

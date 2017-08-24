@@ -23,8 +23,6 @@ public class ConfigurableHttpVerticle extends AbstractVerticle {
   public void start() throws Exception {
     retriever = initializeConfig();
 
-    System.out.println("\nSo far so good, configs have been initialized...\n");
-
     retriever.getConfig(res -> {
         if (res.failed()) {
           throw new RuntimeException("Unable to retrieve the Config", res.cause());
