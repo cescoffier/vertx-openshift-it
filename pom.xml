@@ -45,6 +45,7 @@
      -->
     <fabric8.maven.plugin.version>3.5.0</fabric8.maven.plugin.version>
     <!-- must use version from https://maven.repository.redhat.com/ga/io/fabric8/kubernetes-client/ -->
+    <!-- TODO update kubernetes.client.version to 1.4.35 - currently we have a kubernetes client conflict, see OpenShiftTestAssistant.java -->
     <kubernetes.client.version>1.4.14</kubernetes.client.version>
 
     <!-- muse use version from https://maven.repository.redhat.com/ga/io/fabric8/kubernetes-api/ -->
@@ -77,6 +78,11 @@
         <version>${vertx.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.fabric8</groupId>
+        <artifactId>kubernetes-api</artifactId>
+        <version>${kubernetes.api.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

@@ -5,9 +5,11 @@ import io.vertx.config.ConfigRetrieverOptions;
 import io.vertx.config.ConfigStoreOptions;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpHeaders;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.StaticHandler;
 
 /**
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
@@ -38,6 +40,7 @@ public class ConfigurableHttpVerticle extends AbstractVerticle {
 
         Router router = Router.router(vertx);
         router.get("/all").handler(this::printAll);
+        router.get("/*").handler(StaticHandler.create("configuration"));
         vertx.createHttpServer()
           .requestHandler(router::accept)
           .listen(8080, ar -> {
@@ -72,28 +75,42 @@ public class ConfigurableHttpVerticle extends AbstractVerticle {
     ConfigStoreOptions httpStore = new ConfigStoreOptions()
       .setType("http")
       .setConfig(new JsonObject()
-        .put("host", "localhost").put("port", 8081).put("path", "/conf"));
+        .put("host", "http-service").put("port", 8080).put("path", "/conf"));
 
     ConfigStoreOptions propertiesFile = new ConfigStoreOptions()
       .setType("file")
       .setFormat("properties")
       .setConfig(new JsonObject()
-        .put("path", "my-config.properties")
+        .put("path", "configuration/my-config.properties")
       );
 
     ConfigStoreOptions jsonFile = new ConfigStoreOptions()
       .setType("file")
       .setFormat("json")
       .setConfig(new JsonObject()
-        .put("path", "my-config.json")
+        .put("path", "configuration/my-config.json")
       );
 
     ConfigStoreOptions ymlFile = new ConfigStoreOptions()
       .setType("file")
       .setFormat("yaml")
       .setConfig(new JsonObject()
-        .put("path", "my-config.yml")
+        .put("path", "configuration/my-config.yml")
       );
+
+    ConfigStoreOptions eb = new ConfigStoreOptions()
+      .setType("event-bus")
+      .setConfig(new JsonObject()
+        .put("address", "event-bus-config")
+      );
+
+    ConfigStoreOptions dir = new ConfigStoreOptions()
+      .setType("directory")
+      .setConfig(new JsonObject().put("path", "configuration/config")
+        .put("filesets", new JsonArray()
+          .add(new JsonObject().put("pattern", "*.properties")
+            .put("format", "properties"))
+        ));
 
     ConfigStoreOptions sys = new ConfigStoreOptions().setType("sys");
     ConfigStoreOptions env = new ConfigStoreOptions().setType("env");
@@ -103,8 +120,10 @@ public class ConfigurableHttpVerticle extends AbstractVerticle {
         .addStore(cm)
         .addStore(sys)
         .addStore(env)
-//        .addStore(httpStore)  // Uncomment if you provide a http config, otherwise it will throw an exception
+        .addStore(httpStore)
         .addStore(propertiesFile)
+        .addStore(eb)
+        .addStore(dir)
         .addStore(jsonFile)
         .addStore(ymlFile)
     );

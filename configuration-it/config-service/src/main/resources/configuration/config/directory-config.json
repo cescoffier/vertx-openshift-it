@@ -1,0 +1,11 @@
+{
+  "dirConfigJSON" : true,
+  "dirConfigKey1" : "Some arbitrary text",
+  "dirConfigObject" : [{
+    "key1" : 12,
+    "key2" : "Lorem Ipsum"
+  }, {
+    "key1" : 20,
+    "key2" : "Stage 2"
+  }]
+}
