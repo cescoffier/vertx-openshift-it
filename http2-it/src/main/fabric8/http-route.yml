@@ -8,5 +8,3 @@ spec:
   to:
     kind: Service
     name: ${project.artifactId}
-  tls:
-      termination: passthrough

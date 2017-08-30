@@ -12,6 +12,9 @@ public class HelloHttp2Verticle extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
+    vertx.exceptionHandler(Throwable::printStackTrace);
+
+
     HttpServer server =
       vertx.createHttpServer(new HttpServerOptions()
         .setUseAlpn(true)
@@ -22,10 +25,11 @@ public class HelloHttp2Verticle extends AbstractVerticle {
       );
 
     server.requestHandler(req -> {
+      System.out.println("Handling request on Aloha " + req.version());
       req.response().putHeader("content-type", "text/html").end("<html><body>" +
-        "<h1>Hello from vert.x!</h1>" +
+        "<h1>Aloha from vert.x!</h1>" +
         "<p>version = " + req.version() + "</p>" +
         "</body></html>");
-    }).listen(8080);
+    }).listen(8081);
   }
 }

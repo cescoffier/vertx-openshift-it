@@ -28,7 +28,7 @@ import static org.hamcrest.Matchers.notNullValue;
  */
 public class Http2IT extends AbstractTestClass {
 
-  private static final String NAME = "http2-it";
+  private static final String NAME = "aloha";
   private Vertx vertx;
 
   @Before
@@ -77,7 +77,7 @@ public class Http2IT extends AbstractTestClass {
 
     assertThat(response.get())
       .contains("version = HTTP_2")
-      .contains("Hello from vert.x!");
+      .contains("Aloha from vert.x!");
   }
 
   /**
@@ -91,7 +91,7 @@ public class Http2IT extends AbstractTestClass {
 
     HttpClientOptions options = new HttpClientOptions();
 
-    final String host = urlForRoute(client.routes().withName("aloha").get()).getHost();
+    final String host = urlForRoute(client.routes().withName("http2-it").get()).getHost();
     System.out.println("Host: " + host);
 
     vertx.createHttpClient(options)
