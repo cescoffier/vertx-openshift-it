@@ -17,6 +17,7 @@ import com.jayway.restassured.path.json.JsonPath;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,19 +35,21 @@ public class ConfigurationIT extends AbstractTestClass {
   private final String HTTP_CONFIG_EXPECTED_STRING = "Congratulations, you have just served a configuration over HTTP !";
   private final String EVENT_BUS_EXPECTED_STRING = "Hello configuration from the event bus !";
 
+  private static final String eventbusServiceApp = "eventbus-service";
+  private static final String httpServiceApp = "http-service";
+  private static final String configServiceApp = "config-service";
+
   private static final String CONFIG_MAP = "my-config-map";
   private static final ImmutableMap<String, String> DEFAULT_MAP = ImmutableMap.of(
     "key", "value",
     "date", Long.toString(System.currentTimeMillis()));
 
   @BeforeClass
-  public static void initialize() throws IOException {
+  public static void initialize() throws IOException, URISyntaxException {
     String eventbusBaseUri, httpBaseUri, configBaseUri;
-    String eventbusServiceApp = "eventbus-service";
-    String httpServiceApp = "http-service";
-    String configServiceApp = "config-service";
 
     createOrEditConfigMap(DEFAULT_MAP);
+    OC.execute("policy", "add-role-to-user", "view", "admin", "-n", client.getNamespace());
     OC.initializeServiceAccount(client.getNamespace());
     OC.initializeSystemServiceAccount(client.getNamespace());
 
@@ -73,6 +76,11 @@ public class ConfigurationIT extends AbstractTestClass {
       && get(httpBaseUri + "/conf").getStatusCode() == 200
     );
 
+    // Because we're deploying the services to OpenShift, the *classpath* is in /deployments directory in pods,
+    // not on our local machine, so directory config store wouldn't work without this - it wouldn't find the configs.
+    // That's why we have to copy them to the /deployments dir in config-service pod
+    initializeDirectoryConfig();
+
     get(eventbusBaseUri + "/eventbus"); // Just in case, to call event bus publish
 
     RestAssured.baseURI = configBaseUri;
@@ -92,13 +100,15 @@ public class ConfigurationIT extends AbstractTestClass {
   }
 
   @Test
-  public void testRetrievingConfig() throws InterruptedException {
+  public void testRetrievingConfigByListeningToChange() throws InterruptedException {
 
+    // So event bus config store has some time to load
     ensureThat("we can retrieve the application configuration", () -> {
       await().atMost(2, TimeUnit.MINUTES).until(() ->
-        get("/all").getBody().jsonPath().getString("eventBus") != null); // So event bus config store has some time to load
+        get("/all").getBody().jsonPath().getString("eventBus") != null);
     });
-    ensureThat("the configuration is the expected configuration", () -> {
+
+    ensureThat("the configuration is the expected configuration\n", () -> {
       final JsonPath response = get("/all").getBody().jsonPath();
       softly.assertThat(response.getDouble("date")).isNotNull().isPositive();
       softly.assertThat(response.getString("key")).isEqualTo("value");
@@ -111,13 +121,38 @@ public class ConfigurationIT extends AbstractTestClass {
       softly.assertThat(response.getString("'map.items'.mapItem1")).isEqualTo("Overwrites value in JSON config file");
       softly.assertThat(response.getInt("'map.items'.mapItem2")).isEqualTo(0);
       softly.assertThat(response.getString("httpConfigContent")).isEqualTo(HTTP_CONFIG_EXPECTED_STRING);
-//      softly.assertThat(response.getString("dirConfigKey2")).isEqualTo("How to achieve perfection");
+      softly.assertThat(response.getString("dirConfigKey2")).isEqualTo("How to achieve perfection");
       softly.assertThat(response.getString("eventBus")).isEqualTo(EVENT_BUS_EXPECTED_STRING);
     });
   }
 
   @Test
-  public void testChangingConfiguration() throws InterruptedException {
+  public void testRetrievingConfigFromStream() throws InterruptedException {
+    ensureThat("we can retrieve the application configuration through config stream", () -> {
+      await().atMost(2, TimeUnit.MINUTES).until(() ->
+        get("/all-by-stream").getBody().jsonPath().getString("eventBus") != null);
+    });
+
+    ensureThat("the configuration retrieved through config stream is the expected configuration\n", () -> {
+      final JsonPath response = get("/all-by-stream").getBody().jsonPath();
+      softly.assertThat(response.getDouble("date")).isNotNull().isPositive();
+      softly.assertThat(response.getString("key")).isEqualTo("value");
+      softly.assertThat(response.getString("HOSTNAME")).startsWith("config-service");
+      softly.assertThat(response.getString("KUBERNETES_NAMESPACE")).isEqualToIgnoringCase(client.getNamespace());
+      softly.assertThat(response.getInt("'http.port'")).isNotNull().isNotNegative();
+      softly.assertThat(response.getString("propertiesExampleOption")).isEqualTo("A properties example option");
+      softly.assertThat(response.getString("jsonExampleOption")).isEqualTo("A JSON example option");
+      softly.assertThat(response.getString("toBeOverwritten")).isEqualTo("This is defined in YAML file.");
+      softly.assertThat(response.getString("'map.items'.mapItem1")).isEqualTo("Overwrites value in JSON config file");
+      softly.assertThat(response.getInt("'map.items'.mapItem2")).isEqualTo(0);
+      softly.assertThat(response.getString("httpConfigContent")).isEqualTo(HTTP_CONFIG_EXPECTED_STRING);
+      softly.assertThat(response.getString("dirConfigKey2")).isEqualTo("How to achieve perfection");
+      softly.assertThat(response.getString("eventBus")).isEqualTo(EVENT_BUS_EXPECTED_STRING);
+    });
+  }
+
+  @Test
+  public void testChangingConfigurationByListeningToChange() throws InterruptedException {
     createOrEditConfigMap(
       ImmutableMap.of(
         "key", "value-2",
@@ -125,12 +160,12 @@ public class ConfigurationIT extends AbstractTestClass {
         "yet", "another")
     );
 
-    ensureThat("the new configuration has been read", () -> {
+    ensureThat("after configuration change, the new configuration received by listening to change has been read", () -> {
       await().atMost(2, TimeUnit.MINUTES).until(() ->
         get("/all").getBody().jsonPath().getString("key").equals("value-2"));
     });
 
-    ensureThat("the new configuration is the expected configuration", () -> {
+    ensureThat("the new configuration by listening to change is the expected configuration", () -> {
       final JsonPath response = get("/all").getBody().jsonPath();
       softly.assertThat(response.getDouble("date")).isNotNull().isPositive();
       softly.assertThat(response.getString("key")).isEqualTo("value-2");
@@ -144,33 +179,77 @@ public class ConfigurationIT extends AbstractTestClass {
       softly.assertThat(response.getString("'map.items'.mapItem1")).isEqualTo("Overwrites value in JSON config file");
       softly.assertThat(response.getInt("'map.items'.mapItem2")).isEqualTo(0);
       softly.assertThat(response.getString("httpConfigContent")).isEqualTo(HTTP_CONFIG_EXPECTED_STRING);
-//      softly.assertThat(response.getString("dirConfigKey2")).isEqualTo("How to achieve perfection");
+      softly.assertThat(response.getString("dirConfigKey2")).isEqualTo("How to achieve perfection");
       softly.assertThat(response.getString("eventBus")).isEqualTo(EVENT_BUS_EXPECTED_STRING);
     });
 
     createOrEditConfigMap(DEFAULT_MAP);
-    ensureThat("the old configuration can be read", () -> {
+    ensureThat("the old configuration can be read\n", () -> {
       await().atMost(2, TimeUnit.MINUTES).until(() ->
         get("/all").getBody().jsonPath().getString("key").equals("value"));
     });
   }
 
   @Test
+  public void testChangingConfigurationThroughConfigStream() {
+    createOrEditConfigMap(
+      ImmutableMap.of(
+        "key", "config-stream",
+        "date", Long.toString(System.currentTimeMillis()),
+        "yet", "another-value",
+        "other", "value")
+    );
+
+    ensureThat("after configuration change, the new configuration received through config stream has been read", () -> {
+      await().atMost(2, TimeUnit.MINUTES).until(() ->
+        get("/all-by-stream").getBody().jsonPath().getString("key").equals("config-stream"));
+    });
+
+    ensureThat("the new configuration received through stream is the expected configuration", () -> {
+      final JsonPath response = get("/all-by-stream").getBody().jsonPath();
+      softly.assertThat(response.getDouble("date")).isNotNull().isPositive();
+      softly.assertThat(response.getString("key")).isEqualTo("config-stream");
+      softly.assertThat(response.getString("yet")).isEqualTo("another-value");
+      softly.assertThat(response.getString("other")).isEqualTo("value");
+      softly.assertThat(response.getString("HOSTNAME")).startsWith("config-service");
+      softly.assertThat(response.getString("KUBERNETES_NAMESPACE")).isEqualToIgnoringCase(client.getNamespace());
+      softly.assertThat(response.getInt("'http.port'")).isNotNull().isNotNegative();
+      softly.assertThat(response.getString("propertiesExampleOption")).isEqualTo("A properties example option");
+      softly.assertThat(response.getString("jsonExampleOption")).isEqualTo("A JSON example option");
+      softly.assertThat(response.getString("toBeOverwritten")).isEqualTo("This is defined in YAML file.");
+      softly.assertThat(response.getString("'map.items'.mapItem1")).isEqualTo("Overwrites value in JSON config file");
+      softly.assertThat(response.getInt("'map.items'.mapItem2")).isEqualTo(0);
+      softly.assertThat(response.getString("httpConfigContent")).isEqualTo(HTTP_CONFIG_EXPECTED_STRING);
+      softly.assertThat(response.getString("dirConfigKey2")).isEqualTo("How to achieve perfection");
+      softly.assertThat(response.getString("eventBus")).isEqualTo(EVENT_BUS_EXPECTED_STRING);
+    });
+
+    createOrEditConfigMap(DEFAULT_MAP);
+    ensureThat("the old stream configuration can be read\n", () -> {
+      await().atMost(2, TimeUnit.MINUTES).until(() ->
+        get("/all-by-stream").getBody().jsonPath().getString("key").equals("value"));
+    });
+  }
+
+  @Test
   public void testDeleteConfig() throws InterruptedException {
     client.configMaps().withName(CONFIG_MAP).delete();
-    ensureThat("empty config map is returned when the actual one is deleted", () -> {
+    ensureThat("empty config map is returned when the actual one is deleted\n", () -> {
       await().atMost(2, TimeUnit.MINUTES).until(() ->
-        get("/all").getBody().jsonPath().getString("key") == null);
+        get("/all").getBody().jsonPath().getString("key") == null
+        && get("/all-by-stream").getBody().jsonPath().getString("key") == null);
     });
 
     createOrEditConfigMap(DEFAULT_MAP);
     await().atMost(2, TimeUnit.MINUTES).until(() ->
-      get("/all").getBody().jsonPath().getString("key") != null);
+      get("/all").getBody().jsonPath().getString("key") != null
+      && get("/all-by-stream").getBody().jsonPath().getString("key") != null);
   }
 
   @AfterClass
   public static void clean() {
     client.configMaps().withName(CONFIG_MAP).withGracePeriod(0).delete();
+    OC.execute("policy", "remove-role-from-user", "view", "admin", "-n", client.getNamespace());
     OC.removeServiceAccount(client.getNamespace());
     OC.removeSystemServiceAccount(client.getNamespace());
   }
@@ -190,5 +269,27 @@ public class ConfigurationIT extends AbstractTestClass {
     Route route = deploymentAssistant.client().routes().inNamespace(deploymentAssistant.project()).withName(appName).get();
     assertThat(route).isNotNull();
     return "http://" + route.getSpec().getHost();
+  }
+
+  private static void initializeDirectoryConfig() throws URISyntaxException {
+    String configPodName, pathToJar;
+    Optional<Pod> maybePod = client.pods().inNamespace(deploymentAssistant.project()).list().getItems()
+      .stream().filter(pod -> pod.getMetadata().getName().startsWith(configServiceApp)
+                              && !pod.getMetadata().getName().endsWith("build")
+                              && !pod.getMetadata().getName().endsWith("deploy"))
+      .findFirst();
+
+
+    if (maybePod.isPresent()) {
+      configPodName = maybePod.get().getMetadata().getName();
+    } else {
+      System.out.println("No pod for configuration service available at the moment");
+      return;
+    }
+
+    pathToJar = "/deployments/" +
+                new File(ConfigurableHttpVerticle.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getName();
+
+    OC.execute("exec", configPodName, "--", "unzip", pathToJar, "'configuration/*'", "-d", "/deployments");
   }
 }

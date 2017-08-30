@@ -43,10 +43,10 @@
 
      they are very outdated.
      -->
-    <fabric8.maven.plugin.version>3.5.0</fabric8.maven.plugin.version>
+    <fabric8.maven.plugin.version>3.5.25</fabric8.maven.plugin.version>
     <!-- must use version from https://maven.repository.redhat.com/ga/io/fabric8/kubernetes-client/ -->
     <!-- TODO update kubernetes.client.version to 1.4.35 - currently we have a kubernetes client conflict, see OpenShiftTestAssistant.java -->
-    <kubernetes.client.version>1.4.14</kubernetes.client.version>
+    <kubernetes.client.version>1.4.35</kubernetes.client.version>
 
     <!-- muse use version from https://maven.repository.redhat.com/ga/io/fabric8/kubernetes-api/ -->
     <kubernetes.api.version>2.2.170</kubernetes.api.version>
