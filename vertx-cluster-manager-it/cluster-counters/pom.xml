@@ -46,9 +46,6 @@
         <groupId>io.fabric8</groupId>
         <artifactId>fabric8-maven-plugin</artifactId>
         <configuration>
-          <mode>openshift</mode>
-          <buildStrategy>docker</buildStrategy>
-          <namespace>myproject</namespace>
           <resources>
             <labels>
               <pod>
@@ -59,17 +56,6 @@
               </pod>
             </labels>
           </resources>
-          <images>
-            <image>
-              <name>vertx-openshift-it/cluster-counters</name>
-              <build>
-                <assembly>
-                  <descriptorRef>artifact</descriptorRef>
-                </assembly>
-                <dockerFile>Dockerfile</dockerFile>
-              </build>
-            </image>
-          </images>
         </configuration>
       </plugin>
     </plugins>
