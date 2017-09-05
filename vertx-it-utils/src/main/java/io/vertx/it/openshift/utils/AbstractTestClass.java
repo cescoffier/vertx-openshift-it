@@ -1,30 +1,27 @@
 package io.vertx.it.openshift.utils;
 
-import static com.jayway.awaitility.Awaitility.await;
-import static com.jayway.restassured.RestAssured.get;
-
-import static java.util.Collections.emptySortedMap;
-
-import static io.vertx.it.openshift.utils.Ensure.ensureThat;
-
+import com.jayway.restassured.RestAssured;
+import io.fabric8.openshift.client.OpenShiftClient;
+import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.AfterClass;
 import org.junit.Rule;
-
-import org.assertj.core.api.JUnitSoftAssertions;
-
-import com.jayway.restassured.RestAssured;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.SortedMap;
 import java.util.concurrent.TimeUnit;
 
-import io.fabric8.openshift.client.OpenShiftClient;
+import static com.jayway.awaitility.Awaitility.*;
+import static com.jayway.restassured.RestAssured.*;
+import static io.vertx.it.openshift.utils.Ensure.*;
+import static java.util.Collections.*;
 
 /**
  * @author Slavomír Krupa (slavomir.krupa@gmail.com)
  */
 public class AbstractTestClass {
+
+  protected static final Boolean keepResources = Boolean.getBoolean("keepResources");
 
   protected static OpenShiftTestAssistant deploymentAssistant = new OpenShiftTestAssistant();
   protected static OpenShiftClient client = deploymentAssistant.client();
@@ -72,7 +69,9 @@ public class AbstractTestClass {
 
   @AfterClass
   public static void cleanup() {
-    deploymentAssistant.cleanup();
-    deleteDeployPods();
+    if (!keepResources) {
+      deploymentAssistant.cleanup();
+      deleteDeployPods();
+    }
   }
 }
