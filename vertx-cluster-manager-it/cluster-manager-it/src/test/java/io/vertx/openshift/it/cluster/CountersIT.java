@@ -75,12 +75,13 @@ public class CountersIT extends AbstractTestClass {
   @Before
   public void beforeEach() {
     vertx = Vertx.vertx();
-    clusterCountersHelper.setReplicasAndWait(2);
+    int replicaCount = 3;
+    clusterCountersHelper.setReplicasAndWait(replicaCount);
     await().atMost(5, TimeUnit.MINUTES).until(() -> {
-      get(Kube.urlForRoute(client.routes().withName(APPLICATION_NAME).get(), "/health"))
-        .then().assertThat().statusCode(200);
-      get(Kube.urlForRoute(client.routes().withName(APPLICATION_NAME).get(), "/health"))
-        .then().assertThat().statusCode(200);
+      for (int i = 0; i < replicaCount; i++) {
+        get(Kube.urlForRoute(client.routes().withName(APPLICATION_NAME).get(), "/health"))
+          .then().assertThat().statusCode(200);
+      }
     });
   }
 
@@ -94,8 +95,9 @@ public class CountersIT extends AbstractTestClass {
     HttpClient httpClient = vertx.createHttpClient();
     URL url = Kube.urlForRoute(client.routes().withName(APPLICATION_NAME).get(), "/counters/" + testName.getMethodName());
 
-    CountDownLatch latch = new CountDownLatch(10);
-    for (int i = 0; i < 10; i++) {
+    int loops = 30;
+    CountDownLatch latch = new CountDownLatch(loops);
+    for (int i = 0; i < loops; i++) {
       httpClient.postAbs(url.toString())
         .handler(resp -> {
           latch.countDown();
@@ -108,6 +110,6 @@ public class CountersIT extends AbstractTestClass {
     latch.await(1, TimeUnit.MINUTES);
 
     get(url)
-      .then().assertThat().statusCode(200).body(equalTo("45"));
+      .then().assertThat().statusCode(200).body(equalTo(String.valueOf((loops * (loops - 1)) / 2)));
   }
 }
