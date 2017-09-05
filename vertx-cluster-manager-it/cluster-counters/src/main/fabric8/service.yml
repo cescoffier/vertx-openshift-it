@@ -4,7 +4,7 @@ metadata:
   name: ${project.artifactId}
 spec:
   selector:
-    cluster: cluster-counters
+    cluster: ${project.artifactId}
   ports:
     - protocol: TCP
       port: 80
