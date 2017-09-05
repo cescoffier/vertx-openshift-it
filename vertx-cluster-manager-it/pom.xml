@@ -15,6 +15,7 @@
 
   <modules>
     <module>cluster-counters</module>
+    <module>cluster-maps</module>
     <module>cluster-manager-it</module>
   </modules>
 
