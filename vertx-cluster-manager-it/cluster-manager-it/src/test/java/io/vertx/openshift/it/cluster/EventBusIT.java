@@ -124,4 +124,12 @@ public class EventBusIT extends AbstractTestClass {
     get(url)
       .then().assertThat().statusCode(200).body("size()", is(3));
   }
+
+  @Test
+  public void testDistRequestTimeout() throws Exception {
+    int loops = 30;
+    URL url = Kube.urlForRoute(client.routes().withName(APPLICATION_NAME).get(), "/event-bus/dist-timeout/" + loops);
+    get(url)
+      .then().assertThat().statusCode(200).body(equalTo(String.valueOf(15)));
+  }
 }
