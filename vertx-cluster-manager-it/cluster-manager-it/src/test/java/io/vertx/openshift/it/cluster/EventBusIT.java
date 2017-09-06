@@ -108,4 +108,20 @@ public class EventBusIT extends AbstractTestClass {
     get(url)
       .then().assertThat().statusCode(200).body(equalTo(String.valueOf(loops * 3)));
   }
+
+  @Test
+  public void testLocalRequestReply() throws Exception {
+    int loops = 30;
+    URL url = Kube.urlForRoute(client.routes().withName(APPLICATION_NAME).get(), "/event-bus/local-request-reply/" + loops);
+    get(url)
+      .then().assertThat().statusCode(200).body("size()", is(1));
+  }
+
+  @Test
+  public void testDistRequestReply() throws Exception {
+    int loops = 30;
+    URL url = Kube.urlForRoute(client.routes().withName(APPLICATION_NAME).get(), "/event-bus/dist-request-reply/" + loops);
+    get(url)
+      .then().assertThat().statusCode(200).body("size()", is(3));
+  }
 }

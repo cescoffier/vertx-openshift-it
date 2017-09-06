@@ -42,6 +42,8 @@ public class EventBusVerticle extends AbstractVerticle {
     futures.add(DistributedPeerToPeer.createDistributedPeerToPeer(vertx));
     futures.add(LocalPublish.createLocalPublish(vertx));
     futures.add(DistributedPublish.createDistributedPublish(vertx));
+    futures.add(LocalRequestReply.createLocalRequestReply(vertx));
+    futures.add(DistributedRequestReply.createDistributedRequestReply(vertx));
     CompositeFuture allHandlers = CompositeFuture.all(futures);
     return allHandlers.compose(cf -> {
       Future<HttpServer> future = Future.future();
