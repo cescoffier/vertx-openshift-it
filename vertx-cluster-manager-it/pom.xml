@@ -17,6 +17,7 @@
     <module>cluster-counters</module>
     <module>cluster-maps</module>
     <module>cluster-locks</module>
+    <module>cluster-web-session</module>
     <module>cluster-manager-it</module>
   </modules>
 
