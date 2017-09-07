@@ -9,5 +9,7 @@ spec:
                 fieldRef:
                   apiVersion: v1
                   fieldPath: metadata.namespace
+            - name: KUBERNETES_LABELS
+              value: ${ispn.cluster.labels}
             - name: JAVA_ARGS
               value: '-Dvertx.cacheDirBase=/tmp -Dvertx.jgroups.config=default-configs/default-jgroups-kubernetes.xml -Djava.net.preferIPv4Stack=true -cluster'

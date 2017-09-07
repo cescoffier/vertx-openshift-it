@@ -16,6 +16,7 @@
     <fabric8.skip>false</fabric8.skip>
     <vertx.health.path>/health</vertx.health.path>
     <vertx.verticle>io.vertx.openshift.it.cluster.dtfp.SenderVerticle</vertx.verticle>
+    <ispn.cluster.labels>ispn-cluster=${project.parent.artifactId}</ispn.cluster.labels>
   </properties>
 
   <dependencies>
@@ -52,6 +53,10 @@
                 <property>
                   <name>cluster</name>
                   <value>${project.artifactId}</value>
+                </property>
+                <property>
+                  <name>ispn-cluster</name>
+                  <value>${project.parent.artifactId}</value>
                 </property>
               </pod>
             </labels>

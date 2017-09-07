@@ -16,6 +16,7 @@
     <fabric8.skip>false</fabric8.skip>
     <vertx.health.path>/health</vertx.health.path>
     <vertx.verticle>io.vertx.openshift.it.cluster.CountersVerticle</vertx.verticle>
+    <ispn.cluster.labels>cluster=${project.artifactId}</ispn.cluster.labels>
   </properties>
 
   <dependencies>
