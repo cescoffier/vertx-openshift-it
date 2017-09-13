@@ -1,0 +1,17 @@
+spec:
+  template:
+    spec:
+      containers:
+        - name: vertx
+          ports:
+            - name: infinispan
+              containerPort: 8888
+              protocol: TCP
+          env:
+            - name: OPENSHIFT_KUBE_PING_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: JAVA_ARGS
+              value: '-Dvertx.jgroups.config=cluster-config/default-jgroups-kubernetes.xml -Djava.net.preferIPv4Stack=true -cluster'

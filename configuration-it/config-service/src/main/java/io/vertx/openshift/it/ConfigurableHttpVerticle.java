@@ -28,41 +28,43 @@ public class ConfigurableHttpVerticle extends AbstractVerticle {
       if (res.failed()) {
         throw new RuntimeException("Unable to retrieve the Config", res.cause());
       } else {
-        configByStream = configByListen = (res.result() != null) ? res.result() : new JsonObject();
+        configByListen = configByStream = (res.result() != null) ? res.result() : new JsonObject();
+
+        Router router = Router.router(vertx);
+        router.get("/all").handler(this::printAll);
+        router.get("/all-by-stream").handler(this::printConfigByStream);
+        router.get("/*").handler(StaticHandler.create("configuration"));
+
+        retriever.listen(change -> {
+          configByListen = change.getNewConfiguration();
+          System.out.println("A new config by listening to change has been used");
+        });
+
+        retriever.configStream()
+          .endHandler(event -> {
+            System.out.println("A config stream has been closed.");
+          })
+          .exceptionHandler(event -> {
+            System.err.println("An error has occurred: " + event.getMessage());
+            event.printStackTrace();
+          })
+          .handler(conf -> {
+            configByStream = conf;
+            System.out.println("A new config from stream has been used");
+          });
+
+        vertx.createHttpServer()
+          .requestHandler(router::accept)
+          .listen(8080, ar -> {
+            if (ar.succeeded()) {
+              System.out.println("Server listening on port " + ar.result().actualPort());
+            } else {
+              System.out.println("Unable to start the server: " + ar.cause().getMessage());
+            }
+          });
       }
     });
-
-    retriever.listen(change -> {
-      configByListen = change.getNewConfiguration();
-      System.out.println("A new config by listening to change has been used");
-    });
-
-    retriever.configStream()
-      .endHandler(event -> {
-        System.out.println("A config stream has been closed.");
-      })
-      .exceptionHandler(event -> {
-        System.err.println("An error has occurred: " + event.getMessage());
-        event.printStackTrace();
-      })
-      .handler(conf -> {
-        configByStream = conf;
-        System.out.println("A new config from stream has been used");
-    });
-
-    Router router = Router.router(vertx);
-    router.get("/all").handler(this::printAll);
-    router.get("/all-by-stream").handler(this::printConfigByStream);
-    router.get("/*").handler(StaticHandler.create("configuration"));
-    vertx.createHttpServer()
-      .requestHandler(router::accept)
-      .listen(8080, ar -> {
-        if (ar.succeeded()) {
-          System.out.println("Server listening on port " + ar.result().actualPort());
-        } else {
-          System.out.println("Unable to start the server: " + ar.cause().getMessage());
-        }
-    });
+    System.getProperties();
   }
 
   @Override
@@ -93,7 +95,7 @@ public class ConfigurableHttpVerticle extends AbstractVerticle {
     ConfigStoreOptions httpStore = new ConfigStoreOptions()
       .setType("http")
       .setConfig(new JsonObject()
-        .put("host", "http-service").put("port", 8080).put("path", "/conf"));
+        .put("host", "http-service").put("port", 80).put("path", "/conf"));
 
     ConfigStoreOptions propertiesFile = new ConfigStoreOptions()
       .setType("file")

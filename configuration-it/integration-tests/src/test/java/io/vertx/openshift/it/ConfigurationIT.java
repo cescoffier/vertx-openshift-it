@@ -78,7 +78,7 @@ public class ConfigurationIT extends AbstractTestClass {
 
     // Because we're deploying the services to OpenShift, the *classpath* is in /deployments directory in pods,
     // not on our local machine, so directory config store wouldn't work without this - it wouldn't find the configs.
-    // That's why we have to copy them to the /deployments dir in config-service pod
+    // That's why we have to copy them over to the /deployments dir in config-service pod
     initializeDirectoryConfig();
 
     get(eventbusBaseUri + "/eventbus"); // Just in case, to call event bus publish

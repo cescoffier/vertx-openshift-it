@@ -29,7 +29,7 @@
     <rest-assured.version>2.9.0</rest-assured.version>
     <junit.version>4.12</junit.version>
     <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
-    <vertx-maven-plugin.version>1.0.8</vertx-maven-plugin.version>
+    <vertx-maven-plugin.version>1.0.9</vertx-maven-plugin.version>
     <awaitility.version>1.7.0</awaitility.version>
 
     <release.candidate.repository>
@@ -43,7 +43,7 @@
 
      they are very outdated.
      -->
-    <fabric8.maven.plugin.version>3.5.25</fabric8.maven.plugin.version>
+    <fabric8.maven.plugin.version>3.5.30</fabric8.maven.plugin.version>
     <!-- must use version from https://maven.repository.redhat.com/ga/io/fabric8/kubernetes-client/ -->
     <!-- TODO update kubernetes.client.version to 1.4.35 - currently we have a kubernetes client conflict, see OpenShiftTestAssistant.java -->
     <kubernetes.client.version>1.4.35</kubernetes.client.version>
