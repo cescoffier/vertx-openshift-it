@@ -39,11 +39,11 @@ public class EdgeVerticle extends AbstractVerticle {
       vertx.createHttpServer(new HttpServerOptions());
 
     server.requestHandler(router::accept)
-      .listen(8081);
+      .listen(8080);
   }
 
   private void grpc(RoutingContext rc) {
-    ManagedChannel channel = VertxChannelBuilder.forAddress(vertx, "hello", 80)
+    ManagedChannel channel = VertxChannelBuilder.forAddress(vertx, "hello", 8082)
       .useSsl(options -> {
           options
             .setSsl(true)
@@ -68,12 +68,14 @@ public class EdgeVerticle extends AbstractVerticle {
   }
 
   private void hello(RoutingContext rc) {
-    rc.response().end("Aloha " + rc.request().version());
+    rc.response().end("Hello " + rc.request().version());
   }
 
   private void front(RoutingContext rc) {
-    client.get(80, "aloha", "/")
+    System.out.println("Calling aloha:8081");
+    client.get(8081, "aloha", "/")
       .send(resp -> {
+        System.out.println("Got response from Aloha");
         if (resp.succeeded()) {
           rc.response().end(resp.result().body() + " " + rc.request().version());
         } else {
