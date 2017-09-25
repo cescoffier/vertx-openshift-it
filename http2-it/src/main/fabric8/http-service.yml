@@ -9,4 +9,4 @@ spec:
     protocol: TCP
     targetPort: 8080
   selector:
-    project:  ${project.artifactId}
+    app:  ${project.artifactId}

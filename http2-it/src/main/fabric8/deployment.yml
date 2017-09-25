@@ -8,5 +8,8 @@ spec:
               name: http
               protocol: TCP
             - containerPort: 8081
-              name: aloha-http
+              name: aloha
+              protocol: TCP
+            - containerPort: 8082
+              name: grpc
               protocol: TCP

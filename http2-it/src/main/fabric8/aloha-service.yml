@@ -5,8 +5,8 @@ metadata:
 spec:
   ports:
   - name: aloha
-    port: 80
+    port: 8081
     protocol: TCP
     targetPort: 8081
   selector:
-    project:  ${project.artifactId}
+    app:  ${project.artifactId}

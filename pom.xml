@@ -22,11 +22,11 @@
 
     <vertx.version>3.4.2</vertx.version>
     <!-- version aligned with vert.x core -->
-    <slf4j.version>1.7.21</slf4j.version>
+    <slf4j.version>1.7.25</slf4j.version>
 
     <!-- constrained by kubernetes assertions, which for whatever reason are way behind the latest -->
     <assertj.version>2.4.1</assertj.version>
-    <rest-assured.version>2.9.0</rest-assured.version>
+    <rest-assured.version>3.0.3</rest-assured.version>
     <junit.version>4.12</junit.version>
     <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
     <vertx-maven-plugin.version>1.0.9</vertx-maven-plugin.version>
@@ -43,6 +43,7 @@
 
      they are very outdated.
      -->
+
     <fabric8.maven.plugin.version>3.5.30</fabric8.maven.plugin.version>
 
     <!-- muse use version from https://maven.repository.redhat.com/ga/io/fabric8/kubernetes-api/ -->
@@ -65,6 +66,7 @@
     <module>healthcheck-it</module>
     <module>vertx-service-discovery-it</module>
     <module>sockjs-it</module>
+    <module>vertx-cluster-manager-it</module>
   </modules>
 
   <dependencyManagement>
@@ -118,7 +120,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>22.0</version>
+      <version>23.0</version>
     </dependency>
 
 
@@ -141,7 +143,7 @@
       <version>${awaitility.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.jayway.restassured</groupId>
+      <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
       <version>${rest-assured.version}</version>
     </dependency>
@@ -170,7 +172,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.6.0</version>
+        <version>3.6.1</version>
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
@@ -297,7 +299,7 @@
 
           <plugin>
             <artifactId>maven-failsafe-plugin</artifactId>
-            <version>2.19.1</version>
+            <version>2.20</version>
             <executions>
               <execution>
                 <goals>

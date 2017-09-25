@@ -163,7 +163,7 @@ public class SimpleHttpIT extends AbstractTestClass {
         }
       });
 
-      await().untilAtomic(close, is(true));
+      await().until(() -> messages.size() >= 2);
       Assertions.assertThat(messages).hasSize(2)
         .contains("Hello...", "...World!");
     });
