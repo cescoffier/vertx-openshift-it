@@ -64,7 +64,6 @@ public class ConfigurableHttpVerticle extends AbstractVerticle {
           });
       }
     });
-    System.getProperties();
   }
 
   @Override
