@@ -9,7 +9,6 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import static com.jayway.awaitility.Awaitility.await;
 import static com.jayway.restassured.RestAssured.get;
 import static io.vertx.it.openshift.utils.Ensure.ensureThat;
 import static io.vertx.it.openshift.utils.Kube.awaitUntilPodIsReady;
@@ -23,7 +22,6 @@ public class JdbcIT extends AbstractTestClass {
 
   @BeforeClass
   public static void initialize() throws IOException {
-
 
     // If not created, start the posgresSQL
     System.out.println("Deploying postgres");
@@ -42,11 +40,7 @@ public class JdbcIT extends AbstractTestClass {
 
     awaitUntilPodIsReady(client, POSTGRES);
 
-    deployAndAwaitStartWithRoute();
-    await()
-      .atMost(3, TimeUnit.MINUTES)
-      .catchUncaughtExceptions()
-      .until(() -> get("/init").statusCode() <= 204);
+    deployAndAwaitStartWithRoute("/init");
   }
 
   @AfterClass

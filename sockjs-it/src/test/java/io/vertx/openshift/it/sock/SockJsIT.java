@@ -35,7 +35,7 @@ public class SockJsIT extends AbstractTestClass {
   @BeforeClass
   public static void initialize() throws Exception {
     PHANTOM = new PhantomJSDeployment(client).deploy();
-    deployAndAwaitStartWithRoute();
+    deployAndAwaitStartWithRoute("/status");
     webDriver = PHANTOM.deployAndAwaitStart().connectToWebService();
   }
 

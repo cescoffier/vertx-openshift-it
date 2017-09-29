@@ -37,15 +37,37 @@
             <version>${fabric8.maven.plugin.version}</version>
             <configuration>
               <resources>
-                <env>
-                  <!-- TODO switch to Infinispan cluster manager -->
-                  <JAVA_ARGS>-cp ../hazelcast-config -cluster</JAVA_ARGS>
-                </env>
+                <labels>
+                  <pod>
+                    <property>
+                      <name>cluster</name>
+                      <value>vertx-cluster</value>
+                    </property>
+                  </pod>
+                </labels>
               </resources>
             </configuration>
           </plugin>
         </plugins>
       </build>
+
+      <dependencies>
+        <dependency>
+          <groupId>io.vertx</groupId>
+          <artifactId>vertx-infinispan</artifactId>
+          <exclusions>
+            <exclusion>
+              <artifactId>jgroups</artifactId>
+              <groupId>org.jgroups</groupId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+        <dependency>
+          <groupId>org.jgroups.kubernetes</groupId>
+          <artifactId>jgroups-kubernetes</artifactId>
+          <version>1.0.1.Final</version>
+        </dependency>
+      </dependencies>
     </profile>
   </profiles>
 </project>

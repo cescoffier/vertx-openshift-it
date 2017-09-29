@@ -17,30 +17,42 @@ import io.vertx.ext.web.handler.StaticHandler;
 public class ConfigurableHttpVerticle extends AbstractVerticle {
 
   private ConfigRetriever retriever;
-  private JsonObject Config;
+  private JsonObject configByListen;
+  private JsonObject configByStream;
 
   @Override
   public void start() throws Exception {
     retriever = initializeConfig();
 
     retriever.getConfig(res -> {
-        if (res.failed()) {
-          throw new RuntimeException("Unable to retrieve the Config", res.cause());
-        }
-
-      Config = res.result();
-      if (Config == null) {
-        Config = new JsonObject();
-        }
-        retriever.listen(change -> {
-          Config = change.getNewConfiguration();
-          System.out.println("New Config:\n" + Config.encodePrettily());
-        });
-
+      if (res.failed()) {
+        throw new RuntimeException("Unable to retrieve the Config", res.cause());
+      } else {
+        configByListen = configByStream = (res.result() != null) ? res.result() : new JsonObject();
 
         Router router = Router.router(vertx);
         router.get("/all").handler(this::printAll);
+        router.get("/all-by-stream").handler(this::printConfigByStream);
         router.get("/*").handler(StaticHandler.create("configuration"));
+
+        retriever.listen(change -> {
+          configByListen = change.getNewConfiguration();
+          System.out.println("A new config by listening to change has been used");
+        });
+
+        retriever.configStream()
+          .endHandler(event -> {
+            System.out.println("A config stream has been closed.");
+          })
+          .exceptionHandler(event -> {
+            System.err.println("An error has occurred: " + event.getMessage());
+            event.printStackTrace();
+          })
+          .handler(conf -> {
+            configByStream = conf;
+            System.out.println("A new config from stream has been used");
+          });
+
         vertx.createHttpServer()
           .requestHandler(router::accept)
           .listen(8080, ar -> {
@@ -50,7 +62,8 @@ public class ConfigurableHttpVerticle extends AbstractVerticle {
               System.out.println("Unable to start the server: " + ar.cause().getMessage());
             }
           });
-      });
+      }
+    });
   }
 
   @Override
@@ -61,7 +74,13 @@ public class ConfigurableHttpVerticle extends AbstractVerticle {
   private void printAll(RoutingContext rc) {
     rc.response()
       .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-      .end(Config.copy().put("trace", "1").encodePrettily());
+      .end(configByListen.copy().put("trace", "1").encodePrettily());
+  }
+
+  private void printConfigByStream(RoutingContext rc) {
+    rc.response()
+      .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+      .end(configByStream.copy().put("trace", "1").encodePrettily());
   }
 
   private ConfigRetriever initializeConfig() {
@@ -75,7 +94,7 @@ public class ConfigurableHttpVerticle extends AbstractVerticle {
     ConfigStoreOptions httpStore = new ConfigStoreOptions()
       .setType("http")
       .setConfig(new JsonObject()
-        .put("host", "http-service").put("port", 8080).put("path", "/conf"));
+        .put("host", "http-service").put("port", 80).put("path", "/conf"));
 
     ConfigStoreOptions propertiesFile = new ConfigStoreOptions()
       .setType("file")
@@ -126,6 +145,7 @@ public class ConfigurableHttpVerticle extends AbstractVerticle {
         .addStore(dir)
         .addStore(jsonFile)
         .addStore(ymlFile)
+        .setScanPeriod(10000)
     );
   }
 }
