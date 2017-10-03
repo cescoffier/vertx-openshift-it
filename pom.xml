@@ -67,6 +67,7 @@
     <module>vertx-service-discovery-it</module>
     <module>sockjs-it</module>
     <module>vertx-cluster-manager-it</module>
+    <module>various-db-engines-it</module>
   </modules>
 
   <dependencyManagement>
