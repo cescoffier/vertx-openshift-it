@@ -15,7 +15,7 @@ import static io.vertx.it.openshift.utils.Kube.awaitUntilPodIsReady;
 /**
  * @author Martin Spisiak (mspisiak@redhat.com) on 03/10/17.
  */
-public class PostgreSQLTest extends AbstractTestClass {
+public class PostgreIT extends AbstractTestClass {
   public static final String POSTGRES = "postgres";
 
   @BeforeClass
@@ -31,7 +31,7 @@ public class PostgreSQLTest extends AbstractTestClass {
 
     awaitUntilPodIsReady(client, POSTGRES);
 
-    deployAndAwaitStartWithRoute("/init");
+    deployAndAwaitStartWithRoute("/healthcheck");
   }
 
   @AfterClass
