@@ -23,9 +23,9 @@ import static io.vertx.openshift.it.Errors.error;
 /**
  * @author Martin Spisiak (mspisiak@redhat.com) on 03/10/17.
  */
-public class PostgreSQLVerticle extends AbstractVerticle {
+public class MySQLVerticle extends AbstractVerticle {
   protected String JDBC_URL = System.getenv().getOrDefault("JDBC_URL",
-    "jdbc:postgresql://db-postgres/testdb");
+    "jdbc:mysql://db-mysql/testdb");
   protected String JDBC_USER = System.getenv().getOrDefault("JDBC_USER", "vertx");
   protected String JDBC_PASSWORD = System.getenv().getOrDefault("JDBC_PASSWORD", "password");
   private DataStore store;
@@ -45,7 +45,7 @@ public class PostgreSQLVerticle extends AbstractVerticle {
 
     JsonObject config = new JsonObject()
       .put("url", JDBC_URL)
-      .put("driver_class", "org.postgresql.Driver")
+      .put("driver_class", "com.mysql.jdbc.Driver")
       .put("user", JDBC_USER)
       .put("password", JDBC_PASSWORD);
 

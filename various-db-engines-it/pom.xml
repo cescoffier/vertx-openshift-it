@@ -16,6 +16,7 @@
 
   <modules>
     <module>postgresql-it</module>
+    <module>mysql-it</module>
   </modules>
 
   <dependencies>
@@ -45,6 +46,17 @@
       <groupId>io.vertx.openshift</groupId>
       <artifactId>vertx-it-utils</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.39</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.stefanbirkner</groupId>
+      <artifactId>system-rules</artifactId>
+      <version>1.2.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

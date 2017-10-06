@@ -4,16 +4,37 @@ import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
 import com.jayway.restassured.specification.RequestSpecification;
 import io.vertx.it.openshift.utils.AbstractTestClass;
+import io.vertx.it.openshift.utils.OC;
 import org.json.JSONObject;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.io.IOException;
 
 import static com.jayway.restassured.RestAssured.delete;
 import static com.jayway.restassured.RestAssured.get;
 import static com.jayway.restassured.RestAssured.given;
 import static io.vertx.it.openshift.utils.Ensure.ensureThat;
+import static io.vertx.it.openshift.utils.Kube.awaitUntilPodIsReady;
 import static org.hamcrest.core.IsEqual.equalTo;
 
-public class DBTest extends AbstractTestClass {
+/**
+ * @author Martin Spisiak (mspisiak@redhat.com) on 03/10/17.
+ */
+public class MySQLIT extends AbstractTestClass {
+
   public static final String API_LIST_ROUTE = "/api/vegetables/";
+  public static final String DB_NAME = "db-mysql";
+
+  @AfterClass
+  public static void dbCleanup() throws IOException {
+    client.deploymentConfigs().withName(DB_NAME).withGracePeriod(0).delete();
+    client.services().withName(DB_NAME).withGracePeriod(0).delete();
+    client.imageStreams().withName(DB_NAME).withGracePeriod(0).delete();
+  }
+
+  @Test
   public void CRUDTest() {
     String vegetableName = "Pickles";
     String updatedVegetableName = "Cucumbers";
@@ -53,4 +74,22 @@ public class DBTest extends AbstractTestClass {
   private RequestSpecification setRequestJSONBody (JSONObject body) {
     return given().content(ContentType.JSON).body(body.toString());
   }
+
+  @BeforeClass
+  public static void initialize() throws IOException {
+    System.out.println("Deploying postgres");
+
+    OC.execute("project", client.getNamespace());
+    OC.execute("new-app", "mysql",
+      "-e", "MYSQL_USER=vertx",
+      "-e", "MYSQL_DATABASE=testdb",
+      "-e", "MYSQL_PASSWORD=password",
+      "--name=" + DB_NAME);
+
+
+    awaitUntilPodIsReady(client, DB_NAME);
+
+    deployAndAwaitStartWithRoute("/healthcheck");
+  }
+
 }
