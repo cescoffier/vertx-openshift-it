@@ -11,12 +11,14 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
+  <groupId>io.vertx.openshift</groupId>
   <artifactId>various-db-engines-it</artifactId>
+  <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <modules>
-    <module>postgresql-it</module>
-    <module>mysql-it</module>
+    <module>db-it</module>
+    <module>verticle-utils</module>
   </modules>
 
   <dependencies>
@@ -62,12 +64,6 @@
   </dependencies>
 
   <build>
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-      </testResource>
-    </testResources>
 
     <plugins>
       <plugin>
