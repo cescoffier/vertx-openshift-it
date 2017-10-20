@@ -10,7 +10,6 @@ import io.vertx.rxjava.core.http.HttpServerResponse;
 import io.vertx.rxjava.ext.jdbc.JDBCClient;
 import io.vertx.rxjava.ext.web.Router;
 import io.vertx.rxjava.ext.web.RoutingContext;
-import io.vertx.rxjava.ext.web.handler.BodyHandler;
 import rx.Completable;
 import rx.Observable;
 import rx.Single;
@@ -22,22 +21,22 @@ import static io.vertx.openshift.it.Errors.error;
 /**
  * @author Martin Spisiak (mspisiak@redhat.com) on 03/10/17.
  */
-public abstract class VerticleUtil extends AbstractVerticle {
+public abstract class AbstractDatabaseVerticle extends AbstractVerticle {
+  protected boolean internalOrExternal = Boolean.valueOf(System.getenv().getOrDefault("externalDb", "true"));
   private DataStore store;
 
   protected Completable initDatabase(Vertx vertx, JDBCClient jdbc) {
     return jdbc.rxGetConnection()
       .flatMapCompletable(connection ->
         vertx.fileSystem().rxReadFile("db_init.sql")
-          .flatMapObservable(buffer -> Observable.from(buffer.toString().replaceAll(";.*$","").split(";")))
+          .flatMapObservable(buffer -> Observable.from(buffer.toString().replaceAll(";.*$", "").split(";")))
           .flatMapSingle(connection::rxExecute)
           .doAfterTerminate(connection::close)
           .toCompletable()
       );
   }
 
-  protected Single<HttpServer> initHttpServer( Router router ,JDBCClient client) {
-    // Create the HTTP server and pass the "accept" method to the request handler.
+  protected Single<HttpServer> initHttpServer(Router router, JDBCClient client) {
     this.store = new JdbcVegetableStore(client);
     return vertx
       .createHttpServer()
@@ -163,13 +162,5 @@ public abstract class VerticleUtil extends AbstractVerticle {
           }
         }
       );
-  }
-
-  private String getEnv(String key, String dv) {
-    String s = System.getenv(key);
-    if (s == null) {
-      return dv;
-    }
-    return s;
   }
 }

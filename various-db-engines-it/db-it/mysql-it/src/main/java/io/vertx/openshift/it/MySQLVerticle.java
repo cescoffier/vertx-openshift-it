@@ -1,26 +1,14 @@
 package io.vertx.openshift.it;
 
 import io.vertx.core.json.JsonObject;
-import io.vertx.rxjava.core.AbstractVerticle;
-import io.vertx.rxjava.core.Vertx;
-import io.vertx.rxjava.core.http.HttpServer;
 import io.vertx.rxjava.ext.jdbc.JDBCClient;
 import io.vertx.rxjava.ext.web.Router;
 import io.vertx.rxjava.ext.web.handler.BodyHandler;
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
-
-import static io.vertx.openshift.it.Errors.error;
 
 /**
  * @author Martin Spisiak (mspisiak@redhat.com) on 03/10/17.
  */
-public class MySQLVerticle extends VerticleUtil{
-  protected String JDBC_URL = System.getenv().getOrDefault("JDBC_URL",
-    "jdbc:mysql://db/testdb");
-  protected String JDBC_USER = System.getenv().getOrDefault("JDBC_USER", "vertx");
-  protected String JDBC_PASSWORD = System.getenv().getOrDefault("JDBC_PASSWORD", "password");
+public class MySQLVerticle extends AbstractDatabaseVerticle {
 
   @Override
   public void start() throws Exception {
@@ -35,11 +23,7 @@ public class MySQLVerticle extends VerticleUtil{
 
     router.get("/healthcheck").handler(rc -> rc.response().end("OK"));
 
-    JsonObject config = new JsonObject()
-      .put("url", JDBC_URL)
-      .put("driver_class", "com.mysql.jdbc.Driver")
-      .put("user", JDBC_USER)
-      .put("password", JDBC_PASSWORD);
+    JsonObject config = TestUtils.allocateDatabase("mysql", internalOrExternal);
 
     JDBCClient jdbcClient = JDBCClient.createShared(vertx, config);
 

@@ -1,15 +1,14 @@
 package io.vertx.openshift.it;
 
 import io.vertx.core.json.JsonObject;
-import io.vertx.rxjava.ext.jdbc.JDBCClient;
 import io.vertx.rxjava.ext.web.Router;
+import io.vertx.rxjava.ext.jdbc.JDBCClient;
 import io.vertx.rxjava.ext.web.handler.BodyHandler;
 
 /**
- * @author Martin Spisiak (mspisiak@redhat.com) on 03/10/17.
+ * @author Martin Spisiak (mspisiak@redhat.com) on 12/10/17.
  */
-public class PostgreSQLVerticle extends AbstractDatabaseVerticle {
-
+public class OracleVerticle extends AbstractDatabaseVerticle {
   @Override
   public void start() throws Exception {
     Router router = Router.router(vertx);
@@ -23,16 +22,15 @@ public class PostgreSQLVerticle extends AbstractDatabaseVerticle {
 
     router.get("/healthcheck").handler(rc -> rc.response().end("OK"));
 
-    JsonObject config = TestUtils.allocateDatabase("postgresql", internalOrExternal);
+    JsonObject config = TestUtils.allocateDatabase("oracle12c", true);
 
     JDBCClient jdbcClient = JDBCClient.createShared(vertx, config);
 
     initDatabase(vertx, jdbcClient)
-      .andThen(initHttpServer(router,jdbcClient))
+      .andThen(initHttpServer(router, jdbcClient))
       .subscribe(
         (http) -> System.out.println("Server ready on port " + http.actualPort()),
         Throwable::printStackTrace
       );
   }
-
 }

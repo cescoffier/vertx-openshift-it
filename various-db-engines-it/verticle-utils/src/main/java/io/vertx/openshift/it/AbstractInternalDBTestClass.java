@@ -25,11 +25,11 @@ import static io.vertx.it.openshift.utils.Kube.name;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 
-public abstract class AbstractDBTestClass extends AbstractTestClass {
+public abstract class AbstractInternalDBTestClass extends AbstractTestClass {
 
-  public static final String API_LIST_ROUTE = "/api/vegetables/";
-  public static final String DB_NAME = "db";
-  public static final int WAIT = 30;
+  private static final String API_LIST_ROUTE = "/api/vegetables/";
+  static final String DB_NAME = "db";
+  private static final int WAIT = 30;
 
 
   @Test
@@ -68,31 +68,31 @@ public abstract class AbstractDBTestClass extends AbstractTestClass {
 
   @Test
   public void CRUDTest() {
-    System.out.println("Start CRUD test");
+    System.out.println("Starting CRUD test");
     String vegetableName = "Pickles";
     String updatedVegetableName = "Cucumbers";
     int ammoutOfVegetable = 128;
 
     //Test create new item
     Response postResponse = createItem(vegetableName);
-    ensureThat("Test of response of create new vegetable", () -> postResponse.then().assertThat().body("name", equalTo(vegetableName)));
+    ensureThat("we can create a new vegetable", () -> postResponse.then().assertThat().body("name", equalTo(vegetableName)));
     int vegetableId = postResponse.getBody().jsonPath().getInt("id");
 
     //Test get created
-    ensureThat("Get created vegetable", () -> get(API_LIST_ROUTE+vegetableId).then().assertThat().body("name",equalTo(vegetableName)));
+    ensureThat("the vegetable has been created", () -> get(API_LIST_ROUTE+vegetableId).then().assertThat().body("name",equalTo(vegetableName)));
 
     //Test update created
     JSONObject modifyVegetable = new JSONObject().put("name",updatedVegetableName).put("amount",ammoutOfVegetable).put("id",vegetableId);
-    ensureThat("Update one item", () -> updateItem(vegetableId,modifyVegetable).then().assertThat().body("name", equalTo("Cucumbers")).and().body("amount",equalTo(ammoutOfVegetable)));
+    ensureThat("we can update the vegetable", () -> updateItem(vegetableId,modifyVegetable).then().assertThat().body("name", equalTo("Cucumbers")).and().body("amount",equalTo(ammoutOfVegetable)));
 
     //Test updated
-    ensureThat("Get created vegetable", () -> get(API_LIST_ROUTE+vegetableId).then().assertThat().body("name",equalTo(updatedVegetableName)).and().body("amount",equalTo(ammoutOfVegetable)));
+    ensureThat("the vegetable has been updated", () -> get(API_LIST_ROUTE+vegetableId).then().assertThat().body("name",equalTo(updatedVegetableName)).and().body("amount",equalTo(ammoutOfVegetable)));
 
     //Test delete one
-    ensureThat("Delete item", () -> delete(API_LIST_ROUTE+vegetableId).then().assertThat().statusCode(204));
+    ensureThat("we can delete the vegetable", () -> delete(API_LIST_ROUTE+vegetableId).then().assertThat().statusCode(204));
 
     //Test get deleted
-    ensureThat("Get created vegetable", () -> get(API_LIST_ROUTE+vegetableId).then().assertThat().statusCode(404));
+    ensureThat("the vegetable has been deleted", () -> get(API_LIST_ROUTE+vegetableId).then().assertThat().statusCode(404));
   }
 
   public Response createItem (String name) {
