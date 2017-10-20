@@ -1,25 +1,11 @@
-CREATE TABLE employees_demo
-    ( employee_id    NUMBER(6)
-    , first_name     VARCHAR2(20)
-    , last_name      VARCHAR2(25)
-         CONSTRAINT emp_last_name_nn_demo NOT NULL
-    , email          VARCHAR2(25)
-         CONSTRAINT emp_email_nn_demo     NOT NULL
-    , phone_number   VARCHAR2(20)
-    , hire_date      DATE  DEFAULT SYSDATE
-         CONSTRAINT emp_hire_date_nn_demo  NOT NULL
-    , job_id         VARCHAR2(10)
-       CONSTRAINT     emp_job_nn_demo  NOT NULL
-    , salary         NUMBER(8,2)
-       CONSTRAINT     emp_salary_nn_demo  NOT NULL
-    , commission_pct NUMBER(2,2)
-    , manager_id     NUMBER(6)
-    , department_id  NUMBER(4)
-    , dn             VARCHAR2(300)
-    , CONSTRAINT     emp_salary_min_demo
-                     CHECK (salary > 0)
-    , CONSTRAINT     emp_email_uk_demo
-                     UNIQUE (email)
-    ) ;
+CREATE TABLE vegetables (
+  id        NUMBER GENERATED ALWAYS as IDENTITY(START with 1 INCREMENT by 1),
+  name      VARCHAR2(40) NOT NULL,
+  amount    INT,
+  CONSTRAINT vegetables_pk PRIMARY KEY (id));
 
-SELECT * FROM employees_demo;
+DELETE FROM vegetables;
+
+INSERT INTO vegetables (name, amount) values ('Carrots', 10);
+INSERT INTO vegetables (name, amount) values ('Tomatoes', 10);
+INSERT INTO vegetables (name, amount) values ('Onions', 10);
