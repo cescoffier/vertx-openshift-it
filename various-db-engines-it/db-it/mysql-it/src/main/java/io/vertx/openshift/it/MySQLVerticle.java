@@ -23,7 +23,7 @@ public class MySQLVerticle extends AbstractDatabaseVerticle {
 
     router.get("/healthcheck").handler(rc -> rc.response().end("OK"));
 
-    JsonObject config = TestUtils.allocateDatabase("mysql", internalOrExternal);
+    JsonObject config = TestUtils.allocateDatabase("mysql", isExternalDB);
 
     JDBCClient jdbcClient = JDBCClient.createShared(vertx, config);
 

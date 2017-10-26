@@ -22,7 +22,7 @@ import static io.vertx.openshift.it.Errors.error;
  * @author Martin Spisiak (mspisiak@redhat.com) on 03/10/17.
  */
 public abstract class AbstractDatabaseVerticle extends AbstractVerticle {
-  protected boolean internalOrExternal = Boolean.valueOf(System.getenv().getOrDefault("externalDb", "true"));
+  protected boolean isExternalDB = Boolean.valueOf(System.getenv().getOrDefault("externalDb", "true"));
   protected DataStore store;
 
   protected Completable initDatabase(Vertx vertx, JDBCClient jdbc) {

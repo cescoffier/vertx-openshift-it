@@ -35,6 +35,9 @@
   <profiles>
     <profile>
       <id>external-db-tests</id>
+      <properties>
+        <externalDb>true</externalDb>
+      </properties>
       <build>
         <plugins>
           <plugin>
@@ -55,6 +58,9 @@
 
     <profile>
       <id>internal-db-tests</id>
+      <properties>
+        <externalDb>false</externalDb>
+      </properties>
       <build>
         <plugins>
           <plugin>

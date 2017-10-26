@@ -23,7 +23,7 @@ public class PostgreSQLVerticle extends AbstractDatabaseVerticle {
 
     router.get("/healthcheck").handler(rc -> rc.response().end("OK"));
 
-    JsonObject config = TestUtils.allocateDatabase("postgresql", internalOrExternal);
+    JsonObject config = TestUtils.allocateDatabase("postgresql", isExternalDB);
 
     JDBCClient jdbcClient = JDBCClient.createShared(vertx, config);
 
