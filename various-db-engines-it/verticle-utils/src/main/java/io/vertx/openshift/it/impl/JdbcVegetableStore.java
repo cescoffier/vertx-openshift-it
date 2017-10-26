@@ -17,7 +17,7 @@ import java.util.NoSuchElementException;
  */
 public class JdbcVegetableStore implements DataStore {
 
-  private static final String INSERT = "INSERT INTO vegetables (name, amount) VALUES (?, ?)";
+  protected static final String INSERT = "INSERT INTO vegetables (name, amount) VALUES (?, ?)";
 
   private static final String SELECT_ONE = "SELECT * FROM vegetables WHERE id = ?";
 
@@ -27,7 +27,7 @@ public class JdbcVegetableStore implements DataStore {
 
   private static final String DELETE = "DELETE FROM vegetables WHERE id = ?";
 
-  private final JDBCClient client;
+  protected final JDBCClient client;
 
   public JdbcVegetableStore(JDBCClient jdbcClient) {
     this.client = jdbcClient;
@@ -41,7 +41,7 @@ public class JdbcVegetableStore implements DataStore {
     if (item.getString("name") == null || item.getString("name").isEmpty()) {
       return Single.error(new IllegalArgumentException("The name must not be null or empty"));
     }
-    if (item.getInteger("stock", 0) < 0) {
+    if (item.getInteger("amount", 0) < 0) {
       return Single.error(new IllegalArgumentException("The amount must greater or equal to 0"));
     }
     if (item.containsKey("id")) {
@@ -57,6 +57,7 @@ public class JdbcVegetableStore implements DataStore {
           .doAfterTerminate(conn::close);
       });
   }
+
 
   @Override
   public Observable<JsonObject> readAll() {

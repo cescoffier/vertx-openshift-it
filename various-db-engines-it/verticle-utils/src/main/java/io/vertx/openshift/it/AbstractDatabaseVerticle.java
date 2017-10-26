@@ -23,7 +23,7 @@ import static io.vertx.openshift.it.Errors.error;
  */
 public abstract class AbstractDatabaseVerticle extends AbstractVerticle {
   protected boolean internalOrExternal = Boolean.valueOf(System.getenv().getOrDefault("externalDb", "true"));
-  private DataStore store;
+  protected DataStore store;
 
   protected Completable initDatabase(Vertx vertx, JDBCClient jdbc) {
     return jdbc.rxGetConnection()
@@ -137,7 +137,7 @@ public abstract class AbstractDatabaseVerticle extends AbstractVerticle {
       );
   }
 
-  private void writeError(RoutingContext ctx, Throwable err) {
+  protected void writeError(RoutingContext ctx, Throwable err) {
     if (err instanceof NoSuchElementException) {
       error(ctx, 404, err);
     } else if (err instanceof IllegalArgumentException) {
