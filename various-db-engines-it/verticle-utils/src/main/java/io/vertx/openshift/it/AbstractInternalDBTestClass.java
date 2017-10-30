@@ -1,28 +1,15 @@
 package io.vertx.openshift.it;
 
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.response.Response;
-import com.jayway.restassured.specification.RequestSpecification;
-import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.PodList;
-import io.fabric8.kubernetes.api.model.PodStatus;
-import io.fabric8.kubernetes.api.model.ServiceStatus;
-import io.vertx.it.openshift.utils.AbstractTestClass;
 import io.vertx.it.openshift.utils.OC;
-import org.json.JSONObject;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import static com.jayway.restassured.RestAssured.*;
+import static com.jayway.restassured.RestAssured.get;
 import static io.vertx.it.openshift.utils.Ensure.ensureThat;
-import static io.vertx.it.openshift.utils.Kube.awaitUntilPodIsReady;
-import static io.vertx.it.openshift.utils.Kube.name;
-import static org.hamcrest.core.IsEqual.equalTo;
 
 
 public abstract class AbstractInternalDBTestClass extends AbstractDBTestClass {
