@@ -13,7 +13,7 @@
   <artifactId>http-service</artifactId>
 
   <properties>
-    <vertx.verticle>io.vertx.openshift.it.HttpConfigDeployment</vertx.verticle>
+    <vertx.verticle>io.vertx.openshift.config.HttpConfigDeployment</vertx.verticle>
     <vertx.health.path>/conf</vertx.health.path>
   </properties>
 

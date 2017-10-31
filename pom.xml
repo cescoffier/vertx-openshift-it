@@ -25,12 +25,12 @@
     <slf4j.version>1.7.25</slf4j.version>
 
     <!-- constrained by kubernetes assertions, which for whatever reason are way behind the latest -->
-    <assertj.version>2.4.1</assertj.version>
+    <assertj.version>3.6.2</assertj.version>
     <rest-assured.version>3.0.3</rest-assured.version>
     <junit.version>4.12</junit.version>
     <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
     <vertx-maven-plugin.version>1.0.9</vertx-maven-plugin.version>
-    <awaitility.version>1.7.0</awaitility.version>
+    <awaitility.version>3.0.0</awaitility.version>
 
     <release.candidate.repository>
       https://maven.repository.redhat.com/earlyaccess/all/
@@ -68,6 +68,7 @@
     <module>sockjs-it</module>
     <module>vertx-cluster-manager-it</module>
     <module>various-db-engines-it</module>
+    <module>vertx-circuit-breaker</module>
   </modules>
 
   <dependencyManagement>
@@ -139,7 +140,7 @@
     </dependency>
 
     <dependency>
-      <groupId>com.jayway.awaitility</groupId>
+      <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
       <version>${awaitility.version}</version>
     </dependency>
