@@ -15,7 +15,7 @@
   <properties>
     <fabric8.skip>false</fabric8.skip>
     <vertx.health.path>/health</vertx.health.path>
-    <vertx.verticle>io.vertx.openshift.it.GatewayVerticle</vertx.verticle>
+    <vertx.verticle>io.vertx.openshift.discovery.GatewayVerticle</vertx.verticle>
   </properties>
 
   <dependencies>

@@ -13,7 +13,7 @@
   <artifactId>eventbus-service</artifactId>
 
   <properties>
-    <vertx.verticle>io.vertx.openshift.it.EventBusPublish</vertx.verticle>
+    <vertx.verticle>io.vertx.openshift.config.EventBusPublish</vertx.verticle>
     <vertx.health.path>/</vertx.health.path>
   </properties>
 

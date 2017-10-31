@@ -12,7 +12,7 @@
   <artifactId>sockjs-it</artifactId>
 
   <properties>
-    <vertx.verticle>io.vertx.openshift.it.SockVerticle</vertx.verticle>
+    <vertx.verticle>io.vertx.openshift.sockjs.SockVerticle</vertx.verticle>
   </properties>
 
   <dependencies>
@@ -22,7 +22,7 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-   
+
   </dependencies>
 
   <build>
