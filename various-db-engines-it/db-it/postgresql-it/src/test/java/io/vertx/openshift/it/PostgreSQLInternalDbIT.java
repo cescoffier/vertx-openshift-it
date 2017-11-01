@@ -14,7 +14,7 @@ public class PostgreSQLInternalDbIT extends AbstractInternalDBTestClass {
     System.out.println("Deploying postgres");
 
     OC.execute("project", client.getNamespace());
-    OC.execute("new-app", "openshift/postgresql-92-centos7",
+    OC.execute("new-app", "registry.access.redhat.com/rhscl/postgresql-95-rhel7",
       "-e", "POSTGRESQL_USER=vertx",
       "-e", "POSTGRESQL_DATABASE=testdb",
       "-e", "POSTGRESQL_PASSWORD=password",
@@ -24,6 +24,19 @@ public class PostgreSQLInternalDbIT extends AbstractInternalDBTestClass {
     awaitUntilPodIsReady(client, DB_NAME);
 
     deployAndAwaitStartWithRoute("/healthcheck");
+  }
+
+  @Override
+  protected void deployDB (){
+    OC.execute("project", client.getNamespace());
+    OC.execute("new-app", "registry.access.redhat.com/rhscl/postgresql-95-rhel7",
+      "-e", "POSTGRESQL_USER=vertx",
+      "-e", "POSTGRESQL_DATABASE=testdb",
+      "-e", "POSTGRESQL_PASSWORD=password",
+      "--name=" + DB_NAME);
+
+
+    awaitUntilPodIsReady(client, DB_NAME);
   }
 
 

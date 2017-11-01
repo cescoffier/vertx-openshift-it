@@ -91,7 +91,7 @@ public class TestUtils {
         dbAllocatorParams.put("expression", "oracle12c");
         break;
       case "postgresql":
-        dbAllocatorParams.put("expression", "postgresql94");
+        dbAllocatorParams.put("expression", "postgresql96");
         break;
       case "mysql":
         dbAllocatorParams.put("expression", "mysql57");
