@@ -13,6 +13,10 @@
 
   <artifactId>verticle-utils</artifactId>
 
+  <properties>
+    <fabric8.skip>true</fabric8.skip>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>io.vertx.openshift</groupId>

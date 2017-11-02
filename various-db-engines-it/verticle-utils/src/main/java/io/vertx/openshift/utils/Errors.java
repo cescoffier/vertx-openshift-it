@@ -1,4 +1,4 @@
-package io.vertx.openshift.it;
+package io.vertx.openshift.utils;
 
 import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.ext.web.RoutingContext;
@@ -22,6 +22,4 @@ public class Errors {
   public static void error(RoutingContext ctx, int status, Throwable cause) {
     error(ctx, status, cause.getMessage());
   }
-
-
 }

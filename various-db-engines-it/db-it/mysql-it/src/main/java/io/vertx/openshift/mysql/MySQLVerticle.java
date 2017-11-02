@@ -1,6 +1,8 @@
-package io.vertx.openshift.it;
+package io.vertx.openshift.mysql;
 
 import io.vertx.core.json.JsonObject;
+import io.vertx.openshift.utils.AbstractDatabaseVerticle;
+import io.vertx.openshift.utils.TestUtils;
 import io.vertx.rxjava.ext.jdbc.JDBCClient;
 import io.vertx.rxjava.ext.web.Router;
 import io.vertx.rxjava.ext.web.handler.BodyHandler;
@@ -28,13 +30,11 @@ public class MySQLVerticle extends AbstractDatabaseVerticle {
     JDBCClient jdbcClient = JDBCClient.createShared(vertx, config);
 
     initDatabase(vertx, jdbcClient)
-      .andThen(initHttpServer(router,jdbcClient))
+      .andThen(initHttpServer(router, jdbcClient))
       .subscribe(
         (http) -> System.out.println("Server ready on port " + http.actualPort()),
         Throwable::printStackTrace
       );
   }
-
-
 
 }

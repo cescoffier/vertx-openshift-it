@@ -14,7 +14,7 @@
   <artifactId>mysql-it</artifactId>
 
   <properties>
-    <vertx.verticle>io.vertx.openshift.it.MySQLVerticle</vertx.verticle>
+    <vertx.verticle>io.vertx.openshift.mysql.MySQLVerticle</vertx.verticle>
     <vertx.health.path>/healthcheck</vertx.health.path>
   </properties>
 </project>

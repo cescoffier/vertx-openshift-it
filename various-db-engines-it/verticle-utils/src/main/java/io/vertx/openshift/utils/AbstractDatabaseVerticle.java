@@ -1,8 +1,8 @@
-package io.vertx.openshift.it;
+package io.vertx.openshift.utils;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.openshift.it.impl.JdbcVegetableStore;
+import io.vertx.openshift.utils.impl.JdbcVegetableStore;
 import io.vertx.rxjava.core.AbstractVerticle;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.core.http.HttpServer;
@@ -16,7 +16,7 @@ import rx.Single;
 
 import java.util.NoSuchElementException;
 
-import static io.vertx.openshift.it.Errors.error;
+import static io.vertx.openshift.utils.Errors.error;
 
 /**
  * @author Martin Spisiak (mspisiak@redhat.com) on 03/10/17.

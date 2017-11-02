@@ -1,4 +1,4 @@
-package io.vertx.openshift.it;
+package io.vertx.openshift.utils;
 
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -22,8 +22,8 @@ public abstract class AbstractInternalDBTestClass extends AbstractDBTestClass {
     TimeUnit.SECONDS.sleep(10);
     deployDB();
     awaitUntilPodIsReady(client, DB_NAME);
-    await("Pods running, waiting for probes...").pollInterval(1, TimeUnit.SECONDS).atMost(5, TimeUnit.MINUTES).catchUncaughtExceptions().until(() ->
-        get("/healthcheck").getStatusCode() == 200);
+    await("Pods running, waiting for probes...").pollInterval(1, TimeUnit.SECONDS)
+      .atMost(5, TimeUnit.MINUTES).catchUncaughtExceptions().until(() -> get("/healthcheck").getStatusCode() == 200);
     //Test if app is connected to DB
     CRUDTest();
   }
@@ -36,5 +36,4 @@ public abstract class AbstractInternalDBTestClass extends AbstractDBTestClass {
   }
 
   protected abstract void deployDB();
-
 }

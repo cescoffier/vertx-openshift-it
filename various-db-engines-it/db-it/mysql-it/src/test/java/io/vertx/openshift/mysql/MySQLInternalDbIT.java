@@ -1,6 +1,7 @@
-package io.vertx.openshift.it;
+package io.vertx.openshift.mysql;
 
 import io.vertx.it.openshift.utils.OC;
+import io.vertx.openshift.utils.AbstractInternalDBTestClass;
 import org.junit.BeforeClass;
 
 import java.io.IOException;

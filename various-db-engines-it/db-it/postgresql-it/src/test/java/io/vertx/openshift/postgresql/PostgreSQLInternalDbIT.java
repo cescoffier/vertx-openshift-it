@@ -1,6 +1,7 @@
-package io.vertx.openshift.it;
+package io.vertx.openshift.postgresql;
 
 import io.vertx.it.openshift.utils.OC;
+import io.vertx.openshift.utils.AbstractInternalDBTestClass;
 import org.junit.BeforeClass;
 
 import java.io.IOException;
@@ -20,7 +21,6 @@ public class PostgreSQLInternalDbIT extends AbstractInternalDBTestClass {
       "-e", "POSTGRESQL_PASSWORD=password",
       "--name=" + DB_NAME);
 
-
     awaitUntilPodIsReady(client, DB_NAME);
 
     deployAndAwaitStartWithRoute("/healthcheck");
@@ -35,9 +35,7 @@ public class PostgreSQLInternalDbIT extends AbstractInternalDBTestClass {
       "-e", "POSTGRESQL_PASSWORD=password",
       "--name=" + DB_NAME);
 
-
     awaitUntilPodIsReady(client, DB_NAME);
   }
-
 
 }

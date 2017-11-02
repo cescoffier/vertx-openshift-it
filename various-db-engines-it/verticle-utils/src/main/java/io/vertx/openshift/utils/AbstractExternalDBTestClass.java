@@ -1,4 +1,4 @@
-package io.vertx.openshift.it;
+package io.vertx.openshift.utils;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -20,10 +20,7 @@ public abstract class AbstractExternalDBTestClass extends AbstractDBTestClass {
   public void awaitReadiness() {
     System.out.println("Pods running, waiting for probes...");
 
-    await("Pods running, waiting for probes...").pollInterval(1, TimeUnit.SECONDS).atMost(5, TimeUnit.MINUTES).catchUncaughtExceptions().until(() ->
-      get("/healthcheck").getStatusCode() == 200
-    );
+    await("Pods running, waiting for probes...").pollInterval(1, TimeUnit.SECONDS)
+      .atMost(5, TimeUnit.MINUTES).catchUncaughtExceptions().until(() -> get("/healthcheck").getStatusCode() == 200);
   }
-
-
 }

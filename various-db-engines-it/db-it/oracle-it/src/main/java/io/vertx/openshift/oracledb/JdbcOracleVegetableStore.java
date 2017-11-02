@@ -1,8 +1,8 @@
-package io.vertx.openshift.it;
+package io.vertx.openshift.oracledb;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.openshift.it.impl.JdbcVegetableStore;
+import io.vertx.openshift.utils.impl.JdbcVegetableStore;
 import io.vertx.rxjava.ext.jdbc.JDBCClient;
 import rx.Single;
 

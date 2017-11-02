@@ -1,5 +1,15 @@
 # Vert.x Integration Test for OpenShift
 
+Before you want to run any tests from this test suite for the first time,
+you need to first install the `vertx-it-utils` module to your local maven repo:
+```bash
+cd vertx-it-utils
+
+mvn clean install 
+```
+If you don't do this, the modules here won't compile because of missing dependencies
+(for example missing OpenshiftTestAssistant class and so on.)
+
 If you want to use Minishift for testing, run:
 
 ```bash
@@ -22,35 +32,66 @@ Test in module can be executed switching to `$PROJECT` directory and running
  mvn clean verify -Popenshift
  ```
 
-## Embedded HTTP
 
+## Embedded HTTP
 Check the embedded case. An embedded HTTP server is started is started and tested.
 
 
-
 ## Simple HTTP
-
 Test various HTTP features (replicas, web sockets...)
 
 
 ## Service Discovery
-
-
 Test the Vert.x service discovery.
-## JDBC
 
-Test the Async JDBC Client against a PosgreSQL database running in OpenShift.
+
+## JDBC
+Test the Async JDBC Client against a PostgreSQL database running in OpenShift.
+
 
 ## Configuration
-Showcase different configuration stores and retrieving configuration with different options.
+Showcases different configuration stores and retrieving configuration with different options.
+
+
 ## SockJS 
 You need to set up maven properties, which are used for openshift route generation:
 * `openshift.namespace`  namespace which is used for testing
 * `openshift.route.suffix` suffix which is used for route generation
 
 
-## Running on Openshift Online
+## Healthcheck
+Tests for readiness/liveness of the pod in various scenarios (pod startup, pod restart, pod kill, ..)
 
+
+## HTTP2
+Tests for Vert.x integration of HTTP2 features
+
+
+## Cluster Manager
+Tests for Vert.x clustering - integration with Infinispan, usage of clustered event bus, ..
+
+
+## Various Database Engines
+These tests serve as a verification that a Vert.x application running on OpenShift Online
+is able to communicate with an existing on-premise database as well as an internal database
+also running in the same OpenShift instance. The tests are divided into modules, each of which is named
+after the database engine used in the Vert.x application example:
+* `mysql-it` for Vert.x and MySQL integration tests
+* `postgresql-it` for Vert.x and PostgreSQL integration tests
+* `oracle-it` for Vert.x and OracleDB integration tests - do note that due to the OracleDB being proprietary,
+the tests only cover communication with an existing on-premise database use case.
+
+These modules are located in the `db-it` parent module. On the same level, there's also `verticle-utils` module,
+which contains some utility classes that are commonly used by the tests.
+
+
+## vertx-it-utils
+This module does not contain any tests, but instead provides some abstract test classes,
+OpenshiftTestAssistant class and other utility classes. You need to install this module first (described at the of this page)
+in order to be able to run any tests from this test suite. 
+
+
+## Running on Openshift Online
 1. Login to OpenShift online with `oc`
 2. Create OpenShift project
 3. Use same process as described before

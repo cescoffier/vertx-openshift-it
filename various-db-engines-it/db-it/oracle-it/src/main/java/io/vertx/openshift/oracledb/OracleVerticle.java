@@ -1,15 +1,17 @@
-package io.vertx.openshift.it;
+package io.vertx.openshift.oracledb;
 
 import io.vertx.core.json.JsonObject;
+import io.vertx.openshift.utils.AbstractDatabaseVerticle;
+import io.vertx.openshift.utils.TestUtils;
 import io.vertx.rxjava.core.http.HttpServer;
-import io.vertx.rxjava.ext.web.Router;
 import io.vertx.rxjava.ext.jdbc.JDBCClient;
+import io.vertx.rxjava.ext.web.Router;
 import io.vertx.rxjava.ext.web.RoutingContext;
 import io.vertx.rxjava.ext.web.handler.BodyHandler;
 import rx.Completable;
 import rx.Single;
 
-import static io.vertx.openshift.it.Errors.error;
+import static io.vertx.openshift.utils.Errors.error;
 
 /**
  * @author Martin Spisiak (mspisiak@redhat.com) on 12/10/17.
@@ -49,7 +51,6 @@ public class OracleVerticle extends AbstractDatabaseVerticle {
           (http) -> System.out.println("Server ready on port " + http.actualPort()),
           Throwable::printStackTrace
         );
-
     });
   }
 
@@ -76,18 +77,15 @@ public class OracleVerticle extends AbstractDatabaseVerticle {
       error(ctx, 415, "invalid payload");
       return;
     }
+
     store.create(item)
       .subscribe(
-        json -> {
-          ((JdbcOracleVegetableStore) store).read(json.getString("rowId"))
-            .subscribe(entries -> {
-              ctx.response()
-                .putHeader("Location", "/api/vegetables/" + json.getLong("id"))
-                .putHeader("Content-Type", "application/json")
-                .setStatusCode(201)
-                .end(entries.encodePrettily());
-            });
-        },
+        json -> ((JdbcOracleVegetableStore) store).read(json.getString("rowId"))
+          .subscribe(entries -> ctx.response()
+            .putHeader("Location", "/api/vegetables/" + json.getLong("id"))
+            .putHeader("Content-Type", "application/json")
+            .setStatusCode(201)
+            .end(entries.encodePrettily())),
         err -> {
           System.out.println(err.toString());
           writeError(ctx, err);
@@ -99,20 +97,12 @@ public class OracleVerticle extends AbstractDatabaseVerticle {
     return jdbc.rxGetConnection()
       .flatMap(conn -> conn
         .rxQuery(VEGETABLE_TABLE_EXISTS_QUERY)
-        .map(resultSet -> {
-          long count = resultSet.getRows().get(0).getLong("COUNT");
-          if (count == 0) {
-            return false;
-          }
-          return true;
-        }));
+        .map(resultSet -> resultSet.getRows().get(0).getLong("COUNT") != 0));
   }
 
   private Completable dropVegetableTable(JDBCClient jdbc) {
     return jdbc.rxGetConnection()
-      .flatMap(conn -> conn
-        .rxQuery(DROP_VEGETABLE_TABLE)
-      ).toCompletable();
+      .flatMap(conn -> conn.rxQuery(DROP_VEGETABLE_TABLE)).toCompletable();
   }
 
 }

@@ -1,4 +1,4 @@
-package io.vertx.openshift.it;
+package io.vertx.openshift.utils;
 
 import io.vertx.core.json.JsonObject;
 import rx.Completable;

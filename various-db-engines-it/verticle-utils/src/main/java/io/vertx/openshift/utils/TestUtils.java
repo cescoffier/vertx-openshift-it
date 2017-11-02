@@ -1,4 +1,4 @@
-package io.vertx.openshift.it;
+package io.vertx.openshift.utils;
 
 import io.vertx.core.json.JsonObject;
 
@@ -11,13 +11,14 @@ import java.util.Objects;
 import java.util.Properties;
 
 /**
- * This class serves as container for various database utilities (static methods)
+ * This class serves as a container for various database utilities (static methods)
  *
  * @author Martin Spisiak (mspisiak@redhat.com) on 18/10/17.
  */
 public class TestUtils {
   /**
-   * Red Hat specific database allocator URL
+   * Red Hat-specific database allocator URL, you need to provide a valid URL here,
+   * otherwise the app won't be able to connect to the database.
    */
   private static final String DB_ALLOCATOR_URL =
     System.getenv().getOrDefault("dbAllocatorUrl","");

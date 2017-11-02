@@ -1,14 +1,14 @@
-package io.vertx.openshift.it.impl;
+package io.vertx.openshift.utils.impl;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.sql.ResultSet;
+import io.vertx.openshift.utils.DataStore;
 import io.vertx.rxjava.ext.jdbc.JDBCClient;
 import io.vertx.rxjava.ext.sql.SQLRowStream;
 import rx.Completable;
 import rx.Observable;
 import rx.Single;
-import io.vertx.openshift.it.DataStore;
 
 import java.util.NoSuchElementException;
 
@@ -57,7 +57,6 @@ public class JdbcVegetableStore implements DataStore {
           .doAfterTerminate(conn::close);
       });
   }
-
 
   @Override
   public Observable<JsonObject> readAll() {
