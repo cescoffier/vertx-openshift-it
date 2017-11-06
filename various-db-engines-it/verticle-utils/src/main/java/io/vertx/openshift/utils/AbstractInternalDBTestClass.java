@@ -10,7 +10,9 @@ import static com.jayway.awaitility.Awaitility.await;
 import static com.jayway.restassured.RestAssured.get;
 import static io.vertx.it.openshift.utils.Kube.awaitUntilPodIsReady;
 
-
+/**
+ * Include specific tests and help function for internal db
+ */
 public abstract class AbstractInternalDBTestClass extends AbstractDBTestClass {
 
   @Test

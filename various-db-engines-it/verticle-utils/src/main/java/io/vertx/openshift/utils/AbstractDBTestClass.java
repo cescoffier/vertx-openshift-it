@@ -11,10 +11,12 @@ import static com.jayway.restassured.RestAssured.*;
 import static io.vertx.it.openshift.utils.Ensure.ensureThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
+/**
+ * It contains common test and values for internal and external test
+ */
 public class AbstractDBTestClass extends AbstractTestClass {
   protected static final String API_LIST_ROUTE = "/api/vegetables/";
   protected static final String DB_NAME = "db";
-  protected static final int WAIT = 30;
 
   @Test
   public void CRUDTest() {
