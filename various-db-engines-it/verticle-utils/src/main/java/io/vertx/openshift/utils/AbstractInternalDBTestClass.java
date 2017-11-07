@@ -21,7 +21,6 @@ public abstract class AbstractInternalDBTestClass extends AbstractDBTestClass {
     dbCleanup();
     cleanup();
     deploymentAssistant.deployApplication();
-    TimeUnit.SECONDS.sleep(10);
     deployDB();
     awaitUntilPodIsReady(client, DB_NAME);
     await("Pods running, waiting for probes...").pollInterval(1, TimeUnit.SECONDS)
