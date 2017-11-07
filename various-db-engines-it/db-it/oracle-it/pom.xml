@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>io.vertx.openshift</groupId>
+    <artifactId>db-it</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>oracle-it</artifactId>
+
+  <properties>
+    <vertx.verticle>io.vertx.openshift.oracledb.OracleVerticle</vertx.verticle>
+    <vertx.health.path>/healthcheck</vertx.health.path>
+    <nexus.repo>http://www.maven.example.com/</nexus.repo>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.oracle.jdbc</groupId>
+      <artifactId>ojdbc8</artifactId>
+      <version>12.2.0.1</version>
+    </dependency>
+  </dependencies>
+
+  <repositories>
+    <repository>
+      <id>nexus-maven-repo</id>
+      <name>Nexus maven repo</name>
+      <url>${nexus.repo}</url>
+    </repository>
+  </repositories>
+</project>
