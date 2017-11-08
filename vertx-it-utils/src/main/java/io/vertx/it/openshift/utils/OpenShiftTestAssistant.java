@@ -53,7 +53,7 @@ public class OpenShiftTestAssistant {
 
   public List<? extends HasMetadata> deploy(String name, File template) throws IOException {
     try (FileInputStream fis = new FileInputStream(template)) {
-      List<HasMetadata> entities = client.load(fis).apply();
+      List<HasMetadata> entities = client.load(fis).createOrReplace();
       created.put(name, entities);
       System.out.println(name + " deployed, " + entities.size() + " object(s) created.");
 
@@ -128,8 +128,7 @@ public class OpenShiftTestAssistant {
           .filter(pod -> pod.getMetadata().getName().startsWith(applicationName))
           .filter(this::isRunning)
           .collect(Collectors.toList()).size() >= 1;
-      }
-    );
+    });
   }
 
   private boolean isRunning(Pod pod) {
@@ -155,7 +154,6 @@ public class OpenShiftTestAssistant {
           .filter(filter)
           .filter(this::isRunning)
           .collect(Collectors.toList()).size() >= 1;
-      }
-    );
+    });
   }
 }
