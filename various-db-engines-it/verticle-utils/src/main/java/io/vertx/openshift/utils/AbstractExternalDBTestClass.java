@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import static com.jayway.awaitility.Awaitility.await;
-import static com.jayway.restassured.RestAssured.get;
+import static io.restassured.RestAssured.get;
 
 /**
  * Include specific tests and help function for external db

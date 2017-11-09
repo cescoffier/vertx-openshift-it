@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static com.jayway.awaitility.Awaitility.with;
-import static com.jayway.restassured.RestAssured.get;
+import static io.restassured.RestAssured.get;
 
 import static io.vertx.it.openshift.utils.Ensure.ensureThat;
 import static io.vertx.openshift.it.HealthCheckHttpVerticle.CHECKS_CONTENT_KO;

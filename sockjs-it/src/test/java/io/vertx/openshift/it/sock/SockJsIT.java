@@ -1,7 +1,7 @@
 package io.vertx.openshift.it.sock;
 
 import static com.jayway.awaitility.Awaitility.await;
-import static com.jayway.restassured.RestAssured.get;
+import static io.restassured.RestAssured.get;
 
 import static io.vertx.it.openshift.utils.Ensure.ensureThat;
 import static io.vertx.it.openshift.utils.Kube.urlForRoute;
@@ -14,7 +14,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import com.jayway.restassured.path.json.JsonPath;
+import io.restassured.path.json.JsonPath;
 
 import java.util.concurrent.TimeUnit;
 

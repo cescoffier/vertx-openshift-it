@@ -9,7 +9,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import static com.jayway.restassured.RestAssured.get;
+import static io.restassured.RestAssured.get;
 import static io.vertx.it.openshift.utils.Ensure.ensureThat;
 import static io.vertx.it.openshift.utils.Kube.awaitUntilPodIsReady;
 

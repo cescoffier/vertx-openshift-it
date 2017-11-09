@@ -1,19 +1,19 @@
 package io.vertx.openshift.it;
 
 import static com.jayway.awaitility.Awaitility.await;
-import static com.jayway.restassured.RestAssured.get;
+import static io.restassured.RestAssured.get;
 
 import static io.vertx.it.openshift.utils.Ensure.ensureThat;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
 import io.fabric8.kubernetes.api.model.Pod;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
-import com.jayway.restassured.path.json.JsonPath;
+import io.restassured.path.json.JsonPath;
 
 import java.io.File;
 import java.io.IOException;

@@ -22,7 +22,7 @@ import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 import static com.jayway.awaitility.Awaitility.*;
-import static com.jayway.restassured.RestAssured.*;
+import static io.restassured.RestAssured.*;
 
 /**
  * @author Thomas Segismont
