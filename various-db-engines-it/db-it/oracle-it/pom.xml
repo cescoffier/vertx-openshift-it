@@ -16,7 +16,6 @@
   <properties>
     <vertx.verticle>io.vertx.openshift.oracledb.OracleVerticle</vertx.verticle>
     <vertx.health.path>/healthcheck</vertx.health.path>
-    <nexus.repo>http://www.maven.example.com/</nexus.repo>
   </properties>
 
   <dependencies>

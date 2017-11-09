@@ -3,10 +3,10 @@ package io.vertx.it.openshift.utils;
 import static org.assertj.core.api.Fail.fail;
 
 import static com.jayway.awaitility.Awaitility.await;
-import static com.jayway.restassured.RestAssured.get;
+import static io.restassured.RestAssured.get;
 
 import com.jayway.awaitility.Duration;
-import com.jayway.restassured.response.Response;
+import io.restassured.response.Response;
 
 import java.net.MalformedURLException;
 import java.net.URL;
