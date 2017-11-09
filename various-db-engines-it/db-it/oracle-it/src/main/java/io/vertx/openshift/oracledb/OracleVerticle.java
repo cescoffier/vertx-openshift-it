@@ -87,7 +87,6 @@ public class OracleVerticle extends AbstractDatabaseVerticle {
             .setStatusCode(201)
             .end(entries.encodePrettily())),
         err -> {
-          System.out.println(err.toString());
           writeError(ctx, err);
         }
       );
