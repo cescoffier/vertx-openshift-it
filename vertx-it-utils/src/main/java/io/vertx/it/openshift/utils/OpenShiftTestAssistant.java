@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import static com.jayway.awaitility.Awaitility.await;
 
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,11 +29,8 @@ import io.fabric8.openshift.api.model.Route;
 import io.fabric8.openshift.client.OpenShiftClient;
 
 /**
- * TODO Switch to the booster one, however we have a kubernetes client conflict.
- * Caused by: java.lang.NoSuchMethodError: io.fabric8.openshift.client.OpenShiftClient.load(Ljava/io/InputStream;)
- * Lio/fabric8/kubernetes/client/dsl/NamespaceListVisitFromServerGetDeleteRecreateWaitApplicable;
- *
- *  @author <a href="http://escoffier.me">Clement Escoffier</a>
+ * TODO Switch to the booster one
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class OpenShiftTestAssistant {
 
@@ -53,7 +50,7 @@ public class OpenShiftTestAssistant {
 
   public List<? extends HasMetadata> deploy(String name, File template) throws IOException {
     try (FileInputStream fis = new FileInputStream(template)) {
-      List<HasMetadata> entities = client.load(fis).apply();
+      List<HasMetadata> entities = client.load(fis).createOrReplace();
       created.put(name, entities);
       System.out.println(name + " deployed, " + entities.size() + " object(s) created.");
 
@@ -128,8 +125,7 @@ public class OpenShiftTestAssistant {
           .filter(pod -> pod.getMetadata().getName().startsWith(applicationName))
           .filter(this::isRunning)
           .collect(Collectors.toList()).size() >= 1;
-      }
-    );
+    });
   }
 
   private boolean isRunning(Pod pod) {
@@ -155,7 +151,6 @@ public class OpenShiftTestAssistant {
           .filter(filter)
           .filter(this::isRunning)
           .collect(Collectors.toList()).size() >= 1;
-      }
-    );
+    });
   }
 }

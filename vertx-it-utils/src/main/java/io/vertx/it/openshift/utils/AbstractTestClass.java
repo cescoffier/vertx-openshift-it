@@ -1,6 +1,6 @@
 package io.vertx.it.openshift.utils;
 
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
 import io.fabric8.openshift.client.OpenShiftClient;
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.AfterClass;
@@ -12,7 +12,7 @@ import java.util.SortedMap;
 import java.util.concurrent.TimeUnit;
 
 import static com.jayway.awaitility.Awaitility.*;
-import static com.jayway.restassured.RestAssured.*;
+import static io.restassured.RestAssured.*;
 import static io.vertx.it.openshift.utils.Ensure.*;
 import static java.util.Collections.*;
 

@@ -3,7 +3,7 @@ package io.vertx.openshift.embedded;
 import static org.hamcrest.Matchers.containsString;
 
 import static com.jayway.awaitility.Awaitility.await;
-import static com.jayway.restassured.RestAssured.get;
+import static io.restassured.RestAssured.get;
 
 import static io.fabric8.kubernetes.assertions.Assertions.assertThat;
 import static io.vertx.it.openshift.utils.Ensure.ensureThat;

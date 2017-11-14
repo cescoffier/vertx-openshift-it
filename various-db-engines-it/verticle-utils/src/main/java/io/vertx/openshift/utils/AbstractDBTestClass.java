@@ -1,13 +1,13 @@
 package io.vertx.openshift.utils;
 
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.response.Response;
-import com.jayway.restassured.specification.RequestSpecification;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import io.vertx.it.openshift.utils.AbstractTestClass;
 import org.json.JSONObject;
 import org.junit.Test;
 
-import static com.jayway.restassured.RestAssured.*;
+import static io.restassured.RestAssured.*;
 import static io.vertx.it.openshift.utils.Ensure.ensureThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 

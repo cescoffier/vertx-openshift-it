@@ -40,7 +40,7 @@ public class PostgreSQLInternalDbIT extends AbstractInternalDBTestClass {
    */
   public static void initDB () {
     OC.execute("project", client.getNamespace());
-    OC.execute("new-app", "registry.access.redhat.com/rhscl/postgresql-95-rhel7",
+    OC.execute("new-app", "registry.access.redhat.com/rhscl/postgresql-95-rhel7:latest",
       "-e", "POSTGRESQL_USER=vertx",
       "-e", "POSTGRESQL_DATABASE=testdb",
       "-e", "POSTGRESQL_PASSWORD=password",

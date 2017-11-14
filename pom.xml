@@ -85,6 +85,16 @@
         <artifactId>kubernetes-api</artifactId>
         <version>${kubernetes.api.version}</version>
       </dependency>
+      <dependency>
+        <groupId>io.fabric8</groupId>
+        <artifactId>kubernetes-client</artifactId>
+        <version>1.4.35</version>
+      </dependency>
+      <dependency>
+        <groupId>io.fabric8</groupId>
+        <artifactId>openshift-client</artifactId>
+        <version>1.4.35</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

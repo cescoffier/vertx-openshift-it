@@ -21,7 +21,7 @@ public class TestUtils {
    * otherwise the app won't be able to connect to the database.
    */
   private static final String DB_ALLOCATOR_URL =
-    System.getenv().getOrDefault("dbAllocatorUrl","");
+    System.getenv("dbAllocatorUrl");
 
   /**
    * This method serves as internal or external database allocator (depends on @param external value)

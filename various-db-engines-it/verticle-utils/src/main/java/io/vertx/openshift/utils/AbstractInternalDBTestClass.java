@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import static com.jayway.awaitility.Awaitility.await;
-import static com.jayway.restassured.RestAssured.get;
+import static io.restassured.RestAssured.get;
 import static io.vertx.it.openshift.utils.Kube.awaitUntilPodIsReady;
 
 /**
@@ -21,7 +21,6 @@ public abstract class AbstractInternalDBTestClass extends AbstractDBTestClass {
     dbCleanup();
     cleanup();
     deploymentAssistant.deployApplication();
-    TimeUnit.SECONDS.sleep(10);
     deployDB();
     awaitUntilPodIsReady(client, DB_NAME);
     await("Pods running, waiting for probes...").pollInterval(1, TimeUnit.SECONDS)
