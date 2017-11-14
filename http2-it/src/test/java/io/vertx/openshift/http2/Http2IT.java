@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static io.vertx.it.openshift.utils.Kube.securedUrlForRoute;
 import static io.vertx.it.openshift.utils.Kube.urlForRoute;
 import static org.assertj.core.api.Assertions.assertThat;

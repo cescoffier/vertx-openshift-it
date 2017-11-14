@@ -25,7 +25,7 @@ import java.util.TreeMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static com.jayway.awaitility.Awaitility.*;
+import static org.awaitility.Awaitility.*;
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.CoreMatchers.*;
 

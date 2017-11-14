@@ -2,7 +2,7 @@ package io.vertx.openshift.embedded;
 
 import static org.hamcrest.Matchers.containsString;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static io.restassured.RestAssured.get;
 
 import static io.fabric8.kubernetes.assertions.Assertions.assertThat;

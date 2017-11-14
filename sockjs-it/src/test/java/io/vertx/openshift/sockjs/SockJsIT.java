@@ -1,6 +1,6 @@
 package io.vertx.openshift.sockjs;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static io.restassured.RestAssured.get;
 
 import static io.vertx.it.openshift.utils.Ensure.ensureThat;

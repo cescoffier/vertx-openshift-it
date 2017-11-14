@@ -2,8 +2,8 @@ package io.vertx.openshift.healthcheck;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import static com.jayway.awaitility.Awaitility.await;
-import static com.jayway.awaitility.Awaitility.with;
+import static org.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.with;
 import static io.restassured.RestAssured.get;
 
 import static io.vertx.it.openshift.utils.Ensure.ensureThat;
@@ -178,7 +178,7 @@ public class HealthCheckIT extends AbstractTestClass {
       get(HEALTH).then().statusCode(204);
     });
     ensureThat("pod should be suspected by kubernetes.", () ->
-      await().atMost(4, TimeUnit.MINUTES).catchUncaughtExceptions().until(() -> get(HEALTH).getStatusCode() != 204)
+      await().atMost(6, TimeUnit.MINUTES).catchUncaughtExceptions().until(() -> get(HEALTH).getStatusCode() != 204)
     );
     ensureThat("new pod should be started", () ->
       await().atMost(4, TimeUnit.MINUTES).catchUncaughtExceptions().until(() -> get(HEALTH).getStatusCode() == 204)

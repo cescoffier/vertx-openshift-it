@@ -2,10 +2,10 @@ package io.vertx.it.openshift.utils;
 
 import static org.assertj.core.api.Fail.fail;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static io.restassured.RestAssured.get;
 
-import com.jayway.awaitility.Duration;
+import org.awaitility.Duration;
 import io.restassured.response.Response;
 
 import java.net.MalformedURLException;
@@ -33,7 +33,7 @@ import io.fabric8.openshift.client.OpenShiftClient;
  */
 public class Kube {
 
-  private static final int DEFAULT_WAIT_TIME = 3;
+  private static final int DEFAULT_WAIT_TIME = 5;
 
   public static String name(HasMetadata object) {
     String name = object.getMetadata().getName();
@@ -196,9 +196,7 @@ public class Kube {
 
   public static String awaitUntilRouteIsServed(Route route, String path) {
     AtomicReference<String> resp = new AtomicReference<>();
-    await().atMost(duration()).until(() -> {
-      Kube.isRouteServed(route, path, resp);
-    });
+    await().atMost(duration()).until(() -> Kube.isRouteServed(route, path, resp));
 
     return resp.get();
   }

@@ -17,7 +17,7 @@
   <modules>
     <module>greeting-service</module>
     <module>name-service</module>
-    <module>integration-tests</module>
+    <module>cb-integration-tests</module>
   </modules>
 
   <dependencies>
