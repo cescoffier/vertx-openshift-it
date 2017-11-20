@@ -26,7 +26,6 @@ import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.Probe;
 import io.fabric8.openshift.api.model.DeploymentConfig;
 import io.vertx.it.openshift.utils.AbstractTestClass;
-import io.vertx.openshift.healthcheck.HealthCheckHttpVerticle;
 
 public class HealthCheckIT extends AbstractTestClass {
 

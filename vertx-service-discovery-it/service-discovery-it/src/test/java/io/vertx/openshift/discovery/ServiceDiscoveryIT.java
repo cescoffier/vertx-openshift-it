@@ -49,7 +49,7 @@ public class ServiceDiscoveryIT extends AbstractTestClass {
     );
 
     ensureThat("the gateway is up and running", () ->
-      await().atMost(5, TimeUnit.MINUTES).catchUncaughtExceptions().until(() -> {
+      await().atMost(5, TimeUnit.MINUTES).catchUncaughtExceptions().untilAsserted(() -> {
         Service service = client.services().withName("discovery-gateway").get();
         assertThat(service).isNotNull();
 
@@ -70,10 +70,8 @@ public class ServiceDiscoveryIT extends AbstractTestClass {
   @Before
   public void resetReplicasCount() {
     someServiceHelper.setReplicasAndWait(1);
-    await().atMost(5, TimeUnit.MINUTES).until(() -> {
-      get(urlForRoute(client.routes().withName("some-http-services").get()))
-        .then().assertThat().statusCode(200);
-    });
+    await().atMost(5, TimeUnit.MINUTES).untilAsserted(() ->
+      get(urlForRoute(client.routes().withName("some-http-services").get())).then().assertThat().statusCode(200));
   }
 
 
@@ -81,7 +79,7 @@ public class ServiceDiscoveryIT extends AbstractTestClass {
   public void testHttpClientWithDNS() throws Exception {
     String uuid = UUID.randomUUID().toString();
     ensureThat("service can be resolved using DNS", () ->
-      await().atMost(1, TimeUnit.MINUTES).until(() ->
+      await().atMost(1, TimeUnit.MINUTES).untilAsserted(() ->
         given().queryParam("message", uuid)
           .get(urlForRoute(route, "/dns/http"))
           .then().assertThat().statusCode(200)
@@ -95,7 +93,7 @@ public class ServiceDiscoveryIT extends AbstractTestClass {
   public void testWebClientWithDNS() throws Exception {
     String uuid = UUID.randomUUID().toString();
     ensureThat("service can be resolved using DNS", () ->
-      await().atMost(1, TimeUnit.MINUTES).until(() ->
+      await().atMost(1, TimeUnit.MINUTES).untilAsserted(() ->
         given().queryParam("message", uuid)
           .get(urlForRoute(route, "/dns/web"))
           .then().assertThat().statusCode(200)
@@ -109,7 +107,7 @@ public class ServiceDiscoveryIT extends AbstractTestClass {
   public void testWithHttpClientDiscovery() throws Exception {
     String uuid = UUID.randomUUID().toString();
     ensureThat("service can be resolved using service discovery", () ->
-      await().atMost(1, TimeUnit.MINUTES).until(() ->
+      await().atMost(1, TimeUnit.MINUTES).untilAsserted(() ->
         given().queryParam("message", uuid)
           .get(urlForRoute(route, "/services/http"))
           .then().assertThat().statusCode(200)
@@ -123,7 +121,7 @@ public class ServiceDiscoveryIT extends AbstractTestClass {
   public void testWithWebClientDiscovery() throws Exception {
     String uuid = UUID.randomUUID().toString();
     ensureThat("service can be resolved using service discovery", () ->
-      await().atMost(1, TimeUnit.MINUTES).until(() ->
+      await().atMost(1, TimeUnit.MINUTES).untilAsserted(() ->
         given().queryParam("message", uuid)
           .get(urlForRoute(route, "/services/web"))
           .then().assertThat().statusCode(200)
@@ -137,7 +135,7 @@ public class ServiceDiscoveryIT extends AbstractTestClass {
   public void testHttpClientWithReference() throws Exception {
     String uuid = UUID.randomUUID().toString();
     ensureThat("service can be resolved using a service reference", () ->
-      await().atMost(1, TimeUnit.MINUTES).until(() ->
+      await().atMost(1, TimeUnit.MINUTES).untilAsserted(() ->
         given().queryParam("message", uuid)
           .get(urlForRoute(route, "/ref/http"))
           .then().assertThat().statusCode(200)
@@ -151,7 +149,7 @@ public class ServiceDiscoveryIT extends AbstractTestClass {
   public void testWebClientWithReference() throws Exception {
     String uuid = UUID.randomUUID().toString();
     ensureThat("service can be resolved using a service reference", () ->
-      await().atMost(1, TimeUnit.MINUTES).until(() ->
+      await().atMost(1, TimeUnit.MINUTES).untilAsserted(() ->
         given().queryParam("message", uuid)
           .get(urlForRoute(route, "/ref/http"))
           .then().assertThat().statusCode(200)
@@ -164,7 +162,7 @@ public class ServiceDiscoveryIT extends AbstractTestClass {
   @Test
   public void testDatabaseUsingDNS() throws Exception {
     ensureThat("database can be resolved using DNS", () ->
-      await().atMost(1, TimeUnit.MINUTES).until(() ->
+      await().atMost(1, TimeUnit.MINUTES).untilAsserted(() ->
         get(urlForRoute(route, "/dns/db"))
           .then().assertThat().statusCode(200)
       )
@@ -174,7 +172,7 @@ public class ServiceDiscoveryIT extends AbstractTestClass {
   @Test
   public void testDatabaseUsingDiscovery() throws Exception {
     ensureThat("database can be resolved using service discovery", () ->
-      await().atMost(1, TimeUnit.MINUTES).until(() ->
+      await().atMost(1, TimeUnit.MINUTES).untilAsserted(() ->
         get(urlForRoute(route, "/services/db"))
           .then().assertThat().statusCode(200)
       )

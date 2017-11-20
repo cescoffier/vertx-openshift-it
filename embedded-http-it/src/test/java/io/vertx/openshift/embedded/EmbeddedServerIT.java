@@ -52,7 +52,7 @@ public class EmbeddedServerIT extends AbstractTestClass {
       () -> setReplicasAndWait(deploymentAssistant.client(), deploymentAssistant.applicationName(), 2));
 
     ensureThat("the route is accessible",
-      () -> await().atMost(1, TimeUnit.MINUTES).until(() -> get().then().statusCode(200)));
+      () -> await().atMost(1, TimeUnit.MINUTES).untilAsserted(() -> get().then().statusCode(200)));
 
     ensureThat("the route can be called several times in a row", () -> {
 

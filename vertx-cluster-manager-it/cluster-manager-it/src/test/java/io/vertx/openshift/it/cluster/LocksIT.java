@@ -56,7 +56,7 @@ public class LocksIT extends AbstractTestClass {
     );
 
     Ensure.ensureThat("The locks app is up and running", () ->
-      await().atMost(5, TimeUnit.MINUTES).catchUncaughtExceptions().until(() -> {
+      await().atMost(5, TimeUnit.MINUTES).catchUncaughtExceptions().untilAsserted(() -> {
         Service service = client.services().withName(APPLICATION_NAME).get();
         Assertions.assertThat(service).isNotNull();
 
@@ -79,7 +79,7 @@ public class LocksIT extends AbstractTestClass {
     vertx = Vertx.vertx();
     int replicaCount = 3;
     clusterLocksHelper.setReplicasAndWait(replicaCount);
-    await().atMost(5, TimeUnit.MINUTES).until(() -> {
+    await().atMost(5, TimeUnit.MINUTES).untilAsserted(() -> {
       for (int i = 0; i < replicaCount; i++) {
         get(Kube.urlForRoute(client.routes().withName(APPLICATION_NAME).get(), "/health"))
           .then().assertThat().statusCode(200);
@@ -109,9 +109,7 @@ public class LocksIT extends AbstractTestClass {
           }
           latch.countDown();
         })
-        .exceptionHandler(t -> {
-          latch.countDown();
-        }).end();
+        .exceptionHandler(t -> latch.countDown()).end();
     }
 
     latch.await(1, TimeUnit.MINUTES);

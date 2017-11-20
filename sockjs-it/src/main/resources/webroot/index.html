@@ -9,17 +9,18 @@
   var eventBuses = {};
   var sockJS = {};
   function updateStatus(element,content) {
-        var status = JSON.parse($(element).text());
-        if (!(content in status)) {
-          status[content]=0;
-        }
-        status[content]++;
-        $(element).text(JSON.stringify(status,null,4));
+      var status = JSON.parse($(element).text());
+      if (!(content in status)) {
+        status[content]=0;
+      }
+      status[content]++;
+      $(element).text(JSON.stringify(status,null,4));
   }
+
   $.each(transportOptions, function(index,value) {
 
       // event-bus
-      var eb = new EventBus("http://${project.artifactId}-${openshift.namespace}.${openshift.route.suffix}/eventbus/" + value);
+      var eb = new EventBus(window.location.href + "eventbus/" + value);
       eb.onopen = function () {
       eb.registerHandler("to.client", function (err, msg) {
             updateStatus('#eb-status',value);
@@ -32,7 +33,7 @@
       }
 
       // sock communication
-      var sock = new SockJS("http://${project.artifactId}-${openshift.namespace}.${openshift.route.suffix}/sock/" + value);
+      var sock = new SockJS(window.location.href + "sock/" + value);
 
       sock.onopen = function() {
         console.log(value + ' open');

@@ -44,7 +44,7 @@ public class AbstractTestClass {
 
     deployAndAwaitStart(otherDeployments);
     await(String.format("the route is accessible at %s%s .", RestAssured.baseURI, pathSuffix))
-      .atMost(5, TimeUnit.MINUTES)
+      .atMost(10, TimeUnit.MINUTES)
       .catchUncaughtExceptions()
       .until(() -> get(pathSuffix).statusCode() <= 204);
   }

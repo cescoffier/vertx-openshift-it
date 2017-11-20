@@ -26,11 +26,10 @@ import io.vertx.it.openshift.utils.PhantomJSDeployment;
 
 public class SockJsIT extends AbstractTestClass {
 
-  public static final String EB_STATUS = "eb-status";
-  public static final String SOCK_STATUS = "sock-status";
-  static PhantomJSDeployment PHANTOM;
-
-  static WebDriver webDriver;
+  private static final String EB_STATUS = "eb-status";
+  private static final String SOCK_STATUS = "sock-status";
+  private static PhantomJSDeployment PHANTOM;
+  private static WebDriver webDriver;
 
   @BeforeClass
   public static void initialize() throws Exception {

@@ -58,7 +58,7 @@ public class DeliveryToFailingPodIT extends AbstractTestClass {
 
   private static void ensureRunning(String shortName, String name) {
     Ensure.ensureThat("The " + shortName + " app is up and running", () ->
-      await().atMost(5, TimeUnit.MINUTES).catchUncaughtExceptions().until(() -> {
+      await().atMost(5, TimeUnit.MINUTES).catchUncaughtExceptions().untilAsserted(() -> {
         Service service = client.services().withName(name).get();
         Assertions.assertThat(service).isNotNull();
 
@@ -79,7 +79,7 @@ public class DeliveryToFailingPodIT extends AbstractTestClass {
   public void beforeEach() {
     vertx = Vertx.vertx();
     senderHelper.setReplicasAndWait(3);
-    await().atMost(5, TimeUnit.MINUTES).until(() -> {
+    await().atMost(5, TimeUnit.MINUTES).untilAsserted(() -> {
       for (int i = 0; i < 3; i++) {
         get(Kube.urlForRoute(client.routes().withName(SENDER_APPLICATION_NAME).get(), "/health"))
           .then().assertThat().statusCode(200);

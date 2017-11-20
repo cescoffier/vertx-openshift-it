@@ -8,7 +8,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import io.fabric8.kubernetes.api.model.Pod;
-import io.vertx.openshift.config.ConfigurableHttpVerticle;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -104,10 +103,9 @@ public class ConfigurationIT extends AbstractTestClass {
   public void testRetrievingConfigByListeningToChange() throws InterruptedException {
 
     // So event bus config store has some time to load
-    ensureThat("we can retrieve the application configuration", () -> {
+    ensureThat("we can retrieve the application configuration", () ->
       await().atMost(2, TimeUnit.MINUTES).until(() ->
-        get("/all").getBody().jsonPath().getString("eventBus") != null);
-    });
+        get("/all").getBody().jsonPath().getString("eventBus") != null));
 
     ensureThat("the configuration is the expected configuration\n", () -> {
       final JsonPath response = get("/all").getBody().jsonPath();
@@ -129,10 +127,9 @@ public class ConfigurationIT extends AbstractTestClass {
 
   @Test
   public void testRetrievingConfigFromStream() throws InterruptedException {
-    ensureThat("we can retrieve the application configuration through config stream", () -> {
+    ensureThat("we can retrieve the application configuration through config stream", () ->
       await().atMost(2, TimeUnit.MINUTES).until(() ->
-        get("/all-by-stream").getBody().jsonPath().getString("eventBus") != null);
-    });
+        get("/all-by-stream").getBody().jsonPath().getString("eventBus") != null));
 
     ensureThat("the configuration retrieved through config stream is the expected configuration\n", () -> {
       final JsonPath response = get("/all-by-stream").getBody().jsonPath();
@@ -161,10 +158,9 @@ public class ConfigurationIT extends AbstractTestClass {
         "yet", "another")
     );
 
-    ensureThat("after configuration change, the new configuration received by listening to change has been read", () -> {
+    ensureThat("after configuration change, the new configuration received by listening to change has been read", () ->
       await().atMost(2, TimeUnit.MINUTES).until(() ->
-        get("/all").getBody().jsonPath().getString("key").equals("value-2"));
-    });
+        get("/all").getBody().jsonPath().getString("key").equals("value-2")));
 
     ensureThat("the new configuration by listening to change is the expected configuration", () -> {
       final JsonPath response = get("/all").getBody().jsonPath();
@@ -185,10 +181,9 @@ public class ConfigurationIT extends AbstractTestClass {
     });
 
     createOrEditConfigMap(DEFAULT_MAP);
-    ensureThat("the old configuration can be read\n", () -> {
+    ensureThat("the old configuration can be read\n", () ->
       await().atMost(2, TimeUnit.MINUTES).until(() ->
-        get("/all").getBody().jsonPath().getString("key").equals("value"));
-    });
+        get("/all").getBody().jsonPath().getString("key").equals("value")));
   }
 
   @Test
@@ -201,10 +196,9 @@ public class ConfigurationIT extends AbstractTestClass {
         "other", "value")
     );
 
-    ensureThat("after configuration change, the new configuration received through config stream has been read", () -> {
+    ensureThat("after configuration change, the new configuration received through config stream has been read", () ->
       await().atMost(2, TimeUnit.MINUTES).until(() ->
-        get("/all-by-stream").getBody().jsonPath().getString("key").equals("config-stream"));
-    });
+        get("/all-by-stream").getBody().jsonPath().getString("key").equals("config-stream")));
 
     ensureThat("the new configuration received through stream is the expected configuration", () -> {
       final JsonPath response = get("/all-by-stream").getBody().jsonPath();
@@ -226,20 +220,18 @@ public class ConfigurationIT extends AbstractTestClass {
     });
 
     createOrEditConfigMap(DEFAULT_MAP);
-    ensureThat("the old stream configuration can be read\n", () -> {
+    ensureThat("the old stream configuration can be read\n", () ->
       await().atMost(2, TimeUnit.MINUTES).until(() ->
-        get("/all-by-stream").getBody().jsonPath().getString("key").equals("value"));
-    });
+        get("/all-by-stream").getBody().jsonPath().getString("key").equals("value")));
   }
 
   @Test
   public void testDeleteConfig() throws InterruptedException {
     client.configMaps().withName(CONFIG_MAP).delete();
-    ensureThat("empty config map is returned when the actual one is deleted\n", () -> {
+    ensureThat("empty config map is returned when the actual one is deleted\n", () ->
       await().atMost(2, TimeUnit.MINUTES).until(() ->
         get("/all").getBody().jsonPath().getString("key") == null
-        && get("/all-by-stream").getBody().jsonPath().getString("key") == null);
-    });
+        && get("/all-by-stream").getBody().jsonPath().getString("key") == null));
 
     createOrEditConfigMap(DEFAULT_MAP);
     await().atMost(2, TimeUnit.MINUTES).until(() ->

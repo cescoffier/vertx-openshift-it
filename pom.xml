@@ -25,13 +25,14 @@
     <slf4j.version>1.7.25</slf4j.version>
 
     <!-- constrained by kubernetes assertions, which for whatever reason are way behind the latest -->
-    <assertj.version>3.6.2</assertj.version>
+    <!--<assertj.version>3.6.2</assertj.version>-->
     <rest-assured.version>3.0.3</rest-assured.version>
     <junit.version>4.12</junit.version>
     <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
     <vertx-maven-plugin.version>1.0.9</vertx-maven-plugin.version>
     <awaitility.version>3.0.0</awaitility.version>
     <jgroups-kubernetes.version>1.0.5.Final</jgroups-kubernetes.version>
+    <kubernetes.client.version>1.4.35</kubernetes.client.version>
 
     <release.candidate.repository>
       https://maven.repository.redhat.com/earlyaccess/all/
@@ -48,7 +49,7 @@
     <fabric8.maven.plugin.version>3.5.30</fabric8.maven.plugin.version>
 
     <!-- muse use version from https://maven.repository.redhat.com/ga/io/fabric8/kubernetes-api/ -->
-    <kubernetes.api.version>2.2.170</kubernetes.api.version>
+    <kubernetes.api.version>2.2.192</kubernetes.api.version>
 
     <!-- Docker configuration -->
     <docker.group.name>vertx-openshift-it</docker.group.name>
@@ -83,18 +84,18 @@
       </dependency>
       <dependency>
         <groupId>io.fabric8</groupId>
-        <artifactId>kubernetes-api</artifactId>
+        <artifactId>kubernetes-assertions</artifactId>
         <version>${kubernetes.api.version}</version>
       </dependency>
       <dependency>
         <groupId>io.fabric8</groupId>
         <artifactId>kubernetes-client</artifactId>
-        <version>1.4.35</version>
+        <version>${kubernetes.client.version}</version>
       </dependency>
       <dependency>
         <groupId>io.fabric8</groupId>
         <artifactId>openshift-client</artifactId>
-        <version>1.4.35</version>
+        <version>${kubernetes.client.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -136,7 +137,6 @@
       <version>23.0</version>
     </dependency>
 
-
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -144,23 +144,16 @@
     </dependency>
 
     <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-      <version>${assertj.version}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
       <version>${awaitility.version}</version>
     </dependency>
+
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
       <version>${rest-assured.version}</version>
     </dependency>
-
   </dependencies>
 
   <build>
