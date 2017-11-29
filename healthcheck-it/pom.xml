@@ -14,7 +14,7 @@
   <artifactId>healthcheck-it</artifactId>
 
   <properties>
-    <vertx.verticle>io.vertx.openshift.it.MainVerticle</vertx.verticle>
+    <vertx.verticle>io.vertx.openshift.healthcheck.MainVerticle</vertx.verticle>
     <vertx.health.path>/isAlive</vertx.health.path>
     <vertx.health.readiness.path>/start</vertx.health.readiness.path>
     <vertx.health.port>8088</vertx.health.port>

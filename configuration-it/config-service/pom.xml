@@ -13,7 +13,7 @@
   <artifactId>config-service</artifactId>
 
   <properties>
-    <vertx.verticle>io.vertx.openshift.it.ConfigurableHttpVerticle</vertx.verticle>
+    <vertx.verticle>io.vertx.openshift.config.ConfigurableHttpVerticle</vertx.verticle>
     <vertx.health.path>/all</vertx.health.path>
   </properties>
 

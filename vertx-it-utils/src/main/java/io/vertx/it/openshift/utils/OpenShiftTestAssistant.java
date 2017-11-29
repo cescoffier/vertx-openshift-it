@@ -2,7 +2,7 @@ package io.vertx.it.openshift.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 
 import io.restassured.RestAssured;
 

@@ -25,7 +25,7 @@ import java.util.TreeMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static com.jayway.awaitility.Awaitility.*;
+import static org.awaitility.Awaitility.*;
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.CoreMatchers.*;
 
@@ -54,7 +54,7 @@ public class CountersIT extends AbstractTestClass {
     );
 
     Ensure.ensureThat("The counters app is up and running", () ->
-      await().atMost(5, TimeUnit.MINUTES).catchUncaughtExceptions().until(() -> {
+      await().atMost(5, TimeUnit.MINUTES).catchUncaughtExceptions().untilAsserted(() -> {
         Service service = client.services().withName(APPLICATION_NAME).get();
         Assertions.assertThat(service).isNotNull();
 
@@ -77,7 +77,7 @@ public class CountersIT extends AbstractTestClass {
     vertx = Vertx.vertx();
     int replicaCount = 3;
     clusterCountersHelper.setReplicasAndWait(replicaCount);
-    await().atMost(5, TimeUnit.MINUTES).until(() -> {
+    await().atMost(5, TimeUnit.MINUTES).untilAsserted(() -> {
       for (int i = 0; i < replicaCount; i++) {
         get(Kube.urlForRoute(client.routes().withName(APPLICATION_NAME).get(), "/health"))
           .then().assertThat().statusCode(200);
@@ -99,12 +99,8 @@ public class CountersIT extends AbstractTestClass {
     CountDownLatch latch = new CountDownLatch(loops);
     for (int i = 0; i < loops; i++) {
       httpClient.postAbs(url.toString())
-        .handler(resp -> {
-          latch.countDown();
-        })
-        .exceptionHandler(t -> {
-          latch.countDown();
-        }).end(String.valueOf(i));
+        .handler(resp -> latch.countDown())
+        .exceptionHandler(t -> latch.countDown()).end(String.valueOf(i));
     }
 
     latch.await(1, TimeUnit.MINUTES);

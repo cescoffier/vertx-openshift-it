@@ -4,7 +4,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 
@@ -60,9 +60,8 @@ public class SimpleHttpIT extends AbstractTestClass {
   public void stabilityTest() throws Exception {
     ensureThat("the pod is ready and stay ready for a bit",
       () -> assertThat(deploymentAssistant.client()).deployments().pods().isPodReadyForPeriod());
-    await("That one pod is present.").atMost(1, TimeUnit.MINUTES).catchUncaughtExceptions().until(
-      () ->
-        assertThat(deploymentAssistant.client()).pods().runningStatus().hasSize(1));
+    await("That one pod is present.").atMost(1, TimeUnit.MINUTES).catchUncaughtExceptions()
+      .untilAsserted(() -> assertThat(deploymentAssistant.client()).pods().runningStatus().hasSize(1));
   }
 
   @Test

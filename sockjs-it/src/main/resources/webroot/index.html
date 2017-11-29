@@ -2,24 +2,25 @@
 <head>
   <title></title>
   <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
-  <script src="//cdn.jsdelivr.net/sockjs/0.3.4/sockjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
   <script src="vertx-eventbus.js"></script>
   <script>
   var transportOptions = ["WEBSOCKET","EVENT_SOURCE","HTML_FILE","JSON_P","XHR"];
   var eventBuses = {};
   var sockJS = {};
   function updateStatus(element,content) {
-        var status = JSON.parse($(element).text());
-        if (!(content in status)) {
-          status[content]=0;
-        }
-        status[content]++;
-        $(element).text(JSON.stringify(status,null,4));
+      var status = JSON.parse($(element).text());
+      if (!(content in status)) {
+        status[content]=0;
+      }
+      status[content]++;
+      $(element).text(JSON.stringify(status,null,4));
   }
+
   $.each(transportOptions, function(index,value) {
 
       // event-bus
-      var eb = new EventBus("http://${project.artifactId}-${openshift.namespace}.${openshift.route.suffix}/eventbus/" + value);
+      var eb = new EventBus(window.location.href + "eventbus/" + value);
       eb.onopen = function () {
       eb.registerHandler("to.client", function (err, msg) {
             updateStatus('#eb-status',value);
@@ -32,7 +33,7 @@
       }
 
       // sock communication
-      var sock = new SockJS("http://${project.artifactId}-${openshift.namespace}.${openshift.route.suffix}/sock/" + value);
+      var sock = new SockJS(window.location.href + "sock/" + value);
 
       sock.onopen = function() {
         console.log(value + ' open');

@@ -28,7 +28,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.jayway.awaitility.Awaitility.*;
+import static org.awaitility.Awaitility.*;
 import static io.restassured.RestAssured.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.*;
@@ -58,7 +58,7 @@ public class WebSessionIT extends AbstractTestClass {
     );
 
     Ensure.ensureThat("The web-session app is up and running", () ->
-      await().atMost(5, TimeUnit.MINUTES).catchUncaughtExceptions().until(() -> {
+      await().atMost(5, TimeUnit.MINUTES).catchUncaughtExceptions().untilAsserted(() -> {
         Service service = client.services().withName(APPLICATION_NAME).get();
         Assertions.assertThat(service).isNotNull();
 
@@ -86,7 +86,7 @@ public class WebSessionIT extends AbstractTestClass {
 
   private void scaleTo(int replicaCount) {
     clusterWebSessionHelper.setReplicasAndWait(replicaCount);
-    await().atMost(5, TimeUnit.MINUTES).until(() -> {
+    await().atMost(5, TimeUnit.MINUTES).untilAsserted(() -> {
       for (int i = 0; i < replicaCount; i++) {
         get(Kube.urlForRoute(client.routes().withName(APPLICATION_NAME).get(), "/health"))
           .then().assertThat().statusCode(200);

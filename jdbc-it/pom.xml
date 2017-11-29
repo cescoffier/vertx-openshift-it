@@ -14,7 +14,7 @@
   <artifactId>jdbc-it</artifactId>
 
   <properties>
-    <vertx.verticle>io.vertx.openshift.it.MyMainVerticle</vertx.verticle>
+    <vertx.verticle>io.vertx.openshift.jdbc.MyMainVerticle</vertx.verticle>
   </properties>
 
   <dependencies>

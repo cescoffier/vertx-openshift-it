@@ -25,7 +25,7 @@ import java.util.TreeMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static com.jayway.awaitility.Awaitility.*;
+import static org.awaitility.Awaitility.*;
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.CoreMatchers.*;
 
@@ -54,7 +54,7 @@ public class MapsIT extends AbstractTestClass {
     );
 
     Ensure.ensureThat("The maps app is up and running", () ->
-      await().atMost(5, TimeUnit.MINUTES).catchUncaughtExceptions().until(() -> {
+      await().atMost(5, TimeUnit.MINUTES).catchUncaughtExceptions().untilAsserted(() -> {
         Service service = client.services().withName(APPLICATION_NAME).get();
         Assertions.assertThat(service).isNotNull();
 
@@ -77,7 +77,7 @@ public class MapsIT extends AbstractTestClass {
     vertx = Vertx.vertx();
     int replicaCount = 3;
     clusterMapsHelper.setReplicasAndWait(replicaCount);
-    await().atMost(5, TimeUnit.MINUTES).until(() -> {
+    await().atMost(5, TimeUnit.MINUTES).untilAsserted(() -> {
       for (int i = 0; i < replicaCount; i++) {
         get(Kube.urlForRoute(client.routes().withName(APPLICATION_NAME).get(), "/health"))
           .then().assertThat().statusCode(200);
@@ -101,9 +101,7 @@ public class MapsIT extends AbstractTestClass {
       String value = getValue(i);
       URL url = Kube.urlForRoute(client.routes().withName(APPLICATION_NAME).get(), "/maps/" + testName.getMethodName() + "/" + key);
       httpClient.putAbs(url.toString())
-        .handler(resp -> {
-          latch.countDown();
-        })
+        .handler(resp -> latch.countDown())
         .exceptionHandler(t -> {
           t.printStackTrace();
           latch.countDown();

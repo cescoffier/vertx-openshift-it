@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.SortedMap;
 import java.util.concurrent.TimeUnit;
 
-import static com.jayway.awaitility.Awaitility.*;
+import static org.awaitility.Awaitility.*;
 import static io.restassured.RestAssured.*;
 import static io.vertx.it.openshift.utils.Ensure.*;
 import static java.util.Collections.*;
@@ -44,7 +44,7 @@ public class AbstractTestClass {
 
     deployAndAwaitStart(otherDeployments);
     await(String.format("the route is accessible at %s%s .", RestAssured.baseURI, pathSuffix))
-      .atMost(3, TimeUnit.MINUTES)
+      .atMost(10, TimeUnit.MINUTES)
       .catchUncaughtExceptions()
       .until(() -> get(pathSuffix).statusCode() <= 204);
   }
