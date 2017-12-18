@@ -20,7 +20,7 @@
     <main.class>io.vertx.core.Launcher</main.class>
     <fabric8.skip>false</fabric8.skip>
 
-    <vertx.version>3.4.2</vertx.version>
+    <vertx.version>3.5.0</vertx.version>
     <!-- version aligned with vert.x core -->
     <slf4j.version>1.7.25</slf4j.version>
 
@@ -49,7 +49,7 @@
     <fabric8.maven.plugin.version>3.5.30</fabric8.maven.plugin.version>
 
     <!-- muse use version from https://maven.repository.redhat.com/ga/io/fabric8/kubernetes-api/ -->
-    <kubernetes.api.version>2.2.192</kubernetes.api.version>
+    <kubernetes.api.version>3.0.8</kubernetes.api.version>
 
     <!-- Docker configuration -->
     <docker.group.name>vertx-openshift-it</docker.group.name>
@@ -81,16 +81,6 @@
         <version>${vertx.version}</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>io.fabric8</groupId>
-        <artifactId>kubernetes-client</artifactId>
-        <version>${kubernetes.client.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.fabric8</groupId>
-        <artifactId>openshift-client</artifactId>
-        <version>${kubernetes.client.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

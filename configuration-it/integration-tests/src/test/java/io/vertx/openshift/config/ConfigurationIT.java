@@ -259,7 +259,8 @@ public class ConfigurationIT extends AbstractTestClass {
     } else {
       throw new IllegalStateException("Application deployment config not found");
     }
-    Route route = deploymentAssistant.client().routes().inNamespace(deploymentAssistant.project()).withName(appName).get();
+
+    Route route = deploymentAssistant.getRoute(appName);
     assertThat(route).isNotNull();
     return "http://" + route.getSpec().getHost();
   }
