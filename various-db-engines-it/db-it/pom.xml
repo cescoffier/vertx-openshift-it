@@ -33,9 +33,9 @@
   </dependencies>
 
   <profiles>
-    <!-- external-db-tests profile expects a db connection and oracle jdbc artifact to be provided.
-         This profile is active by default. -->
     <profile>
+      <!-- external-db-tests profile expects a db connection and oracle jdbc artifact to be provided.
+      This profile is active by default. -->
       <id>external-db-tests</id>
       <properties>
         <externalDb>true</externalDb>
