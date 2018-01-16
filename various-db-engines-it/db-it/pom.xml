@@ -34,6 +34,8 @@
 
   <profiles>
     <profile>
+      <!-- external-db-tests profile expects a db connection and oracle jdbc artifact to be provided.
+      This profile is active by default. -->
       <id>external-db-tests</id>
       <properties>
         <externalDb>true</externalDb>
@@ -69,10 +71,17 @@
     </profile>
 
     <profile>
+      <!-- internal-db-tests profile also deploys relevant db images (postgresql & mysql) on OpenShift. Oracle db image
+      is not available, that's why this module is excluded from the build. -->
       <id>internal-db-tests</id>
       <properties>
         <externalDb>false</externalDb>
       </properties>
+      <!-- Only build modules for which we have OpenShift db images -->
+      <modules>
+        <module>mysql-it</module>
+        <module>postgresql-it</module>
+      </modules>
       <build>
         <plugins>
           <plugin>
