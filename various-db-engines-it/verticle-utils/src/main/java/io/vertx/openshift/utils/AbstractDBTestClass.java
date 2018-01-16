@@ -68,6 +68,6 @@ public class AbstractDBTestClass extends AbstractTestClass {
   }
 
   private RequestSpecification setRequestJSONBody(JSONObject body) {
-    return given().content(ContentType.JSON).body(body.toString());
+    return given().body(ContentType.JSON).body(body.toString());
   }
 }
