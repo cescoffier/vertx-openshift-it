@@ -1,5 +1,4 @@
 spec:
-  replicas: 3
   strategy:
     type: Rolling
     rollingParams:

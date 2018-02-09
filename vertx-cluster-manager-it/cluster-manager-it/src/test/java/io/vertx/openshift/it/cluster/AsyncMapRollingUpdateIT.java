@@ -95,12 +95,12 @@ public class AsyncMapRollingUpdateIT extends AbstractTestClass {
   @Test
   public void testAsyncMapDataNotLost() throws Exception {
     int loops = 30;
-    String mapKey = testName.getMethodName();
 
     HttpClient httpClient = vertx.createHttpClient();
     CountDownLatch putLatch = new CountDownLatch(loops);
     for (int i = 0; i < loops; i++) {
       String mapName = "map-" + i % 2;
+      String mapKey = testName.getMethodName() + "-" + i;
       URL url = Kube.urlForRoute(client.routes().withName(APPLICATION_NAME).get(), "/stuff/" + mapName + "/" + mapKey);
       httpClient.putAbs(url.toString())
         .handler(resp -> putLatch.countDown())
@@ -110,13 +110,15 @@ public class AsyncMapRollingUpdateIT extends AbstractTestClass {
     }
     putLatch.await(1, TimeUnit.MINUTES);
 
-    // FIXME trigger deploy
+    OC.execute("rollout", "latest", APPLICATION_NAME);
+    OC.execute("rollout", "status", "dc/" + APPLICATION_NAME); // blocks until done
 
     for (int i = 0; i < loops; i++) {
       String mapName = "map-" + i % 2;
+      String mapKey = testName.getMethodName() + "-" + i;
       URL url = Kube.urlForRoute(client.routes().withName(APPLICATION_NAME).get(), "/stuff/" + mapName + "/" + mapKey);
       get(url)
-        .then().assertThat().statusCode(200).body("index", equalTo(String.valueOf(i)));
+        .then().assertThat().statusCode(200).body("index", equalTo(i));
     }
   }
 }
