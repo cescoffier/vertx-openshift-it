@@ -14,7 +14,6 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>cluster-ru-asyncmap</module>
     <module>cluster-ru-eventbus-sender</module>
     <module>cluster-ru-eventbus-receiver</module>
   </modules>

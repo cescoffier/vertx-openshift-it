@@ -35,8 +35,7 @@ import static org.hamcrest.CoreMatchers.*;
  */
 public class AsyncMapRollingUpdateIT extends AbstractTestClass {
 
-  private static final String APPLICATION_GROUP = "cluster-rolling-update";
-  private static final String APPLICATION_NAME = "cluster-ru-asyncmap";
+  private static final String APPLICATION_NAME = "cluster-rolling-update-asyncmap";
 
   private static Route route;
   private static OpenShiftHelper clusterRuAsyncMapHelper;
@@ -50,7 +49,7 @@ public class AsyncMapRollingUpdateIT extends AbstractTestClass {
     initializeServiceAccount();
 
     SortedMap<String, File> dependencies = new TreeMap<>();
-    dependencies.put("A-RUAsyncMap", new File("../" + APPLICATION_GROUP + "/" + APPLICATION_NAME + "/target/classes/META-INF/fabric8/openshift.yml"));
+    dependencies.put("A-RUAsyncMap", new File("../" + APPLICATION_NAME + "/target/classes/META-INF/fabric8/openshift.yml"));
     dependencies.forEach((name, template) ->
       Ensure.ensureThat(String.format("template file %s can be deployed", template), () -> deploymentAssistant.deploy(name, template))
     );
