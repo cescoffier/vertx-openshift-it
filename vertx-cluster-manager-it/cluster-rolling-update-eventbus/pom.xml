@@ -10,7 +10,7 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>cluster-rolling-update</artifactId>
+  <artifactId>cluster-rolling-update-eventbus</artifactId>
   <packaging>pom</packaging>
 
   <modules>

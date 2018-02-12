@@ -21,7 +21,7 @@
     <module>cluster-event-bus</module>
     <module>cluster-delivery-to-failing-pod</module>
     <module>cluster-rolling-update-asyncmap</module>
-    <module>cluster-rolling-update</module>
+    <module>cluster-rolling-update-eventbus</module>
     <module>cluster-manager-it</module>
   </modules>
 

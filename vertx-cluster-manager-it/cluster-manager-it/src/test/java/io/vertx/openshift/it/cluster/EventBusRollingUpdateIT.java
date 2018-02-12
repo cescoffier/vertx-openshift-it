@@ -32,7 +32,7 @@ import static org.hamcrest.Matchers.*;
  */
 public class EventBusRollingUpdateIT extends AbstractTestClass {
 
-  private static final String APPLICATION_GROUP = "cluster-rolling-update";
+  private static final String APPLICATION_GROUP = "cluster-rolling-update-eventbus";
   private static final String SENDER_APPLICATION_NAME = "cluster-ru-eventbus-sender";
   private static final String RECEIVER_APPLICATION_NAME = "cluster-ru-eventbus-receiver";
 

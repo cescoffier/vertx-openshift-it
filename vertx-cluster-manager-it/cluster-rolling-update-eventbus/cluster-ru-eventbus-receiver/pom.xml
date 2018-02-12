@@ -6,16 +6,16 @@
 
   <parent>
     <groupId>io.vertx.openshift</groupId>
-    <artifactId>cluster-rolling-update</artifactId>
+    <artifactId>cluster-rolling-update-eventbus</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>cluster-ru-eventbus-sender</artifactId>
+  <artifactId>cluster-ru-eventbus-receiver</artifactId>
 
   <properties>
     <fabric8.skip>false</fabric8.skip>
     <vertx.health.path>/health</vertx.health.path>
-    <vertx.verticle>io.vertx.openshift.it.cluster.ru.EventBusSenderVerticle</vertx.verticle>
+    <vertx.verticle>io.vertx.openshift.it.cluster.ru.EventBusReceiverVerticle</vertx.verticle>
     <ispn.cluster.labels>ispn-cluster=${project.parent.artifactId}</ispn.cluster.labels>
   </properties>
 
