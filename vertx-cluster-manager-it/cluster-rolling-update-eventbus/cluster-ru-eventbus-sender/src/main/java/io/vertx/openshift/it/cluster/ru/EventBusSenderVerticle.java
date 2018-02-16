@@ -20,7 +20,7 @@ import io.vertx.ext.web.handler.ResponseContentTypeHandler;
 import io.vertx.ext.web.handler.TimeoutHandler;
 import org.infinispan.health.Health;
 import org.infinispan.health.HealthStatus;
-import org.infinispan.manager.DefaultCacheManager;
+import org.infinispan.manager.EmbeddedCacheManager;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -119,7 +119,7 @@ public class EventBusSenderVerticle extends AbstractVerticle {
       .register("ispn-cluster-status", future -> {
         VertxInternal vertxInternal = (VertxInternal) vertx;
         InfinispanClusterManager clusterManager = (InfinispanClusterManager) vertxInternal.getClusterManager();
-        DefaultCacheManager cacheManager = (DefaultCacheManager) clusterManager.getCacheContainer();
+        EmbeddedCacheManager cacheManager = (EmbeddedCacheManager) clusterManager.getCacheContainer();
         Health health = cacheManager.getHealth();
         HealthStatus healthStatus = health.getClusterHealth().getHealthStatus();
         Status status = new Status()

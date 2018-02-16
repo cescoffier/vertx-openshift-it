@@ -20,7 +20,7 @@ import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.ResponseContentTypeHandler;
 import org.infinispan.health.Health;
 import org.infinispan.health.HealthStatus;
-import org.infinispan.manager.DefaultCacheManager;
+import org.infinispan.manager.EmbeddedCacheManager;
 
 /**
  * @author Thomas Segismont
@@ -121,7 +121,7 @@ public class AsyncMapVerticle extends AbstractVerticle {
       .register("ispn-cluster-status", future -> {
         VertxInternal vertxInternal = (VertxInternal) vertx;
         InfinispanClusterManager clusterManager = (InfinispanClusterManager) vertxInternal.getClusterManager();
-        DefaultCacheManager cacheManager = (DefaultCacheManager) clusterManager.getCacheContainer();
+        EmbeddedCacheManager cacheManager = (EmbeddedCacheManager) clusterManager.getCacheContainer();
         Health health = cacheManager.getHealth();
         HealthStatus healthStatus = health.getClusterHealth().getHealthStatus();
         Status status = new Status()
