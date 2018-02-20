@@ -51,6 +51,7 @@ public class Http2IT extends AbstractTestClass {
    */
   @Test
   public void testHttp2_H2() throws Exception {
+    System.out.println("Running a TLS passthrough HTTP/2 test");
     Assertions.assertThat(client).deployments().pods().isPodReadyForPeriod();
     AtomicReference<String> response = new AtomicReference<>();
 
@@ -85,6 +86,7 @@ public class Http2IT extends AbstractTestClass {
    */
   @Test
   public void testHttp2_Internal_H2C() throws Exception {
+    System.out.println("Running internal H2C test - HTTP/2...");
     Assertions.assertThat(client).deployments().pods().isPodReadyForPeriod();
 
     AtomicReference<String> response = new AtomicReference<>();
@@ -106,7 +108,9 @@ public class Http2IT extends AbstractTestClass {
     await().atMost(1, TimeUnit.MINUTES).untilAtomic(response, is(notNullValue()));
 
     assertThat(response.get())
-      .startsWith("Aloha HTTP_2");
+      .contains("version = HTTP_2")
+      .contains("Aloha from vert.x!")
+      .contains("HTTP_1_1");
   }
 
   /**
@@ -143,6 +147,7 @@ public class Http2IT extends AbstractTestClass {
 
   @Test
   public void testGRPC() throws Exception {
+    System.out.println("Running GRPC test...");
     Assertions.assertThat(client).deployments().pods().isPodReadyForPeriod();
 
 
@@ -152,12 +157,10 @@ public class Http2IT extends AbstractTestClass {
 
 
     ManagedChannel channel = VertxChannelBuilder.forAddress(vertx, host, 443)
-      .useSsl(options -> {
-          options
-            .setSsl(true)
-            .setUseAlpn(true)
-            .setTrustAll(true);
-        }
+      .useSsl(options -> options
+        .setSsl(true)
+        .setUseAlpn(true)
+        .setTrustAll(true)
       )
       .build();
 

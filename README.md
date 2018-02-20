@@ -67,6 +67,10 @@ Tests for readiness/liveness of the pod in various scenarios (pod startup, pod r
 Tests for Vert.x integration of HTTP2 features
 
 
+## Circuit Breaker
+Integration tests for Vert.x Circuit Breaker module. The tests are taken from [Vert.x Circuit Breaker Booster](https://github.com/openshiftio-vertx-boosters/vertx-circuit-breaker-booster)
+
+
 ## Cluster Manager
 Tests for Vert.x clustering - integration with Infinispan, usage of clustered event bus, ..
 
