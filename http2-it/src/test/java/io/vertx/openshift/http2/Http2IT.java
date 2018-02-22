@@ -51,7 +51,6 @@ public class Http2IT extends AbstractTestClass {
    */
   @Test
   public void testHttp2_H2() throws Exception {
-    System.out.println("Running a TLS passthrough HTTP/2 test");
     Assertions.assertThat(client).deployments().pods().isPodReadyForPeriod();
     AtomicReference<String> response = new AtomicReference<>();
 
@@ -86,7 +85,6 @@ public class Http2IT extends AbstractTestClass {
    */
   @Test
   public void testHttp2_Internal_H2C() throws Exception {
-    System.out.println("Running internal H2C test - HTTP/2...");
     Assertions.assertThat(client).deployments().pods().isPodReadyForPeriod();
 
     AtomicReference<String> response = new AtomicReference<>();
@@ -147,14 +145,11 @@ public class Http2IT extends AbstractTestClass {
 
   @Test
   public void testGRPC() throws Exception {
-    System.out.println("Running GRPC test...");
     Assertions.assertThat(client).deployments().pods().isPodReadyForPeriod();
-
 
     String host = securedUrlForRoute(client.routes().withName("hello").get()).getHost();
     System.out.println("Host: " + host);
     System.out.println("Port: " + 443);
-
 
     ManagedChannel channel = VertxChannelBuilder.forAddress(vertx, host, 443)
       .useSsl(options -> options
