@@ -106,7 +106,9 @@ public class Http2IT extends AbstractTestClass {
     await().atMost(1, TimeUnit.MINUTES).untilAtomic(response, is(notNullValue()));
 
     assertThat(response.get())
-      .startsWith("Aloha HTTP_2");
+      .contains("version = HTTP_2")
+      .contains("Aloha from vert.x!")
+      .contains("HTTP_1_1");
   }
 
   /**
@@ -145,19 +147,15 @@ public class Http2IT extends AbstractTestClass {
   public void testGRPC() throws Exception {
     Assertions.assertThat(client).deployments().pods().isPodReadyForPeriod();
 
-
     String host = securedUrlForRoute(client.routes().withName("hello").get()).getHost();
     System.out.println("Host: " + host);
     System.out.println("Port: " + 443);
 
-
     ManagedChannel channel = VertxChannelBuilder.forAddress(vertx, host, 443)
-      .useSsl(options -> {
-          options
-            .setSsl(true)
-            .setUseAlpn(true)
-            .setTrustAll(true);
-        }
+      .useSsl(options -> options
+        .setSsl(true)
+        .setUseAlpn(true)
+        .setTrustAll(true)
       )
       .build();
 
