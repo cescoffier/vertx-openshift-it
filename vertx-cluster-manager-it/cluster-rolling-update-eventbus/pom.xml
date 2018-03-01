@@ -6,23 +6,16 @@
 
   <parent>
     <groupId>io.vertx.openshift</groupId>
-    <artifactId>vertx-openshift-it</artifactId>
+    <artifactId>vertx-cluster-manager-it</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>vertx-cluster-manager-it</artifactId>
+  <artifactId>cluster-rolling-update-eventbus</artifactId>
   <packaging>pom</packaging>
 
   <modules>
-    <module>cluster-counters</module>
-    <module>cluster-maps</module>
-    <module>cluster-locks</module>
-    <module>cluster-web-session</module>
-    <module>cluster-event-bus</module>
-    <module>cluster-delivery-to-failing-pod</module>
-    <module>cluster-rolling-update-asyncmap</module>
-    <module>cluster-rolling-update-eventbus</module>
-    <module>cluster-manager-it</module>
+    <module>cluster-ru-eventbus-sender</module>
+    <module>cluster-ru-eventbus-receiver</module>
   </modules>
 
   <properties>
