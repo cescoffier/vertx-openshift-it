@@ -16,6 +16,7 @@
   <properties>
     <example.foo>foo</example.foo>
     <example.bar>bar</example.bar>
+    <fabric8.skip>true</fabric8.skip>
   </properties>
 
   <modules>

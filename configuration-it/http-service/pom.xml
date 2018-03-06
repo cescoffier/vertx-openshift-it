@@ -15,6 +15,7 @@
   <properties>
     <vertx.verticle>io.vertx.openshift.config.HttpConfigDeployment</vertx.verticle>
     <vertx.health.path>/conf</vertx.health.path>
+    <fabric8.skip>false</fabric8.skip>
   </properties>
 
   <build>

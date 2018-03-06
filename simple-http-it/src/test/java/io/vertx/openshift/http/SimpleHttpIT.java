@@ -13,6 +13,8 @@ import static io.vertx.it.openshift.utils.Ensure.ensureThat;
 import static io.vertx.it.openshift.utils.Kube.setReplicasAndWait;
 import static io.vertx.it.openshift.utils.Kube.sleep;
 
+import static okhttp3.ws.WebSocket.TEXT;
+
 import okio.ByteString;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -29,12 +31,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.vertx.it.openshift.utils.AbstractTestClass;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.WebSocket;
-import okhttp3.WebSocketListener;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import okhttp3.ws.WebSocket;
+import okhttp3.ws.WebSocketCall;
+import okhttp3.ws.WebSocketListener;
+import okio.Buffer;
 
 
 /**
@@ -120,39 +127,44 @@ public class SimpleHttpIT extends AbstractTestClass {
         .url(RestAssured.baseURI + "/ws")
         .build();
 
+      AtomicBoolean close = new AtomicBoolean();
       List<String> messages = new ArrayList<>();
 
-      WebSocketListener webSocketListener = new WebSocketListener() {
-        @Override
-        public void onOpen(WebSocket webSocket, okhttp3.Response response) {
-          webSocket.send("Hello...");
-          webSocket.send("...World!");
-          webSocket.close(1000, "Goodbye, World!");
-        }
+      WebSocketCall.create(client, request).enqueue(
+        new WebSocketListener() {
+          @Override
+          public void onOpen(WebSocket webSocket, okhttp3.Response response) {
+            try {
+              webSocket.sendMessage(RequestBody.create(TEXT, "Hello..."));
+              webSocket.sendMessage(RequestBody.create(TEXT, "...World!"));
+              webSocket.close(1000, "Goodbye, World!");
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
+          }
 
-        @Override
-        public void onFailure(WebSocket webSocket, Throwable t, okhttp3.Response response) {
-          System.err.println("An error has occured: " + t.getMessage());
-          t.printStackTrace();
-        }
+          @Override
+          public void onFailure(IOException e, okhttp3.Response response) {
+            System.err.println("An error has occured: " + e.getMessage());
+            e.printStackTrace();
+          }
 
-        @Override
-        public void onMessage(WebSocket webSocket, String text) {
-          messages.add(text);
-        }
+          @Override
+          public void onMessage(ResponseBody responseBody) throws IOException {
+            messages.add(responseBody.string());
+          }
 
-        @Override
-        public void onMessage(WebSocket webSocket, ByteString bytes) {
-          messages.add(bytes.utf8());
-        }
+          @Override
+          public void onPong(Buffer buffer) {
+            messages.add(buffer.readByteString().utf8());
+          }
 
-        @Override
-        public void onClosing(WebSocket webSocket, int code, String reason) {
-          webSocket.close(1000, null);
+          @Override
+          public void onClose(int i, String s) {
+            close.set(true);
+          }
         }
-      };
-
-      client.newWebSocket(request, webSocketListener);
+      );
 
       await().until(() -> messages.size() >= 2);
       Assertions.assertThat(messages).hasSize(2)

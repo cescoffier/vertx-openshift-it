@@ -153,8 +153,4 @@ public class OpenShiftTestAssistant {
           .collect(Collectors.toList()).size() >= 1;
     });
   }
-
-  public Route getRoute(String appName) {
-    return client.routes().inNamespace(project).withName(appName).get();
-  }
 }

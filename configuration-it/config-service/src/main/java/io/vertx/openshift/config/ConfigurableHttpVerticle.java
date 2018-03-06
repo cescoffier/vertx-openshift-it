@@ -28,7 +28,8 @@ public class ConfigurableHttpVerticle extends AbstractVerticle {
       if (res.failed()) {
         throw new RuntimeException("Unable to retrieve the Config", res.cause());
       } else {
-        configByListen = configByStream = (res.result() != null) ? res.result() : new JsonObject();
+        configByListen = (res.result() != null) ? res.result() : new JsonObject();
+        configByStream = (res.result() != null) ? res.result() : new JsonObject();
 
         Router router = Router.router(vertx);
         router.get("/all").handler(this::printAll);
