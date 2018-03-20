@@ -71,6 +71,7 @@
     <module>vertx-cluster-manager-it</module>
     <module>various-db-engines-it</module>
     <module>vertx-circuit-breaker</module>
+    <module>vertx-mqtt-it</module>
   </modules>
 
   <dependencyManagement>
