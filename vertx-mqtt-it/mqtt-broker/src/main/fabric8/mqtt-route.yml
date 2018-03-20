@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Route
 metadata:
-  name: mqtt-service-route
+  name: mqtt-route
 spec:
   port:
     targetPort: 1883

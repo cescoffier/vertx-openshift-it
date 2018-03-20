@@ -1,8 +1,10 @@
-package io.vertx.openshift.mqtt;
+package io.vertx.openshift.mqtt.subscriber;
 
 import io.netty.handler.codec.mqtt.MqttQoS;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.mqtt.MqttClient;
 import io.vertx.mqtt.MqttClientOptions;
 
@@ -55,7 +57,18 @@ public class MqttSubscriber extends AbstractVerticle {
         System.err.println("An error has occured: " + s.cause().getMessage());
       }
     });
+
+    // Just for healthcheck purposes
+    Router router = Router.router(vertx);
+    router.get("/").handler(this::healthcheck);
+
+    vertx
+      .createHttpServer()
+      .requestHandler(router::accept)
+      .listen(8080);
   }
 
-
+  private void healthcheck(RoutingContext rc) {
+    rc.response().end("Hello healthcheck!");
+  }
 }

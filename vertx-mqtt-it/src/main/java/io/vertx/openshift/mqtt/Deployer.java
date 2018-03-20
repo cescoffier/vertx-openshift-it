@@ -10,9 +10,6 @@ import io.vertx.ext.web.RoutingContext;
 public class Deployer extends AbstractVerticle {
 
   public void start() {
-    vertx.deployVerticle(MqttBroker.class.getName());
-    vertx.deployVerticle(MqttSubscriber.class.getName());
-
     Router router = Router.router(vertx);
     router.get("/").handler(this::healthcheck);
 

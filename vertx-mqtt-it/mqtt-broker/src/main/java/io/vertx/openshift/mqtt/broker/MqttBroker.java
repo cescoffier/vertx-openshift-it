@@ -1,9 +1,11 @@
-package io.vertx.openshift.mqtt;
+package io.vertx.openshift.mqtt.broker;
 
 import io.netty.handler.codec.mqtt.MqttQoS;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.PemKeyCertOptions;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.mqtt.MqttEndpoint;
 import io.vertx.mqtt.MqttServer;
 import io.vertx.mqtt.MqttServerOptions;
@@ -36,6 +38,15 @@ public class MqttBroker extends AbstractVerticle {
         start.cause().printStackTrace();
       }
     });
+
+    //Just for healthcheck purposes
+    Router router = Router.router(vertx);
+    router.get("/").handler(this::healthcheck);
+
+    vertx
+      .createHttpServer()
+      .requestHandler(router::accept)
+      .listen(8080);
   }
 
   private void configureEndpoint(MqttEndpoint endpoint) {
@@ -112,5 +123,9 @@ public class MqttBroker extends AbstractVerticle {
         endpoint.publishReceived(message.messageId());
       }
     }).publishReleaseHandler(endpoint::publishComplete);
+  }
+
+  private void healthcheck(RoutingContext rc) {
+    rc.response().end("Hello healthcheck!");
   }
 }
