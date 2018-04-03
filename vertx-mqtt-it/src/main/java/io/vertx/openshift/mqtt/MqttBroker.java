@@ -1,4 +1,4 @@
-package io.vertx.openshift.mqtt.broker;
+package io.vertx.openshift.mqtt;
 
 import io.netty.handler.codec.mqtt.MqttQoS;
 import io.vertx.core.AbstractVerticle;
@@ -10,7 +10,6 @@ import io.vertx.mqtt.MqttEndpoint;
 import io.vertx.mqtt.MqttServer;
 import io.vertx.mqtt.MqttServerOptions;
 import io.vertx.mqtt.MqttTopicSubscription;
-import io.vertx.mqtt.messages.MqttSubscribeMessage;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -23,18 +22,29 @@ public class MqttBroker extends AbstractVerticle {
 
   @Override
   public void start() {
-    MqttServerOptions options = new MqttServerOptions();
-//      .setKeyCertOptions(new PemKeyCertOptions()
-//        .setKeyPath("private.pem")
-//        .setCertPath("public.pem"))
-//      .setSsl(true);
+    MqttServerOptions options = new MqttServerOptions()
+      .setKeyCertOptions(new PemKeyCertOptions()
+        .setKeyPath("private.pem")
+        .setCertPath("public.pem"))
+      .setSsl(true)
+      .setPort(1885);
 
-    MqttServer mqttServer = MqttServer.create(vertx, options);
-    mqttServer.endpointHandler(this::configureEndpoint).listen(start -> {
+    MqttServer mqttServer = MqttServer.create(vertx, options)
+      .endpointHandler(this::configureEndpoint).listen(start -> {
+        if (start.succeeded()) {
+          System.out.println("MQTT secured server is listening on port " + start.result().actualPort());
+        } else {
+          System.out.println("Error on starting the secured server");
+          start.cause().printStackTrace();
+        }
+      });
+
+    MqttServer.create(vertx)
+      .endpointHandler(this::configureEndpoint).listen(start -> {
       if (start.succeeded()) {
-        System.out.println("MQTT server is listening on port " + start.result().actualPort());
+        System.out.println("MQTT insecure server is listening on port " + start.result().actualPort());
       } else {
-        System.out.println("Error on starting the server");
+        System.out.println("Error on starting the insecure server");
         start.cause().printStackTrace();
       }
     });
@@ -67,17 +77,16 @@ public class MqttBroker extends AbstractVerticle {
 
     endpoint.accept(true);
 
-    endpoint.disconnectHandler(dc -> System.out.println("Received disconnect from client"));
-
     configureSubscribeHandler(endpoint);
 
     configureUnsubscribeHandler(endpoint);
 
     configurePublishHandler(endpoint);
 
-    endpoint.pingHandler(v -> System.out.println("Ping received from client"));
-
-    endpoint.closeHandler(v -> System.out.println("MQTT Server closed"));
+    endpoint
+      .disconnectHandler(dc -> System.out.println("Received disconnect from client"))
+      .pingHandler(v -> System.out.println("Ping received from client"))
+      .closeHandler(v -> System.out.println("MQTT Server closed"));
   }
 
   private void configureSubscribeHandler(MqttEndpoint endpoint) {

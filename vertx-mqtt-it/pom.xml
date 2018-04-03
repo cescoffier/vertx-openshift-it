@@ -11,21 +11,22 @@
   </parent>
 
   <artifactId>vertx-mqtt-it</artifactId>
-  <packaging>pom</packaging>
-
-  <modules>
-    <module>mqtt-broker</module>
-    <module>mqtt-subscriber</module>
-  </modules>
 
   <properties>
-    <fabric8.skip>true</fabric8.skip>
+    <vertx.verticle>io.vertx.openshift.mqtt.MqttBroker</vertx.verticle>
+    <vertx.health.port>8080</vertx.health.port>
+    <vertx.health.path>/</vertx.health.path>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-mqtt</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx.openshift</groupId>
+      <artifactId>vertx-it-utils</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 

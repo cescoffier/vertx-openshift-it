@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mqtt-service
+  name: mqtt-secured-service
 spec:
   ports:
   - name: mqtt
-    port: 1883
+    port: 1885
     protocol: TCP
-    targetPort: 1883
+    targetPort: 1885
   selector:
     app:  ${project.artifactId}

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Route
+metadata:
+  name: mqtt-secured-route
+spec:
+  port:
+    targetPort: 1885
+  to:
+    kind: Service
+    name: mqtt-secured-service
+  tls:
+    termination: passthrough
