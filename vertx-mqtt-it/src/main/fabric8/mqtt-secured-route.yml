@@ -4,7 +4,7 @@ metadata:
   name: mqtt-secured-route
 spec:
   port:
-    targetPort: 1885
+    targetPort: 8883
   to:
     kind: Service
     name: mqtt-secured-service

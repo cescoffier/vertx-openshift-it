@@ -27,9 +27,9 @@ public class MqttBroker extends AbstractVerticle {
         .setKeyPath("private.pem")
         .setCertPath("public.pem"))
       .setSsl(true)
-      .setPort(1885);
+      .setPort(8883);
 
-    MqttServer mqttServer = MqttServer.create(vertx, options)
+    MqttServer.create(vertx, options)
       .endpointHandler(this::configureEndpoint).listen(start -> {
         if (start.succeeded()) {
           System.out.println("MQTT secured server is listening on port " + start.result().actualPort());

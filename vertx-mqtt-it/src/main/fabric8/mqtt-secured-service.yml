@@ -5,8 +5,8 @@ metadata:
 spec:
   ports:
   - name: mqtt
-    port: 1885
+    port: 8883
     protocol: TCP
-    targetPort: 1885
+    targetPort: 8883
   selector:
     app:  ${project.artifactId}
