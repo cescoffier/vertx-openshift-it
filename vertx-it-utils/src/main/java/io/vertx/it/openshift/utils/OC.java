@@ -32,10 +32,32 @@ public class OC {
   }
 
   public static String execute(String... args) {
+    return executeWithQuotes(true, args);
+  }
+
+  private static File find() {
+    String path = System.getenv().get("PATH");
+    String[] segments = path.split(File.pathSeparator);
+    for (String s : segments) {
+      File maybe = new File(s, "oc");
+      if (maybe.isFile()) {
+        return maybe;
+      }
+    }
+    throw new IllegalArgumentException("Cannot find `oc` in PATH: " + path);
+  }
+
+  /**
+   * This method will look for the OC exec first, then execute a command constructed from <b>args</b> param.
+   * @param handleQuoting specifies whether to wrap arguments in quotation marks or not.
+   * @param args args from which the command will be constructed
+   * @return output of the executed command, wrapped in single quotation marks.
+   */
+  public static String executeWithQuotes(boolean handleQuoting, String... args) {
     File oc_executable = find();
 
     CommandLine commandLine = new CommandLine(oc_executable);
-    commandLine.addArguments(args);
+    commandLine.addArguments(args, handleQuoting);
 
     DefaultExecutor executor = new DefaultExecutor();
 
@@ -56,18 +78,5 @@ public class OC {
     } catch (IOException e) {
       throw new RuntimeException("Unable to execute " + commandLine.toString(), e);
     }
-
-  }
-
-  private static File find() {
-    String path = System.getenv().get("PATH");
-    String[] segments = path.split(File.pathSeparator);
-    for (String s : segments) {
-      File maybe = new File(s, "oc");
-      if (maybe.isFile()) {
-        return maybe;
-      }
-    }
-    throw new IllegalArgumentException("Cannot find `oc` in PATH: " + path);
   }
 }
