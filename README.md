@@ -34,7 +34,7 @@ Test in module can be executed switching to `$PROJECT` directory and running
 
 
 ## Embedded HTTP
-Check the embedded case. An embedded HTTP server is started is started and tested.
+Check the embedded case. An embedded HTTP server is started and tested.
 
 
 ## Simple HTTP
@@ -89,9 +89,15 @@ These modules are located in the `db-it` parent module. On the same level, there
 which contains some utility classes that are commonly used by the tests.
 
 
+## MQTT
+Integration tests for Vert.x MQTT module. This includes tests for connectivity, topic subscription
+and message publishing. When running the tests, a MQTT broker (server) is deployed in OpenShift
+and a MQTT client is created locally.
+
+
 ## vertx-it-utils
 This module does not contain any tests, but instead provides some abstract test classes,
-OpenshiftTestAssistant class and other utility classes. You need to install this module first (described at the of this page)
+OpenshiftTestAssistant class and other utility classes. You need to install this module first (described at the top of this page)
 in order to be able to run any tests from this test suite. 
 
 
