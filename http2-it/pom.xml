@@ -11,21 +11,23 @@
   </parent>
 
   <artifactId>http2-it</artifactId>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>grpc</module>
+    <module>http2</module>
+  </modules>
 
   <properties>
-    <vertx.verticle>io.vertx.openshift.http2.MainVerticle</vertx.verticle>
-
-    <vertx.health.port>8080</vertx.health.port>
-    <vertx.health.path>/health</vertx.health.path>
-
-    <vertx.grpc.version>1.3.0</vertx.grpc.version>
+    <vertx.grpc.version>1.9.0</vertx.grpc.version>
+    <fabric8.skip>true</fabric8.skip>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>20.0</version>
+      <version>23.0</version>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
