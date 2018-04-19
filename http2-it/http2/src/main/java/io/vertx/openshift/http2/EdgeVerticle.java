@@ -56,7 +56,6 @@ public class EdgeVerticle extends AbstractVerticle {
       )
       .build();
 
-    System.out.println(channel.getState(true));
     GreeterGrpc.GreeterVertxStub stub = GreeterGrpc.newVertxStub(channel);
     HelloRequest request = HelloRequest.newBuilder().setName("EdgeVerticle").build();
     System.out.println(new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + " Sending request...");
@@ -66,7 +65,6 @@ public class EdgeVerticle extends AbstractVerticle {
         System.out.println("Succeeded " + asyncResponse.result().getMessage());
         rc.response().end(asyncResponse.result().getMessage());
       } else {
-        System.out.println("SHIIT this has failed -.-");
         rc.fail(asyncResponse.cause());
       }
     });

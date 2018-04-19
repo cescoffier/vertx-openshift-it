@@ -38,15 +38,18 @@ public class Http2IT extends AbstractTestClass {
 
   private static final String NAME = "aloha";
   private Vertx vertx;
+  private ManagedChannel channel;
 
   @Before
   public void setup() {
     Assertions.assertThat(client).deployments().pods().isPodReadyForPeriod();
     vertx = Vertx.vertx();
+    channel = buildChannel();
   }
 
   @After
   public void tearDown() {
+    channel.shutdown();
     vertx.close();
     System.out.println();
   }
@@ -196,7 +199,7 @@ public class Http2IT extends AbstractTestClass {
    */
   @Test
   public void testSimpleGRPC() {
-    GreeterGrpc.GreeterVertxStub stub = buildStub();
+    GreeterGrpc.GreeterVertxStub stub = GreeterGrpc.newVertxStub(channel);
     HelloRequest request = HelloRequest.newBuilder().setName("OpenShift").build();
     AtomicReference<String> result = new AtomicReference<>();
 
@@ -220,7 +223,7 @@ public class Http2IT extends AbstractTestClass {
    */
   @Test
   public void testServerSideStreamingGRPC() {
-    GreeterGrpc.GreeterVertxStub stub = buildStub();
+    GreeterGrpc.GreeterVertxStub stub = GreeterGrpc.newVertxStub(channel);
     List<String> names = Lists.newArrayList("Vert.x", "running on", "OpenShift");
     StreamRequest request = StreamRequest.newBuilder()
       .addAllNames(names)
@@ -249,7 +252,7 @@ public class Http2IT extends AbstractTestClass {
    */
   @Test
   public void testClientSideStreamingGRPC() {
-    GreeterGrpc.GreeterVertxStub stub = buildStub();
+    GreeterGrpc.GreeterVertxStub stub = GreeterGrpc.newVertxStub(channel);
     List<HelloRequest> requests = new ArrayList<>();
     requests.add(HelloRequest.newBuilder().setName("reactive").build());
     requests.add(HelloRequest.newBuilder().setName("rocks").build());
@@ -276,7 +279,7 @@ public class Http2IT extends AbstractTestClass {
    */
   @Test
   public void testBidirectionalFullDuplexStreamingGRPC() {
-    GreeterGrpc.GreeterVertxStub stub = buildStub();
+    GreeterGrpc.GreeterVertxStub stub = GreeterGrpc.newVertxStub(channel);
     List<HelloRequest> requests = new ArrayList<>();
     requests.add(HelloRequest.newBuilder().setName("communication").build());
     requests.add(HelloRequest.newBuilder().setName("satisfaction").build());
@@ -284,7 +287,7 @@ public class Http2IT extends AbstractTestClass {
     AtomicReference<List<String>> result = new AtomicReference<>(new ArrayList<>());
 
     ensureThat("we can make a bidirectional full-duplex gRPC.", () -> {
-      stub.sayStreamHelloStreamReply(stream -> {
+      stub.sayHelloFullDuplex(stream -> {
         stream
           .exceptionHandler(Throwable::printStackTrace)
           .handler(item -> {
@@ -303,6 +306,8 @@ public class Http2IT extends AbstractTestClass {
         stream.end();
       });
     });
+
+    channel.shutdown();
   }
 
   /**
@@ -310,7 +315,7 @@ public class Http2IT extends AbstractTestClass {
    */
   @Test
   public void testBidirectionalHalfDuplexStreamingGRPC() {
-    GreeterGrpc.GreeterVertxStub stub = buildStub();
+    GreeterGrpc.GreeterVertxStub stub = GreeterGrpc.newVertxStub(channel);
     List<HelloRequest> requests = new ArrayList<>();
     requests.add(HelloRequest.newBuilder().setName("fun").build());
     requests.add(HelloRequest.newBuilder().setName("testing").build());
@@ -318,7 +323,7 @@ public class Http2IT extends AbstractTestClass {
     AtomicBoolean finished = new AtomicBoolean();
 
     ensureThat("we can make a bidirectional half-duplex gRPC.", () -> {
-      stub.sayStreamHelloStreamReply(stream -> {
+      stub.sayHelloHalfDuplex(stream -> {
         stream
           .exceptionHandler(Throwable::printStackTrace)
           .handler(item -> {
@@ -340,6 +345,8 @@ public class Http2IT extends AbstractTestClass {
         finished.set(true);
       });
     });
+
+    channel.shutdown();
   }
 
   @Test
@@ -348,21 +355,18 @@ public class Http2IT extends AbstractTestClass {
 
   }
 
-  private GreeterGrpc.GreeterVertxStub buildStub() {
+  private ManagedChannel buildChannel() {
     Assertions.assertThat(client).deployments().pods().isPodReadyForPeriod();
 
     String host = securedUrlForRoute(client.routes().withName("hello").get()).getHost();
     System.out.println("Host: " + host);
     System.out.println("Port: " + 443);
 
-    ManagedChannel channel = VertxChannelBuilder.forAddress(vertx, host, 443)
+    return VertxChannelBuilder.forAddress(vertx, host, 443)
       .useSsl(options -> options
         .setSsl(true)
         .setUseAlpn(true)
         .setTrustAll(true)
-      )
-      .build();
-
-    return GreeterGrpc.newVertxStub(channel);
+      ).build();
   }
 }

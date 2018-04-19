@@ -18,7 +18,7 @@ service Greeter {
   // Client-side streaming
   rpc SayStreamHello (stream HelloRequest) returns (StreamReply) {}
 
-  // Bidirectional streaming
+  // Bidirectional streaming - full duplex
   rpc SayHelloFullDuplex (stream HelloRequest) returns (stream HelloReply) {}
 
   // Bidirectional streaming - request buffering
