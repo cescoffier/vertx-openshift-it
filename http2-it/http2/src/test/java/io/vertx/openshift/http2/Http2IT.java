@@ -343,6 +343,9 @@ public class Http2IT extends AbstractTestClass {
     });
   }
 
+  /**
+   * Checks that making an unimplemented gRPC on server-side results in a failure.
+   */
   @Test
   public void testUnimplementedCallGRPC() {
     ensureThat("making an unimplemented gRPC on server-side results in a failure.", () -> {
