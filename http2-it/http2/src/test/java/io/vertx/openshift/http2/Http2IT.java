@@ -3,14 +3,15 @@ package io.vertx.openshift.http2;
 import com.google.common.collect.Lists;
 import io.fabric8.kubernetes.assertions.Assertions;
 import io.grpc.ManagedChannel;
-import io.grpc.examples.helloworld.GreeterGrpc;
-import io.grpc.examples.helloworld.HelloRequest;
-import io.grpc.examples.helloworld.StreamRequest;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpVersion;
 import io.vertx.grpc.VertxChannelBuilder;
 import io.vertx.it.openshift.utils.AbstractTestClass;
+import io.vertx.openshift.grpc.Empty;
+import io.vertx.openshift.grpc.GreeterGrpc;
+import io.vertx.openshift.grpc.HelloRequest;
+import io.vertx.openshift.grpc.StreamRequest;
 import org.junit.*;
 
 import java.io.File;
@@ -22,11 +23,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static io.vertx.it.openshift.utils.Ensure.ensureThat;
-import static org.assertj.core.api.Assertions.fail;
-import static org.awaitility.Awaitility.await;
 import static io.vertx.it.openshift.utils.Kube.securedUrlForRoute;
 import static io.vertx.it.openshift.utils.Kube.urlForRoute;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -39,19 +40,21 @@ public class Http2IT extends AbstractTestClass {
   private static final String NAME = "aloha";
   private Vertx vertx;
   private ManagedChannel channel;
+  private GreeterGrpc.GreeterVertxStub stub;
 
   @Before
   public void setup() {
     Assertions.assertThat(client).deployments().pods().isPodReadyForPeriod();
     vertx = Vertx.vertx();
     channel = buildChannel();
+    stub = GreeterGrpc.newVertxStub(channel);
   }
 
   @After
-  public void tearDown() {
+  public void tearDown() throws InterruptedException {
     channel.shutdown();
+    assertThat(channel.awaitTermination(10, TimeUnit.SECONDS)).isTrue();
     vertx.close();
-    System.out.println();
   }
 
   @BeforeClass
@@ -199,7 +202,6 @@ public class Http2IT extends AbstractTestClass {
    */
   @Test
   public void testSimpleGRPC() {
-    GreeterGrpc.GreeterVertxStub stub = GreeterGrpc.newVertxStub(channel);
     HelloRequest request = HelloRequest.newBuilder().setName("OpenShift").build();
     AtomicReference<String> result = new AtomicReference<>();
 
@@ -223,7 +225,6 @@ public class Http2IT extends AbstractTestClass {
    */
   @Test
   public void testServerSideStreamingGRPC() {
-    GreeterGrpc.GreeterVertxStub stub = GreeterGrpc.newVertxStub(channel);
     List<String> names = Lists.newArrayList("Vert.x", "running on", "OpenShift");
     StreamRequest request = StreamRequest.newBuilder()
       .addAllNames(names)
@@ -252,17 +253,16 @@ public class Http2IT extends AbstractTestClass {
    */
   @Test
   public void testClientSideStreamingGRPC() {
-    GreeterGrpc.GreeterVertxStub stub = GreeterGrpc.newVertxStub(channel);
     List<HelloRequest> requests = new ArrayList<>();
     requests.add(HelloRequest.newBuilder().setName("reactive").build());
     requests.add(HelloRequest.newBuilder().setName("rocks").build());
 
     ensureThat("we can make a client-side streaming gRPC.", () -> {
       stub.sayStreamHello(stream -> {
-        stream.exceptionHandler(Throwable::printStackTrace);
         stream.handler(res -> {
-          if (res.failed()) fail("Assertion failed", res.cause());
-          else {
+          if (res.failed()) {
+            fail("Assertion failed", res.cause());
+          } else {
             assertThat(res.result()).isNotNull();
             assertThat(res.result().getMessagesList()).containsOnly("Streamed reactive", "Streamed rocks");
           }
@@ -279,7 +279,6 @@ public class Http2IT extends AbstractTestClass {
    */
   @Test
   public void testBidirectionalFullDuplexStreamingGRPC() {
-    GreeterGrpc.GreeterVertxStub stub = GreeterGrpc.newVertxStub(channel);
     List<HelloRequest> requests = new ArrayList<>();
     requests.add(HelloRequest.newBuilder().setName("communication").build());
     requests.add(HelloRequest.newBuilder().setName("satisfaction").build());
@@ -298,7 +297,7 @@ public class Http2IT extends AbstractTestClass {
             result.compareAndSet(vals, newVals);
           })
           .endHandler(v -> {
-            assertThat(result.get()).containsOnly("Full duplex communication", "Full duplex satisfaction", "Full duplex power");
+            assertThat(result.get()).containsOnly("Full-duplex communication", "Full-duplex satisfaction", "Full-duplex power");
           });
 
         requests.forEach(stream::write);
@@ -306,8 +305,6 @@ public class Http2IT extends AbstractTestClass {
         stream.end();
       });
     });
-
-    channel.shutdown();
   }
 
   /**
@@ -315,7 +312,6 @@ public class Http2IT extends AbstractTestClass {
    */
   @Test
   public void testBidirectionalHalfDuplexStreamingGRPC() {
-    GreeterGrpc.GreeterVertxStub stub = GreeterGrpc.newVertxStub(channel);
     List<HelloRequest> requests = new ArrayList<>();
     requests.add(HelloRequest.newBuilder().setName("fun").build());
     requests.add(HelloRequest.newBuilder().setName("testing").build());
@@ -345,22 +341,25 @@ public class Http2IT extends AbstractTestClass {
         finished.set(true);
       });
     });
-
-    channel.shutdown();
   }
 
   @Test
-  @Ignore("To be implemented...")
   public void testUnimplementedCallGRPC() {
-
+    ensureThat("making an unimplemented gRPC on server-side results in a failure.", () -> {
+      stub.sayUnimplemented(Empty.newBuilder().build(), response -> {
+        if (response.succeeded()) {
+          fail("Should not succeed, there is no implementation");
+        } else {
+          assertThat(response.cause()).isNotNull();
+        }
+      });
+    });
   }
 
   private ManagedChannel buildChannel() {
     Assertions.assertThat(client).deployments().pods().isPodReadyForPeriod();
 
     String host = securedUrlForRoute(client.routes().withName("hello").get()).getHost();
-    System.out.println("Host: " + host);
-    System.out.println("Port: " + 443);
 
     return VertxChannelBuilder.forAddress(vertx, host, 443)
       .useSsl(options -> options

@@ -1,8 +1,6 @@
 package io.vertx.openshift.http2;
 
 import io.grpc.ManagedChannel;
-import io.grpc.examples.helloworld.GreeterGrpc;
-import io.grpc.examples.helloworld.HelloRequest;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
@@ -12,6 +10,8 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.client.WebClientOptions;
 import io.vertx.grpc.VertxChannelBuilder;
+import io.vertx.openshift.grpc.GreeterGrpc;
+import io.vertx.openshift.grpc.HelloRequest;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
