@@ -7,7 +7,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import static io.restassured.RestAssured.get;
 import static io.vertx.it.openshift.utils.Ensure.ensureThat;
