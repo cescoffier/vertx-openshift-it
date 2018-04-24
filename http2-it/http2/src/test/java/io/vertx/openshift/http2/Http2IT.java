@@ -175,7 +175,7 @@ public class Http2IT extends AbstractTestClass {
    * which in turn creates a gRPC call that's executed on <b>HelloGrpcVerticle</b>.
    */
   @Test
-  public void testGRPCFromEdgeVerticle() {
+  public void testSimpleGRPCFromEdgeVerticle() {
     AtomicReference<String> response = new AtomicReference<>();
     final String host = urlForRoute(client.routes().withName("http2").get()).getHost();
 

@@ -31,14 +31,12 @@ public class HelloGrpcVerticle extends AbstractVerticle {
       .addService(new GreeterGrpc.GreeterVertxImplBase() {
         @Override
         public void sayHello(HelloRequest request, Future<HelloReply> future) {
-          System.out.println("Hello " + request.getName());
           future.complete(HelloReply.newBuilder().setMessage("Hello " + request.getName()).build());
         }
 
         @Override
         public void sayHelloStreamReply(StreamRequest request, GrpcWriteStream<HelloReply> responses) {
           for (String s : request.getNamesList()) {
-            System.out.println("Streaming " + s);
             responses.write(HelloReply.newBuilder().setMessage("Streaming " + s).build());
           }
           responses.end();
@@ -50,7 +48,6 @@ public class HelloGrpcVerticle extends AbstractVerticle {
           requests
             .exceptionHandler(Throwable::printStackTrace)
             .handler(res -> {
-              System.out.println("Streamed " + res.getName());
               builder.addMessages("Streamed " + res.getName());
             })
             .endHandler(h -> replyFuture.complete(builder.build()));
@@ -61,7 +58,6 @@ public class HelloGrpcVerticle extends AbstractVerticle {
           exchange
             .exceptionHandler(Throwable::printStackTrace)
             .handler(item -> {
-              System.out.println("Full-duplex " + item.getName());
               exchange.write(HelloReply.newBuilder().setMessage("Full-duplex " + item.getName()).build());
             })
             .endHandler(h -> exchange.end());
@@ -72,10 +68,7 @@ public class HelloGrpcVerticle extends AbstractVerticle {
           List<HelloRequest> buffer = new ArrayList<>();
           exchange
             .exceptionHandler(Throwable::printStackTrace)
-            .handler(item -> {
-              System.out.println("Half-duplex " + item.getName());
-              buffer.add(item);
-            })
+            .handler(buffer::add)
             .endHandler(h -> {
               buffer.forEach(v -> exchange.write(HelloReply.newBuilder().setMessage("Half-duplex " + v.getName()).build()));
               exchange.end();

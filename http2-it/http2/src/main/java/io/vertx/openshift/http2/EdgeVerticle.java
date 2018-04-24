@@ -13,9 +13,6 @@ import io.vertx.grpc.VertxChannelBuilder;
 import io.vertx.openshift.grpc.GreeterGrpc;
 import io.vertx.openshift.grpc.HelloRequest;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
 /**
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
@@ -58,7 +55,7 @@ public class EdgeVerticle extends AbstractVerticle {
 
     GreeterGrpc.GreeterVertxStub stub = GreeterGrpc.newVertxStub(channel);
     HelloRequest request = HelloRequest.newBuilder().setName("EdgeVerticle").build();
-    System.out.println(new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + " Sending request...");
+    System.out.println("Sending request...");
     stub.sayHello(request, asyncResponse -> {
       System.out.println("Got result");
       if (asyncResponse.succeeded()) {
