@@ -64,7 +64,7 @@ Tests for readiness/liveness of the pod in various scenarios (pod startup, pod r
 
 
 ## HTTP2
-Tests for Vert.x integration of HTTP2 features
+Contains tests for Vert.x integration of HTTP2 features + tests for Vert.x integration of [gRPC](https://grpc.io/).
 
 
 ## Circuit Breaker
