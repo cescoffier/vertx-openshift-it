@@ -18,6 +18,7 @@
     <module>mysql-it</module>
     <module>postgresql-it</module>
     <module>oracle-it</module>
+    <module>mongodb-it</module>
   </modules>
 
   <properties>
@@ -71,7 +72,7 @@
     </profile>
 
     <profile>
-      <!-- internal-db-tests profile also deploys relevant db images (postgresql & mysql) on OpenShift. Oracle db image
+      <!-- internal-db-tests profile also deploys relevant db images (postgresql & mysql & mongodb) on OpenShift. Oracle db image
       is not available, that's why this module is excluded from the build. -->
       <id>internal-db-tests</id>
       <properties>

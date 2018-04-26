@@ -67,7 +67,7 @@ public class AbstractDBTestClass extends AbstractTestClass {
     return setRequestJSONBody(body).put(API_LIST_ROUTE + id);
   }
 
-  private RequestSpecification setRequestJSONBody(JSONObject body) {
+  protected RequestSpecification setRequestJSONBody(JSONObject body) {
     return given().body(ContentType.JSON).body(body.toString());
   }
 }
