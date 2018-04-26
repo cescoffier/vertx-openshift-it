@@ -288,7 +288,7 @@ public class MongoDBVerticle extends AbstractVerticle {
         if (event.succeeded()) {
           ctx.response()
             .putHeader("Content-Type", "application/json")
-            .setStatusCode(201)
+            .setStatusCode(204)
             .end(event.result().encodePrettily());
         } else {
           writeError(ctx, event.cause());
@@ -302,7 +302,7 @@ public class MongoDBVerticle extends AbstractVerticle {
     try {
       item = ctx.getBodyAsJson();
     } catch (RuntimeException e) {
-      writeError(ctx, new UnsupportedMediaTypeException("Payload isn't json"));
+      writeError(ctx, new UnsupportedMediaTypeException("Payload isn't json object"));
       return;
     }
     if (Objects.isNull(item)) {
@@ -319,10 +319,11 @@ public class MongoDBVerticle extends AbstractVerticle {
 
   private void isPayloadValidJsonArray(RoutingContext ctx) {
     JsonArray item;
+    System.out.println(ctx.getBodyAsJsonArray().toString());
     try {
       item = ctx.getBodyAsJsonArray();
     } catch (RuntimeException e) {
-      writeError(ctx, new UnsupportedMediaTypeException("Payload isn't json"));
+      writeError(ctx, new UnsupportedMediaTypeException("Payload isn't json array"));
       return;
     }
     if (Objects.isNull(item)) {
