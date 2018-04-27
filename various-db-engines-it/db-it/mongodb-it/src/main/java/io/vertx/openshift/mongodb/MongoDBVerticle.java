@@ -12,7 +12,7 @@ import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
-import io.vertx.openshift.mongodb.exceptions.UnprocessableEntytyException;
+import io.vertx.openshift.mongodb.exceptions.UnprocessableEntityException;
 import io.vertx.openshift.mongodb.exceptions.UnsupportedMediaTypeException;
 import io.vertx.openshift.mongodb.models.MongoDBVegetableStore;
 
@@ -310,7 +310,7 @@ public class MongoDBVerticle extends AbstractVerticle {
     } else if (ctx.request().method() != HttpMethod.PATCH
       && ctx.request().method() != HttpMethod.DELETE
       && Objects.isNull(item.getString("name"))) {
-      writeError(ctx, new UnprocessableEntytyException("Name is required!"));
+      writeError(ctx, new UnprocessableEntityException("Name is required!"));
     } else {
       ctx.put("jsonBody", item);
       ctx.next();
@@ -350,7 +350,7 @@ public class MongoDBVerticle extends AbstractVerticle {
   protected void writeError(RoutingContext ctx, Throwable err) {
     if (err instanceof NoSuchElementException) {
       error(ctx, 404, err.getMessage());
-    } else if (err instanceof UnprocessableEntytyException) {
+    } else if (err instanceof UnprocessableEntityException) {
       error(ctx, 422, err.getMessage());
     } else if (err instanceof UnsupportedMediaTypeException) {
       error(ctx, 415, err.getMessage());
