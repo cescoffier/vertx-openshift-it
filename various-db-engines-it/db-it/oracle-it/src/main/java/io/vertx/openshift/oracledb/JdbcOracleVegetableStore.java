@@ -1,10 +1,10 @@
 package io.vertx.openshift.oracledb;
 
+import io.reactivex.Single;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.openshift.utils.impl.JdbcVegetableStore;
-import io.vertx.rxjava.ext.jdbc.JDBCClient;
-import rx.Single;
+import io.vertx.reactivex.ext.jdbc.JDBCClient;
 
 
 public class JdbcOracleVegetableStore extends JdbcVegetableStore {
