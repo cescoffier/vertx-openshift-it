@@ -98,6 +98,18 @@
       <artifactId>vertx-web</artifactId>
     </dependency>
 
+    <!-- Temporarily added dependency, see https://issues.jboss.org/browse/ENTVTX-170 for more info -->
+    <dependency>
+      <groupId>io.agroal</groupId>
+      <artifactId>agroal-api</artifactId>
+      <version>0.4.0.redhat-1</version>
+    </dependency>
+    <dependency>
+      <groupId>io.agroal</groupId>
+      <artifactId>agroal-pool</artifactId>
+      <version>0.4.0.redhat-1</version>
+    </dependency>
+
     <!-- Logging -->
     <dependency>
       <groupId>org.slf4j</groupId>

@@ -47,6 +47,7 @@ public class GatewayVerticle extends AbstractVerticle {
       .put("driver_class", "org.postgresql.Driver")
       .put("user", "luke")
       .put("password", "secret")
+      .put("provider_class", "io.vertx.ext.jdbc.spi.impl.C3P0DataSourceProvider")
     );
 
     Router router = Router.router(vertx);
@@ -77,10 +78,10 @@ public class GatewayVerticle extends AbstractVerticle {
 
       Single<JDBCClient> svc3 = JDBCDataSource.rxGetJDBCClient(discovery, svc -> svc.getName().equals("my-database"),
         new JsonObject()
-          .put("url", "jdbc:postgresql://my-database:5432/my_data")
-          .put("driver_class", "org.postgresql.Driver")
-          .put("user", "luke")
-          .put("password", "secret"));
+          .put("jdbcUrl", "jdbc:postgresql://my-database:5432/my_data")
+          .put("driverClassName", "org.postgresql.Driver")
+          .put("principal", "luke")
+          .put("credential", "secret"));
 
       Single.zip(svc1, svc2, svc3, (wc, hc, db) -> {
         this.web = wc;

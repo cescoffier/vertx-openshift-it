@@ -206,13 +206,11 @@ public class Kube {
       List<Pod> items = client.pods().list().getItems();
       for (Pod pod : items) {
         String podName = name(pod);
-        if (podName.startsWith(name) && !podName.endsWith("-build")) {
-          if (!KubernetesHelper.isPodReady(pod)) {
-            return false;
-          }
+        if (podName.startsWith(name) && !podName.endsWith("-build") && !podName.endsWith("-deploy")) {
+          return KubernetesHelper.isPodReady(pod);
         }
       }
-      return true;
+      return false;
     });
   }
 
@@ -221,12 +219,10 @@ public class Kube {
       List<Pod> items = client.pods().list().getItems();
       for (Pod pod : items) {
         if (!pod.getMetadata().getName().endsWith("-build")) {
-          if (!KubernetesHelper.isPodReady(pod)) {
-            return false;
-          }
+          return KubernetesHelper.isPodReady(pod);
         }
       }
-      return true;
+      return false;
     });
   }
 
