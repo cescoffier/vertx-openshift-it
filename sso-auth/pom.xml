@@ -11,28 +11,36 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>simple-http-it</artifactId>
+  <artifactId>sso-auth</artifactId>
 
   <properties>
-    <vertx.verticle>io.vertx.openshift.http.MainVerticle</vertx.verticle>
+    <vertx.verticle>io.vertx.openshift.auth.RestApplication</vertx.verticle>
+    <vertx.health.path>/health</vertx.health.path>
   </properties>
 
   <dependencies>
     <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-auth-oauth2</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-auth-jwt</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-tcnative-boringssl-static</artifactId>
+      <version>2.0.7.Final</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>io.vertx.openshift</groupId>
       <artifactId>vertx-it-utils</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
+      <version>1.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
   <build>
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-      </testResource>
-    </testResources>
     <plugins>
       <plugin>
         <groupId>io.fabric8</groupId>
@@ -40,5 +48,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>

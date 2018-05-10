@@ -59,6 +59,11 @@ You need to set up maven properties, which are used for openshift route generati
 * `openshift.route.suffix` suffix which is used for route generation
 
 
+## SSO Auth
+Tests for authentication using Vert.x JWTAuth & OAuth2 modules. JWTAuth integration tests taken [Vert.x Secured Booster](https://github.com/openshiftio-vertx-boosters/vertx-secured-http-booster). 
+The tests use Red Hat SSO image v7.1
+
+
 ## Healthcheck
 Tests for readiness/liveness of the pod in various scenarios (pod startup, pod restart, pod kill, ..)
 

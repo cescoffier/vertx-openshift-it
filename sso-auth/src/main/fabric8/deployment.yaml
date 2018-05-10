@@ -1,0 +1,17 @@
+spec:
+  template:
+    spec:
+      containers:
+      - env:
+        - name: JAVA_APP_DIR
+          value: /deployments
+        - name: SSO_AUTH_SERVER_URL
+          value: ${SSO_AUTH_SERVER_URL}
+        - name: REALM
+          value: master
+        - name: REALM_PUBLIC_KEY
+          value: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoETnPmN55xBJjRzN/cs30OzJ9olkteLVNRjzdTxFOyRtS2ovDfzdhhO9XzUcTMbIsCOAZtSt8K+6yvBXypOSYvI75EUdypmkcK1KoptqY5KEBQ1KwhWuP7IWQ0fshUwD6jI1QWDfGxfM/h34FvEn/0tJ71xN2P8TI2YanwuDZgosdobx/PAvlGREBGuk4BgmexTOkAdnFxIUQcCkiEZ2C41uCrxiS4CEe5OX91aK9HKZV4ZJX6vnqMHmdDnsMdO+UFtxOBYZio+a1jP4W3d7J5fGeiOaXjQCOpivKnP2yU2DPdWmDMyVb67l8DRA+jh0OJFKZ5H2fNgE3II59vdsRwIDAQAB
+        - name: CLIENT_ID
+          value: demoapp
+        - name: SECRET
+          value: 1daa57a2-b60e-468b-a3ac-25bd2dc2eadc
