@@ -15,22 +15,23 @@ import org.flywaydb.core.Flyway;
  */
 public class MyMainVerticle extends AbstractVerticle {
 
-  public static final String JDBC_URL = System.getenv().getOrDefault("JDBC_URL",
+  private static final String JDBC_URL = System.getenv().getOrDefault("JDBC_URL",
     "jdbc:postgresql://postgres/testdb");
-  public static final String JDBC_USER = System.getenv().getOrDefault("JDBC_USER", "vertx");
-  public static final String JDBC_PASSWORD = System.getenv().getOrDefault("JDBC_PASSWORD", "password");
+  private static final String JDBC_USER = System.getenv().getOrDefault("JDBC_USER", "vertx");
+  private static final String JDBC_PASSWORD = System.getenv().getOrDefault("JDBC_PASSWORD", "password");
   private JDBCClient jdbcClient;
 
   @Override
-  public void start(Future<Void> startFuture) throws Exception {
+  public void start(Future<Void> startFuture) {
     Router router = Router.router(vertx);
 
     JsonObject config = new JsonObject()
-      .put("jdbcUrl", JDBC_URL)
-      .put("driverClassName", "org.postgresql.Driver")
-      .put("principal", JDBC_USER)
-      .put("credential", JDBC_PASSWORD)
-      .put("castUUID", true);
+      .put("url", JDBC_URL)
+      .put("driver_class", "org.postgresql.Driver")
+      .put("user", JDBC_USER)
+      .put("password", JDBC_PASSWORD)
+      .put("castUUID", true)
+      .put("provider_class", "io.vertx.ext.jdbc.spi.impl.C3P0DataSourceProvider");
 
     jdbcClient = JDBCClient.createNonShared(vertx, config);
 

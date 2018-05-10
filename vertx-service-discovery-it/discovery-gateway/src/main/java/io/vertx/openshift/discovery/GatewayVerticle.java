@@ -43,10 +43,11 @@ public class GatewayVerticle extends AbstractVerticle {
     dnsWeb = WebClient.create(vertx, new WebClientOptions().setDefaultHost(ENDPOINT_NAME).setDefaultPort(8080)
       .setKeepAlive(false));
     dnsDatabase = JDBCClient.createShared(vertx, new JsonObject()
-      .put("jdbcUrl", "jdbc:postgresql://my-database:5432/my_data")
-      .put("driverClassName", "org.postgresql.Driver")
-      .put("principal", "luke")
-      .put("credential", "secret")
+      .put("url", "jdbc:postgresql://my-database:5432/my_data")
+      .put("driver_class", "org.postgresql.Driver")
+      .put("user", "luke")
+      .put("password", "secret")
+      .put("provider_class", "io.vertx.ext.jdbc.spi.impl.C3P0DataSourceProvider")
     );
 
     Router router = Router.router(vertx);
