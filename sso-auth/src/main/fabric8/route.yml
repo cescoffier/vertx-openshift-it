@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Route
+metadata:
+  name: ${project.artifactId}
+spec:
+  to:
+    name: "${project.artifactId}"
