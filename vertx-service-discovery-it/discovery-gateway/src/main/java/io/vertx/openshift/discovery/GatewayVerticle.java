@@ -1,20 +1,20 @@
 package io.vertx.openshift.discovery;
 
+import io.reactivex.Single;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClientOptions;
-import io.vertx.rxjava.core.AbstractVerticle;
-import io.vertx.rxjava.core.http.HttpClient;
-import io.vertx.rxjava.ext.jdbc.JDBCClient;
-import io.vertx.rxjava.ext.web.Router;
-import io.vertx.rxjava.ext.web.RoutingContext;
-import io.vertx.rxjava.ext.web.client.HttpResponse;
-import io.vertx.rxjava.ext.web.client.WebClient;
-import io.vertx.rxjava.ext.web.codec.BodyCodec;
-import io.vertx.rxjava.servicediscovery.ServiceDiscovery;
-import io.vertx.rxjava.servicediscovery.types.HttpEndpoint;
-import io.vertx.rxjava.servicediscovery.types.JDBCDataSource;
-import rx.Single;
+import io.vertx.reactivex.core.AbstractVerticle;
+import io.vertx.reactivex.core.http.HttpClient;
+import io.vertx.reactivex.ext.jdbc.JDBCClient;
+import io.vertx.reactivex.ext.web.Router;
+import io.vertx.reactivex.ext.web.RoutingContext;
+import io.vertx.reactivex.ext.web.client.HttpResponse;
+import io.vertx.reactivex.ext.web.client.WebClient;
+import io.vertx.reactivex.ext.web.codec.BodyCodec;
+import io.vertx.reactivex.servicediscovery.ServiceDiscovery;
+import io.vertx.reactivex.servicediscovery.types.HttpEndpoint;
+import io.vertx.reactivex.servicediscovery.types.JDBCDataSource;
 
 /**
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
