@@ -1,5 +1,8 @@
 package io.vertx.openshift.utils;
 
+import io.reactivex.Completable;
+import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.openshift.utils.impl.JdbcVegetableStore;
@@ -10,10 +13,6 @@ import io.vertx.reactivex.core.http.HttpServerResponse;
 import io.vertx.reactivex.ext.jdbc.JDBCClient;
 import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.RoutingContext;
-
-import io.reactivex.Single;
-import io.reactivex.Completable;
-import io.reactivex.Observable;
 
 import java.util.NoSuchElementException;
 

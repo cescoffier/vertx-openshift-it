@@ -6,9 +6,9 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import static org.awaitility.Awaitility.await;
 import static io.restassured.RestAssured.get;
 import static io.vertx.it.openshift.utils.Kube.awaitUntilPodIsReady;
+import static org.awaitility.Awaitility.await;
 
 /**
  * Include specific tests and help function for internal db

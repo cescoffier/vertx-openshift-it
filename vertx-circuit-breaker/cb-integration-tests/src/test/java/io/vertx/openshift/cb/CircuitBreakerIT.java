@@ -1,18 +1,18 @@
 package io.vertx.openshift.cb;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
-
-import static org.awaitility.Awaitility.await;
-import static io.restassured.RestAssured.get;
-
+import io.fabric8.kubernetes.api.model.HasMetadata;
+import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.openshift.api.model.DeploymentConfig;
+import io.fabric8.openshift.api.model.Route;
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
+import io.vertx.circuitbreaker.CircuitBreakerState;
+import io.vertx.core.json.JsonObject;
+import io.vertx.it.openshift.utils.OpenShiftTestAssistant;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,13 +21,10 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import io.fabric8.kubernetes.api.model.HasMetadata;
-import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.openshift.api.model.DeploymentConfig;
-import io.fabric8.openshift.api.model.Route;
-import io.vertx.it.openshift.utils.OpenShiftTestAssistant;
-import io.vertx.circuitbreaker.CircuitBreakerState;
-import io.vertx.core.json.JsonObject;
+import static io.restassured.RestAssured.get;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.core.IsEqual.equalTo;
 
 public class CircuitBreakerIT {
 

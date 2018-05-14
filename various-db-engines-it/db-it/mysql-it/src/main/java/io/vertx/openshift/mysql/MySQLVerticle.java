@@ -7,8 +7,6 @@ import io.vertx.reactivex.ext.jdbc.JDBCClient;
 import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.handler.BodyHandler;
 
-import static io.vertx.reactivex.ext.web.Router.router;
-
 /**
  * @author Martin Spisiak (mspisiak@redhat.com) on 03/10/17.
  */

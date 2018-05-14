@@ -1,5 +1,7 @@
 package io.vertx.openshift.oracledb;
 
+import io.reactivex.Completable;
+import io.reactivex.Single;
 import io.vertx.core.json.JsonObject;
 import io.vertx.openshift.utils.AbstractDatabaseVerticle;
 import io.vertx.openshift.utils.TestUtils;
@@ -8,8 +10,6 @@ import io.vertx.reactivex.ext.jdbc.JDBCClient;
 import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.RoutingContext;
 import io.vertx.reactivex.ext.web.handler.BodyHandler;
-import io.reactivex.Completable;
-import io.reactivex.Single;
 
 import static io.vertx.openshift.utils.Errors.error;
 
