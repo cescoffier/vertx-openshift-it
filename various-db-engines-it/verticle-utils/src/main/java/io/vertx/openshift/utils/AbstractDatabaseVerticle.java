@@ -1,18 +1,18 @@
 package io.vertx.openshift.utils;
 
+import io.reactivex.Completable;
+import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.openshift.utils.impl.JdbcVegetableStore;
-import io.vertx.rxjava.core.AbstractVerticle;
-import io.vertx.rxjava.core.Vertx;
-import io.vertx.rxjava.core.http.HttpServer;
-import io.vertx.rxjava.core.http.HttpServerResponse;
-import io.vertx.rxjava.ext.jdbc.JDBCClient;
-import io.vertx.rxjava.ext.web.Router;
-import io.vertx.rxjava.ext.web.RoutingContext;
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
+import io.vertx.reactivex.core.AbstractVerticle;
+import io.vertx.reactivex.core.Vertx;
+import io.vertx.reactivex.core.http.HttpServer;
+import io.vertx.reactivex.core.http.HttpServerResponse;
+import io.vertx.reactivex.ext.jdbc.JDBCClient;
+import io.vertx.reactivex.ext.web.Router;
+import io.vertx.reactivex.ext.web.RoutingContext;
 
 import java.util.NoSuchElementException;
 
@@ -29,10 +29,9 @@ public abstract class AbstractDatabaseVerticle extends AbstractVerticle {
     return jdbc.rxGetConnection()
       .flatMapCompletable(connection ->
         vertx.fileSystem().rxReadFile("db_init.sql")
-          .flatMapObservable(buffer -> Observable.from(buffer.toString().replaceAll(";.*$", "").split(";")))
-          .flatMapSingle(connection::rxExecute)
+          .flatMapObservable(buffer -> Observable.fromArray(buffer.toString().replaceAll(";.*$", "").split(";")))
+          .flatMapCompletable(connection::rxExecute)
           .doAfterTerminate(connection::close)
-          .toCompletable()
       );
   }
 

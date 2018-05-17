@@ -2,8 +2,6 @@ package io.vertx.openshift.mongodb;
 
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
 import io.vertx.it.openshift.utils.OC;
 import io.vertx.openshift.utils.AbstractInternalDBTestClass;
 import org.json.JSONArray;

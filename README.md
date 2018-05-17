@@ -89,6 +89,7 @@ after the database engine used in the Vert.x application example:
 * `postgresql-it` for Vert.x and PostgreSQL integration tests
 * `oracle-it` for Vert.x and OracleDB integration tests - do note that due to the OracleDB being proprietary,
 the tests only cover communication with an existing on-premise database use case.
+* `mongodb-it` for Vert.x and MongoDB integration tests
 
 These modules are located in the `db-it` parent module. On the same level, there's also `verticle-utils` module,
 which contains some utility classes that are commonly used by the tests.

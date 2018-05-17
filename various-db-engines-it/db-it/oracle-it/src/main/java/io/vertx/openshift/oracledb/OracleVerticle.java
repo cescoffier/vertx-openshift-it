@@ -1,15 +1,15 @@
 package io.vertx.openshift.oracledb;
 
+import io.reactivex.Completable;
+import io.reactivex.Single;
 import io.vertx.core.json.JsonObject;
 import io.vertx.openshift.utils.AbstractDatabaseVerticle;
 import io.vertx.openshift.utils.TestUtils;
-import io.vertx.rxjava.core.http.HttpServer;
-import io.vertx.rxjava.ext.jdbc.JDBCClient;
-import io.vertx.rxjava.ext.web.Router;
-import io.vertx.rxjava.ext.web.RoutingContext;
-import io.vertx.rxjava.ext.web.handler.BodyHandler;
-import rx.Completable;
-import rx.Single;
+import io.vertx.reactivex.core.http.HttpServer;
+import io.vertx.reactivex.ext.jdbc.JDBCClient;
+import io.vertx.reactivex.ext.web.Router;
+import io.vertx.reactivex.ext.web.RoutingContext;
+import io.vertx.reactivex.ext.web.handler.BodyHandler;
 
 import static io.vertx.openshift.utils.Errors.error;
 

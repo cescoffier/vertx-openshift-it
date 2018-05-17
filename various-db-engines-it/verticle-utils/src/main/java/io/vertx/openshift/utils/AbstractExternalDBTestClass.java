@@ -6,8 +6,8 @@ import org.junit.BeforeClass;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import static org.awaitility.Awaitility.await;
 import static io.restassured.RestAssured.get;
+import static org.awaitility.Awaitility.await;
 
 /**
  * Include specific tests and help function for external db

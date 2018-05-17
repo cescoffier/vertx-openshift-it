@@ -1,14 +1,14 @@
 package io.vertx.openshift.utils.impl;
 
+import io.reactivex.Completable;
+import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.sql.ResultSet;
 import io.vertx.openshift.utils.DataStore;
-import io.vertx.rxjava.ext.jdbc.JDBCClient;
-import io.vertx.rxjava.ext.sql.SQLRowStream;
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
+import io.vertx.reactivex.ext.jdbc.JDBCClient;
+import io.vertx.reactivex.ext.sql.SQLRowStream;
 
 import java.util.NoSuchElementException;
 

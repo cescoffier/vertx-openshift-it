@@ -15,12 +15,12 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import static org.awaitility.Awaitility.await;
 import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 import static io.vertx.it.openshift.utils.Ensure.ensureThat;
 import static io.vertx.it.openshift.utils.Kube.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 

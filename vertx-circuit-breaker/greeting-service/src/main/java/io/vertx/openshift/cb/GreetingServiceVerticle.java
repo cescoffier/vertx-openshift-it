@@ -1,20 +1,19 @@
 package io.vertx.openshift.cb;
 
 import io.vertx.circuitbreaker.CircuitBreakerOptions;
-import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.bridge.PermittedOptions;
 import io.vertx.ext.web.client.WebClientOptions;
 import io.vertx.ext.web.handler.sockjs.BridgeOptions;
-import io.vertx.ext.web.handler.sockjs.PermittedOptions;
-import io.vertx.rxjava.circuitbreaker.CircuitBreaker;
-import io.vertx.rxjava.circuitbreaker.HystrixMetricHandler;
-import io.vertx.rxjava.core.AbstractVerticle;
-import io.vertx.rxjava.ext.web.Router;
-import io.vertx.rxjava.ext.web.RoutingContext;
-import io.vertx.rxjava.ext.web.client.HttpResponse;
-import io.vertx.rxjava.ext.web.client.WebClient;
-import io.vertx.rxjava.ext.web.handler.StaticHandler;
-import io.vertx.rxjava.ext.web.handler.sockjs.SockJSHandler;
+import io.vertx.reactivex.circuitbreaker.CircuitBreaker;
+import io.vertx.reactivex.circuitbreaker.HystrixMetricHandler;
+import io.vertx.reactivex.core.AbstractVerticle;
+import io.vertx.reactivex.ext.web.Router;
+import io.vertx.reactivex.ext.web.RoutingContext;
+import io.vertx.reactivex.ext.web.client.HttpResponse;
+import io.vertx.reactivex.ext.web.client.WebClient;
+import io.vertx.reactivex.ext.web.handler.StaticHandler;
+import io.vertx.reactivex.ext.web.handler.sockjs.SockJSHandler;
 
 import static io.netty.handler.codec.http.HttpHeaderValues.APPLICATION_JSON;
 import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
@@ -65,7 +64,6 @@ public class GreetingServiceVerticle extends AbstractVerticle {
     circuit.rxExecuteCommandWithFallback(
       future ->
         client.get("/api/name").rxSend()
-          .doOnEach(r -> System.out.println(r.getValue().bodyAsString()))
           .map(HttpResponse::bodyAsJsonObject)
           .map(json -> json.getString("name"))
           .subscribe(
@@ -89,7 +87,7 @@ public class GreetingServiceVerticle extends AbstractVerticle {
       );
   }
 
-  private Handler<RoutingContext> getSockJsHandler() {
+  private SockJSHandler getSockJsHandler() {
     SockJSHandler sockJSHandler = SockJSHandler.create(vertx);
     BridgeOptions options = new BridgeOptions();
     options.addInboundPermitted(
