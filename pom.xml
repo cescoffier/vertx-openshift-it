@@ -26,11 +26,11 @@
 
     <!-- constrained by kubernetes assertions, which for whatever reason are way behind the latest -->
     <!--<assertj.version>3.6.2</assertj.version>-->
-    <rest-assured.version>3.0.6</rest-assured.version>
-    <junit.version>4.12</junit.version>
+    <rest-assured.version>3.1.0</rest-assured.version>
+    <junit.version>4.12.0.redhat-003</junit.version>
     <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
-    <vertx-maven-plugin.version>1.0.9</vertx-maven-plugin.version>
-    <awaitility.version>3.0.0</awaitility.version>
+    <vertx-maven-plugin.version>1.0.13</vertx-maven-plugin.version>
+    <awaitility.version>3.1.0</awaitility.version>
     <jgroups-kubernetes.version>1.0.5.Final</jgroups-kubernetes.version>
     <kubernetes.client.version>1.4.35</kubernetes.client.version>
 
@@ -49,7 +49,7 @@
     <fabric8.maven.plugin.version>3.5.35</fabric8.maven.plugin.version>
 
     <!-- muse use version from https://maven.repository.redhat.com/ga/io/fabric8/kubernetes-api/ -->
-    <kubernetes.api.version>3.0.8</kubernetes.api.version>
+    <kubernetes.api.version>3.0.11</kubernetes.api.version>
 
     <!-- Docker configuration -->
     <docker.group.name>vertx-openshift-it</docker.group.name>
@@ -102,12 +102,12 @@
     <dependency>
       <groupId>io.agroal</groupId>
       <artifactId>agroal-api</artifactId>
-      <version>0.4.0.redhat-1</version>
+      <version>0.5</version>
     </dependency>
     <dependency>
       <groupId>io.agroal</groupId>
       <artifactId>agroal-pool</artifactId>
-      <version>0.4.0.redhat-1</version>
+      <version>0.5</version>
     </dependency>
 
     <!-- Logging -->
@@ -133,7 +133,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>23.0</version>
+      <version>25.0-jre</version>
     </dependency>
 
     <dependency>

@@ -36,12 +36,12 @@
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>42.1.4</version>
+      <version>42.2.2.jre7</version>
     </dependency>
     <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
-      <version>4.0.3</version>
+      <version>5.0.7</version>
     </dependency>
     <dependency>
       <groupId>io.vertx.openshift</groupId>
@@ -52,12 +52,12 @@
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-      <version>5.1.44</version>
+      <version>8.0.11</version>
     </dependency>
     <dependency>
       <groupId>com.github.stefanbirkner</groupId>
       <artifactId>system-rules</artifactId>
-      <version>1.2.0</version>
+      <version>1.17.2</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
