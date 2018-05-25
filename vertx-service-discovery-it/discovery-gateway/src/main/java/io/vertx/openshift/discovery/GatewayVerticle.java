@@ -43,11 +43,11 @@ public class GatewayVerticle extends AbstractVerticle {
     dnsWeb = WebClient.create(vertx, new WebClientOptions().setDefaultHost(ENDPOINT_NAME).setDefaultPort(8080)
       .setKeepAlive(false));
     dnsDatabase = JDBCClient.createShared(vertx, new JsonObject()
-      .put("url", "jdbc:postgresql://my-database:5432/my_data")
-      .put("driver_class", "org.postgresql.Driver")
-      .put("user", "luke")
-      .put("password", "secret")
-      .put("provider_class", "io.vertx.ext.jdbc.spi.impl.C3P0DataSourceProvider")
+      .put("jdbcUrl", "jdbc:postgresql://my-database:5432/my_data")
+      .put("driverClassName", "org.postgresql.Driver")
+      .put("principal", "luke")
+      .put("credential", "secret")
+      .put("provider_class", "io.vertx.ext.jdbc.spi.impl.AgroalCPDataSourceProvider")
     );
 
     Router router = Router.router(vertx);
@@ -78,11 +78,11 @@ public class GatewayVerticle extends AbstractVerticle {
 
       Single<JDBCClient> svc3 = JDBCDataSource.rxGetJDBCClient(discovery, svc -> svc.getName().equals("my-database"),
         new JsonObject()
-          .put("url", "jdbc:postgresql://my-database:5432/my_data")
-          .put("driver_class", "org.postgresql.Driver")
-          .put("user", "luke")
-          .put("password", "secret")
-          .put("provider_class", "io.vertx.ext.jdbc.spi.impl.C3P0DataSourceProvider"));
+          .put("jdbcUrl", "jdbc:postgresql://my-database:5432/my_data")
+          .put("driverClassName", "org.postgresql.Driver")
+          .put("principal", "luke")
+          .put("credential", "secret")
+          .put("provider_class", "io.vertx.ext.jdbc.spi.impl.AgroalCPDataSourceProvider"));
 
       Single.zip(svc1, svc2, svc3, (wc, hc, db) -> {
         this.web = wc;
