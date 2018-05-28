@@ -1,9 +1,8 @@
 package io.vertx.it.openshift.utils;
 
-import static io.vertx.it.openshift.utils.Kube.awaitUntilRouteIsServed;
-import static io.vertx.it.openshift.utils.Kube.createRouteForService;
-import static io.vertx.it.openshift.utils.Kube.urlForRoute;
-
+import io.fabric8.kubernetes.api.model.*;
+import io.fabric8.openshift.api.model.Route;
+import io.fabric8.openshift.client.OpenShiftClient;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -11,18 +10,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.net.URL;
 
-import io.fabric8.kubernetes.api.model.Container;
-import io.fabric8.kubernetes.api.model.ContainerBuilder;
-import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
-import io.fabric8.kubernetes.api.model.EnvVar;
-import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.PodBuilder;
-import io.fabric8.kubernetes.api.model.Service;
-import io.fabric8.kubernetes.api.model.ServiceBuilder;
-import io.fabric8.kubernetes.api.model.ServicePort;
-import io.fabric8.kubernetes.api.model.ServicePortBuilder;
-import io.fabric8.openshift.api.model.Route;
-import io.fabric8.openshift.client.OpenShiftClient;
+import static io.vertx.it.openshift.utils.Kube.*;
 
 /**
  * @author Slavomír Krupa (slavomir.krupa@gmail.com)
