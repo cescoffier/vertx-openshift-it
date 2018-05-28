@@ -8,9 +8,6 @@
   <script>
     $(function(){
       var eb = new EventBus(window.location.href + 'eventbus');
-      setTimeout(function() {
-        console.log("Trying to load this shit..");
-      }, 10000);
       eb.onopen = function () {
         var svc = new MyService(eb, 'my-service-address');
 
