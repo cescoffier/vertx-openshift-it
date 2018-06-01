@@ -39,6 +39,7 @@ public class SockJSProxyIT extends AbstractTestClass {
     ensureThat("the sockjs proxy serves requests correctly", () -> {
       Route route = client.routes().withName("sockjs-service-proxy").get();
       webDriver.get(urlForRoute(route).toString());
+      assertThat(webDriver.getTitle()).isEqualTo("SockJS client");
     });
 
     ensureThat("the sockjs proxy returns correct value", () -> {
