@@ -8,81 +8,82 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
-import static io.vertx.it.openshift.utils.Kube.*;
+import static io.vertx.it.openshift.utils.Kube.awaitUntilRouteIsServed;
+import static io.vertx.it.openshift.utils.Kube.createRouteForService;
+import static io.vertx.it.openshift.utils.Kube.urlForRoute;
 
 /**
- * @author Slavomír Krupa (slavomir.krupa@gmail.com)
+ * @author Martin Spisiak (mspisiak@redhat.com) on 29/05/18.
  */
-
-public class PhantomJSDeployment implements AutoCloseable {
-
-  public static final String PHANTOMJS = "phantomjs";
+public class ChromeDeployment implements AutoCloseable {
+  public static final String CHROME = "chrome";
   private OpenShiftClient client;
   private Route route;
   private Pod pod;
   private Service service;
   private WebDriver driver;
 
-  public PhantomJSDeployment(OpenShiftClient client) {
+  public ChromeDeployment(OpenShiftClient client) {
     this.client = client;
   }
 
-  public PhantomJSDeployment deploy() {
-    System.out.println("Deploying Phantom ");
-    createPhantomService();
-    createPhantomPod();
-    createPhantomRoute();
+  public ChromeDeployment deploy() {
+    System.out.println("Deploying Chrome");
+    createChromeService();
+    createChromePod();
+    createChromeRoute();
     return this;
   }
 
-  public PhantomJSDeployment deployAndAwaitStart() {
+  public ChromeDeployment deployAndAwaitStart() {
     deploy();
     awaitUntilRouteIsServed(route, "/status");
     return this;
   }
 
-  public URL getUrl() {
+  public URL getUrl() throws MalformedURLException {
     if (retrieveRoute()) {
-      return urlForRoute(route);
+      return new URL(urlForRoute(route).toString() + "/wd/hub");
     }
-    throw new IllegalStateException("PhantomJS is not deployed");
+    throw new IllegalStateException("Chrome is not deployed");
   }
 
-  public WebDriver connectToWebService() {
-    DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
+  public WebDriver connectToWebService() throws MalformedURLException {
+    DesiredCapabilities capabilities = DesiredCapabilities.chrome();
     driver = new RemoteWebDriver(getUrl(), capabilities);
     driver.manage().window().setSize(new Dimension(1920, 1080));
     return driver;
   }
 
-  private void createPhantomRoute() {
+  private void createChromeRoute() {
     if (!retrieveRoute()) {
-      route = createRouteForService(client, PHANTOMJS, true);
+      route = createRouteForService(client, CHROME, true);
     }
   }
 
   private boolean retrieveRoute() {
-    route = client.routes().withName(PHANTOMJS).get();
+    route = client.routes().withName(CHROME).get();
     return route != null;
   }
 
   private boolean retrievePod() {
-    pod = client.pods().withName(PHANTOMJS).get();
+    pod = client.pods().withName(CHROME).get();
     return pod != null;
   }
 
   private boolean retrieveService() {
-    service = client.services().withName(PHANTOMJS).get();
+    service = client.services().withName(CHROME).get();
     return service != null;
   }
 
-  private void createPhantomPod() {
+  private void createChromePod() {
     if (!retrievePod()) {
       Container c = new ContainerBuilder()
-        .withName(PHANTOMJS)
-        .withImage("maschmid/phantomjs")
+        .withName(CHROME)
+        .withImage("selenium/standalone-chrome")
         .withImagePullPolicy("Always")
         .withEnv(new EnvVar("IGNORE_SSL_ERRORS", "true", null))
         .withPorts(new ContainerPortBuilder().withContainerPort(4444).withName("webdriver").build())
@@ -90,8 +91,8 @@ public class PhantomJSDeployment implements AutoCloseable {
 
       Pod pb = new PodBuilder()
         .withNewMetadata()
-        .withName(PHANTOMJS)
-        .addToLabels("name", PHANTOMJS)
+        .withName(CHROME)
+        .addToLabels("name", CHROME)
         .endMetadata()
         .withNewSpec()
         .withTerminationGracePeriodSeconds(0L)
@@ -104,7 +105,7 @@ public class PhantomJSDeployment implements AutoCloseable {
     }
   }
 
-  private void createPhantomService() {
+  private void createChromeService() {
     if (!retrieveService()) {
       ServicePort sp = new ServicePortBuilder()
         .withProtocol("TCP")
@@ -113,12 +114,12 @@ public class PhantomJSDeployment implements AutoCloseable {
         .build();
       Service sb = new ServiceBuilder()
         .withNewMetadata()
-        .withName(PHANTOMJS)
-        .addToLabels("name", PHANTOMJS)
+        .withName(CHROME)
+        .addToLabels("name", CHROME)
         .endMetadata()
         .withNewSpec()
         .withSessionAffinity("None")
-        .addToSelector("name", PHANTOMJS)
+        .addToSelector("name", CHROME)
         .addToPorts(sp)
         .endSpec()
         .build();
