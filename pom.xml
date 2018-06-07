@@ -20,7 +20,7 @@
     <main.class>io.vertx.core.Launcher</main.class>
     <fabric8.skip>false</fabric8.skip>
 
-    <vertx.version>3.4.2</vertx.version>
+    <vertx.version>3.4.2.redhat-009</vertx.version>
     <!-- version aligned with vert.x core -->
     <slf4j.version>1.7.25</slf4j.version>
 
