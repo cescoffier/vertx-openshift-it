@@ -51,11 +51,10 @@ public class TestUtils {
     }
 
     return new JsonObject()
-      .put("url", connectionParams.getProperty("db.jdbc_url"))
-      .put("user", connectionParams.getProperty("db.username"))
-      .put("driver_class", connectionParams.getProperty("db.jdbc_class"))
-      .put("password", connectionParams.getProperty("db.password"))
-      .put("provider_class", "io.vertx.ext.jdbc.spi.impl.C3P0DataSourceProvider");
+      .put("jdbcUrl", connectionParams.getProperty("db.jdbc_url"))
+      .put("principal", connectionParams.getProperty("db.username"))
+      .put("driverClassName", connectionParams.getProperty("db.jdbc_class"))
+      .put("credential", connectionParams.getProperty("db.password"));
   }
 
   private static JsonObject allocateInternalDatabase(String database) {
@@ -79,11 +78,10 @@ public class TestUtils {
     }
 
     return new JsonObject()
-      .put("url", jdbcURL)
-      .put("driver_class", jdbcDriver)
-      .put("user", jdbcUser)
-      .put("password", jdbcPassword)
-      .put("provider_class", "io.vertx.ext.jdbc.spi.impl.C3P0DataSourceProvider");
+      .put("jdbcUrl", jdbcURL)
+      .put("driverClassName", jdbcDriver)
+      .put("principal", jdbcUser)
+      .put("credential", jdbcPassword);
   }
 
   private static String createAllocatorUrl(String db) {
