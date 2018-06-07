@@ -25,11 +25,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>25.0-jre</version>
-    </dependency>
-    <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-tcnative-boringssl-static</artifactId>
       <version>2.0.8.Final</version>
@@ -91,22 +86,6 @@
           </execution>
         </executions>
       </plugin>
-
-      <!--<plugin>-->
-        <!--<artifactId>maven-dependency-plugin</artifactId>-->
-        <!--<executions>-->
-          <!--<execution>-->
-            <!--<goals>-->
-              <!--<goal>unpack-dependencies</goal>-->
-            <!--</goals>-->
-            <!--<phase>initialize</phase>-->
-            <!--<configuration>-->
-              <!--<includeArtifactIds>netty-tcnative-boringssl-static</includeArtifactIds>-->
-              <!--<outputDirectory>${project.build.directory}/classes</outputDirectory>-->
-            <!--</configuration>-->
-          <!--</execution>-->
-        <!--</executions>-->
-      <!--</plugin>-->
       <plugin>
         <groupId>io.fabric8</groupId>
         <artifactId>vertx-maven-plugin</artifactId>
