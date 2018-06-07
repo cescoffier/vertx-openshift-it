@@ -32,6 +32,29 @@ Test in module can be executed switching to `$PROJECT` directory and running
  mvn clean verify -Popenshift
  ```
 
+Note that the productized Vert.x 3.5.1.redhat-004 uses Agroal as a default
+JDBC connection pool as opposed to c3p0 used in upstream 3.5.1 release.
+In order to use the c3p0 connection pool, you need to modify the JDBC client
+configuration as the c3p0 library uses different configuration keys than Agroal:
+```java
+// Agroal example
+JsonObject agroalConfig = new JsonObject()
+  .put("jdbcUrl", JDBC_URL)
+  .put("driverClassName", "org.postgresql.Driver")
+  .put("principal", JDBC_USER)
+  .put("credential", JDBC_PASSWORD)
+  .put("castUUID", true);
+
+// c3p0 example
+JsonObject c3p0Config = new JsonObject()
+  .put("url", JDBC_URL)
+  .put("driver_class", "org.postgresql.Driver")
+  .put("user", JDBC_USER)
+  .put("password", JDBC_PASSWORD)
+  .put("castUUID", true)
+  .put("provider_class", "io.vertx.ext.jdbc.spi.impl.C3P0DataSourceProvider");
+```
+
 
 ## Embedded HTTP
 Check the embedded case. An embedded HTTP server is started and tested.
