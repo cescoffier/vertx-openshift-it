@@ -16,8 +16,8 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>db-it</module>
     <module>verticle-utils</module>
+    <module>db-it</module>
   </modules>
 
   <dependencies>
@@ -65,21 +65,8 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>io.fabric8</groupId>
+        <groupId>io.reactiverse</groupId>
         <artifactId>vertx-maven-plugin</artifactId>
-        <version>${vertx-maven-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>vmp</id>
-            <goals>
-              <goal>initialize</goal>
-              <goal>package</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <redeploy>true</redeploy>
-        </configuration>
       </plugin>
     </plugins>
   </build>

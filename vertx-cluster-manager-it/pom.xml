@@ -29,4 +29,12 @@
     <fabric8.skip>true</fabric8.skip>
   </properties>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>io.reactiverse</groupId>
+        <artifactId>vertx-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>

@@ -1,20 +1,26 @@
 package io.vertx.it.openshift.utils;
 
-import io.restassured.RestAssured;
+import io.fabric8.kubernetes.api.model.HasMetadata;
+import io.fabric8.openshift.api.model.DeploymentConfig;
+import io.fabric8.openshift.api.model.Route;
 import io.fabric8.openshift.client.OpenShiftClient;
+import io.restassured.RestAssured;
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.AfterClass;
 import org.junit.Rule;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 import java.util.SortedMap;
 import java.util.concurrent.TimeUnit;
 
-import static org.awaitility.Awaitility.*;
-import static io.restassured.RestAssured.*;
-import static io.vertx.it.openshift.utils.Ensure.*;
-import static java.util.Collections.*;
+import static io.fabric8.openshift.assertions.Assertions.assertThat;
+import static io.restassured.RestAssured.get;
+import static io.vertx.it.openshift.utils.Ensure.ensureThat;
+import static java.util.Collections.emptySortedMap;
+import static org.awaitility.Awaitility.await;
 
 /**
  * @author Slavomír Krupa (slavomir.krupa@gmail.com)
@@ -65,6 +71,23 @@ public class AbstractTestClass {
     ensureThat("application can be deployed", deploymentAssistant::deployApplication);
     ensureThat("application is started", deploymentAssistant::awaitApplicationReadinessOrFail);
     helper = new OpenShiftHelper(client, deploymentAssistant.applicationName());
+  }
+
+  public static String deployApp(String name, String templatePath) throws IOException {
+    String appName;
+    List<? extends HasMetadata> entities = deploymentAssistant.deploy(name, new File(templatePath));
+
+    Optional<String> first = entities.stream().filter(hm -> hm instanceof DeploymentConfig).map(hm -> (DeploymentConfig) hm)
+      .map(dc -> dc.getMetadata().getName()).findFirst();
+    if (first.isPresent()) {
+      appName = first.get();
+    } else {
+      throw new IllegalStateException("Application deployment config not found");
+    }
+
+    Route route = deploymentAssistant.getRoute(appName);
+    assertThat(route).isNotNull();
+    return "http://" + route.getSpec().getHost();
   }
 
   @AfterClass

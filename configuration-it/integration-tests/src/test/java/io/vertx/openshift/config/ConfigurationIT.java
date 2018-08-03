@@ -1,19 +1,15 @@
 package io.vertx.openshift.config;
 
-import static org.awaitility.Awaitility.await;
-import static io.restassured.RestAssured.get;
-
-import static io.vertx.it.openshift.utils.Ensure.ensureThat;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import io.restassured.RestAssured;
+import com.google.common.collect.ImmutableMap;
+import io.fabric8.kubernetes.api.model.DoneableConfigMap;
 import io.fabric8.kubernetes.api.model.Pod;
+import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
+import io.vertx.it.openshift.utils.AbstractTestClass;
+import io.vertx.it.openshift.utils.OC;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.google.common.collect.ImmutableMap;
-import io.restassured.path.json.JsonPath;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,12 +20,9 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import io.fabric8.kubernetes.api.model.HasMetadata;
-import io.fabric8.kubernetes.api.model.DoneableConfigMap;
-import io.fabric8.openshift.api.model.DeploymentConfig;
-import io.fabric8.openshift.api.model.Route;
-import io.vertx.it.openshift.utils.AbstractTestClass;
-import io.vertx.it.openshift.utils.OC;
+import static io.restassured.RestAssured.get;
+import static io.vertx.it.openshift.utils.Ensure.ensureThat;
+import static org.awaitility.Awaitility.await;
 
 public class ConfigurationIT extends AbstractTestClass {
   private final String HTTP_CONFIG_EXPECTED_STRING = "Congratulations, you have just served a configuration over HTTP !";
@@ -72,8 +65,8 @@ public class ConfigurationIT extends AbstractTestClass {
 
     await("Pods running, waiting for probes...").pollInterval(1, TimeUnit.SECONDS).atMost(10, TimeUnit.MINUTES).catchUncaughtExceptions().until(() ->
       get(configBaseUri + "/all").getStatusCode() == 200
-      && get(eventbusBaseUri + "/eventbus").getStatusCode() == 200
-      && get(httpBaseUri + "/conf").getStatusCode() == 200
+        && get(eventbusBaseUri + "/eventbus").getStatusCode() == 200
+        && get(httpBaseUri + "/conf").getStatusCode() == 200
     );
 
     // Because we're deploying the services to OpenShift, the *classpath* is in /deployments directory in pods,
@@ -100,7 +93,7 @@ public class ConfigurationIT extends AbstractTestClass {
   }
 
   @Test
-  public void testRetrievingConfigByListeningToChange() throws InterruptedException {
+  public void testRetrievingConfigByListeningToChange() {
 
     // So event bus config store has some time to load
     ensureThat("we can retrieve the application configuration", () ->
@@ -126,7 +119,7 @@ public class ConfigurationIT extends AbstractTestClass {
   }
 
   @Test
-  public void testRetrievingConfigFromStream() throws InterruptedException {
+  public void testRetrievingConfigFromStream() {
     ensureThat("we can retrieve the application configuration through config stream", () ->
       await().atMost(2, TimeUnit.MINUTES).until(() ->
         get("/all-by-stream").getBody().jsonPath().getString("eventBus") != null));
@@ -150,7 +143,7 @@ public class ConfigurationIT extends AbstractTestClass {
   }
 
   @Test
-  public void testChangingConfigurationByListeningToChange() throws InterruptedException {
+  public void testChangingConfigurationByListeningToChange() {
     createOrEditConfigMap(
       ImmutableMap.of(
         "key", "value-2",
@@ -226,17 +219,17 @@ public class ConfigurationIT extends AbstractTestClass {
   }
 
   @Test
-  public void testDeleteConfig() throws InterruptedException {
+  public void testDeleteConfig() {
     client.configMaps().withName(CONFIG_MAP).delete();
     ensureThat("empty config map is returned when the actual one is deleted\n", () ->
       await().atMost(2, TimeUnit.MINUTES).until(() ->
         get("/all").getBody().jsonPath().getString("key") == null
-        && get("/all-by-stream").getBody().jsonPath().getString("key") == null));
+          && get("/all-by-stream").getBody().jsonPath().getString("key") == null));
 
     createOrEditConfigMap(DEFAULT_MAP);
     await().atMost(2, TimeUnit.MINUTES).until(() ->
       get("/all").getBody().jsonPath().getString("key") != null
-      && get("/all-by-stream").getBody().jsonPath().getString("key") != null);
+        && get("/all-by-stream").getBody().jsonPath().getString("key") != null);
   }
 
   @AfterClass
@@ -247,30 +240,12 @@ public class ConfigurationIT extends AbstractTestClass {
     OC.removeSystemServiceAccount(client.getNamespace());
   }
 
-
-  private static String deployApp(String name, String templatePath) throws IOException {
-    String appName;
-    List<? extends HasMetadata> entities = deploymentAssistant.deploy(name, new File(templatePath));
-
-    Optional<String> first = entities.stream().filter(hm -> hm instanceof DeploymentConfig).map(hm -> (DeploymentConfig) hm)
-      .map(dc -> dc.getMetadata().getName()).findFirst();
-    if (first.isPresent()) {
-      appName = first.get();
-    } else {
-      throw new IllegalStateException("Application deployment config not found");
-    }
-
-    Route route = deploymentAssistant.getRoute(appName);
-    assertThat(route).isNotNull();
-    return "http://" + route.getSpec().getHost();
-  }
-
   private static void initializeDirectoryConfig() throws URISyntaxException {
     String configPodName, pathToJar;
     Optional<Pod> maybePod = client.pods().inNamespace(deploymentAssistant.project()).list().getItems()
       .stream().filter(pod -> pod.getMetadata().getName().startsWith(configServiceApp)
-                              && !pod.getMetadata().getName().endsWith("build")
-                              && !pod.getMetadata().getName().endsWith("deploy"))
+        && !pod.getMetadata().getName().endsWith("build")
+        && !pod.getMetadata().getName().endsWith("deploy"))
       .findFirst();
 
 
@@ -282,7 +257,7 @@ public class ConfigurationIT extends AbstractTestClass {
     }
 
     pathToJar = "/deployments/" +
-                new File(ConfigurableHttpVerticle.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getName();
+      new File(ConfigurableHttpVerticle.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getName();
 
     OC.execute("exec", configPodName, "--", "unzip", pathToJar, "'configuration/*'", "-d", "/deployments");
   }

@@ -1,32 +1,24 @@
 package io.vertx.openshift.cb;
 
-import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.openshift.api.model.DeploymentConfig;
-import io.fabric8.openshift.api.model.Route;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.vertx.circuitbreaker.CircuitBreakerState;
 import io.vertx.core.json.JsonObject;
-import io.vertx.it.openshift.utils.OpenShiftTestAssistant;
-import org.junit.AfterClass;
+import io.vertx.it.openshift.utils.AbstractTestClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static io.restassured.RestAssured.get;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.core.IsEqual.equalTo;
 
-public class CircuitBreakerIT {
+public class CircuitBreakerIT extends AbstractTestClass {
 
   private static final String NAME_SERVICE_APP = "name-service";
   private static final String GREETING_SERVICE_APP = "greeting-service";
@@ -36,10 +28,8 @@ public class CircuitBreakerIT {
   private static final String HELLO_OK = "Hello, World!";
   private static final String HELLO_FALLBACK = "Hello, Fallback!";
 
-  private static final long SLEEP_WINDOW = 5000l;
+  private static final long SLEEP_WINDOW = 5000L;
   private static final long REQUEST_THRESHOLD = 3;
-
-  private static final OpenShiftTestAssistant OPENSHIFT = new OpenShiftTestAssistant();
 
   private static String nameBaseUri;
   private static String greetingBaseUri;
@@ -51,7 +41,7 @@ public class CircuitBreakerIT {
     greetingBaseUri = deployApp(GREETING_SERVICE_APP, System.getProperty("greetingServiceTemplate"));
 
     await().atMost(5, TimeUnit.MINUTES).until(() -> {
-      List<Pod> list = OPENSHIFT.client().pods().inNamespace(OPENSHIFT.project()).list().getItems();
+      List<Pod> list = client.pods().inNamespace(deploymentAssistant.project()).list().getItems();
       return list.stream()
         .filter(pod -> pod.getMetadata().getName().startsWith(NAME_SERVICE_APP) || pod.getMetadata().getName().startsWith(GREETING_SERVICE_APP))
         .filter(pod -> "running".equalsIgnoreCase(pod.getStatus().getPhase())).collect(Collectors.toList()).size() >= 2;
@@ -65,24 +55,19 @@ public class CircuitBreakerIT {
     );
   }
 
-  @AfterClass
-  public static void teardown() throws Exception {
-    OPENSHIFT.cleanup();
-  }
-
   @Before
   public void assureServiceIsWorking() {
     await().atMost(10, TimeUnit.SECONDS).until(() -> testGreeting(HELLO_OK));
   }
 
   @Test
-  public void testThatCircuitBreakerIsClosedByDefault() throws InterruptedException {
+  public void testThatCircuitBreakerIsClosedByDefault() {
     assertCircuitBreaker(CircuitBreakerState.CLOSED);
     assertGreeting(HELLO_OK);
   }
 
   @Test
-  public void testThatCircuitBreakerIsOpenedAfterFailures() throws InterruptedException {
+  public void testThatCircuitBreakerIsOpenedAfterFailures() {
     changeNameServiceState(FAIL);
     for (int i = 0; i < REQUEST_THRESHOLD; i++) {
       assertGreeting(HELLO_FALLBACK);
@@ -96,7 +81,7 @@ public class CircuitBreakerIT {
   }
 
   @Test
-  public void testThatWeExposeHalfOpenState() throws InterruptedException {
+  public void testThatWeExposeHalfOpenState() {
     changeNameServiceState(FAIL);
     for (int i = 0; i < REQUEST_THRESHOLD; i++) {
       assertGreeting(HELLO_FALLBACK);
@@ -144,27 +129,5 @@ public class CircuitBreakerIT {
     Response response = RestAssured.given().header("Content-type", "application/json")
       .body(new JsonObject().put("state", state).encodePrettily()).put(nameBaseUri + "/api/state");
     response.then().assertThat().statusCode(200).body("state", equalTo(state));
-  }
-
-  /**
-   * @param name
-   * @param templatePath
-   * @return the app route
-   * @throws IOException
-   */
-  private static String deployApp(String name, String templatePath) throws IOException {
-    String appName = "";
-    List<? extends HasMetadata> entities = OPENSHIFT.deploy(name, new File(templatePath));
-
-    Optional<String> first = entities.stream().filter(hm -> hm instanceof DeploymentConfig).map(hm -> (DeploymentConfig) hm)
-      .map(dc -> dc.getMetadata().getName()).findFirst();
-    if (first.isPresent()) {
-      appName = first.get();
-    } else {
-      throw new IllegalStateException("Application deployment config not found");
-    }
-    Route route = OPENSHIFT.client().routes().inNamespace(OPENSHIFT.project()).withName(appName).get();
-    assertThat(route).isNotNull();
-    return "http://" + route.getSpec().getHost();
   }
 }

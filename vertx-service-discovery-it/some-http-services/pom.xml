@@ -17,14 +17,4 @@
     <vertx.verticle>io.vertx.openshift.discovery.HttpVerticle</vertx.verticle>
     <vertx.health.path>/</vertx.health.path>
   </properties>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>io.fabric8</groupId>
-        <artifactId>vertx-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-
 </project>
