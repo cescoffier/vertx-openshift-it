@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>vertx-proton</artifactId>
+    <groupId>io.vertx.openshift</groupId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>vertx-proton-frontend</artifactId>
+  <packaging>jar</packaging>
+
+  <properties>
+    <fabric8.skip>false</fabric8.skip>
+    <vertx.verticle>io.vertx.openshift.proton.frontend.Frontend</vertx.verticle>
+    <vertx.health>/api/health</vertx.health>
+  </properties>
+</project>
