@@ -32,6 +32,29 @@ Test in module can be executed switching to `$PROJECT` directory and running
  mvn clean verify -Popenshift
  ```
 
+Note that the productized Vert.x 3.5.1.redhat-004 uses Agroal as a default
+JDBC connection pool as opposed to c3p0 used in upstream 3.5.1 release.
+In order to use the c3p0 connection pool, you need to modify the JDBC client
+configuration as the c3p0 library uses different configuration keys than Agroal:
+```
+// Agroal example
+JsonObject agroalConfig = new JsonObject()
+  .put("jdbcUrl", JDBC_URL)
+  .put("driverClassName", "org.postgresql.Driver")
+  .put("principal", JDBC_USER)
+  .put("credential", JDBC_PASSWORD)
+  .put("castUUID", true);
+
+// c3p0 example
+JsonObject c3p0Config = new JsonObject()
+  .put("url", JDBC_URL)
+  .put("driver_class", "org.postgresql.Driver")
+  .put("user", JDBC_USER)
+  .put("password", JDBC_PASSWORD)
+  .put("castUUID", true)
+  .put("provider_class", "io.vertx.ext.jdbc.spi.impl.C3P0DataSourceProvider");
+```
+
 
 ## Embedded HTTP
 Check the embedded case. An embedded HTTP server is started and tested.
@@ -105,9 +128,16 @@ and message publishing. When running the tests, a MQTT broker (server) is deploy
 and a MQTT client is created locally.
 
 
+## Proton
+Integration tests for Vert.x Proton module. The application leverages the 
+[amq63-basic OpenShift Application template](https://github.com/jboss-openshift/application-templates/blob/master/docs/amq/amq63-basic.adoc)
+and is derived from the [RHOAR AMQP messaging booster](https://github.com/openshiftio-vertx-boosters/vertx-messaging-work-queue-booster).
+
+
+
 ## vertx-it-utils
 This module does not contain any tests, but instead provides some abstract test classes,
-OpenshiftTestAssistant class and other utility classes. You need to install this module first (described at the top of this page)
+`OpenshiftTestAssistant` class and other utility classes. You need to install this module first (described at the top of this page)
 in order to be able to run any tests from this test suite. 
 
 

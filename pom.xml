@@ -20,7 +20,7 @@
     <main.class>io.vertx.core.Launcher</main.class>
     <fabric8.skip>false</fabric8.skip>
 
-    <vertx.version>3.5.1</vertx.version>
+    <vertx.version>3.5.1.redhat-004</vertx.version>
     <!-- version aligned with vert.x core -->
     <slf4j.version>1.7.25</slf4j.version>
 
@@ -29,10 +29,9 @@
     <rest-assured.version>3.1.0</rest-assured.version>
     <junit.version>4.12.0.redhat-003</junit.version>
     <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
-    <vertx-maven-plugin.version>1.0.13</vertx-maven-plugin.version>
+    <vertx-maven-plugin.version>1.0.15</vertx-maven-plugin.version>
     <awaitility.version>3.1.0</awaitility.version>
     <jgroups-kubernetes.version>1.0.5.Final</jgroups-kubernetes.version>
-    <kubernetes.client.version>1.4.35</kubernetes.client.version>
 
     <release.candidate.repository>
       https://maven.repository.redhat.com/earlyaccess/all/
@@ -46,7 +45,7 @@
      they are very outdated.
      -->
 
-    <fabric8.maven.plugin.version>3.5.39</fabric8.maven.plugin.version>
+    <fabric8.maven.plugin.version>3.5.40</fabric8.maven.plugin.version>
 
     <!-- muse use version from https://maven.repository.redhat.com/ga/io/fabric8/kubernetes-api/ -->
     <kubernetes.api.version>3.0.11</kubernetes.api.version>
@@ -74,6 +73,7 @@
     <module>various-db-engines-it</module>
     <module>vertx-circuit-breaker</module>
     <module>vertx-mqtt-it</module>
+    <module>vertx-proton</module>
   </modules>
 
   <dependencyManagement>
@@ -148,7 +148,7 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>io.fabric8</groupId>
+          <groupId>io.reactiverse</groupId>
           <artifactId>vertx-maven-plugin</artifactId>
           <version>${vertx-maven-plugin.version}</version>
           <executions>
@@ -166,7 +166,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.6.1</version>
+        <version>3.7.0</version>
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
@@ -293,7 +293,7 @@
 
           <plugin>
             <artifactId>maven-failsafe-plugin</artifactId>
-            <version>2.20</version>
+            <version>2.22.0</version>
             <executions>
               <execution>
                 <goals>

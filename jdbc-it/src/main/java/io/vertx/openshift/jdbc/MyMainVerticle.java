@@ -26,12 +26,11 @@ public class MyMainVerticle extends AbstractVerticle {
     Router router = Router.router(vertx);
 
     JsonObject config = new JsonObject()
-      .put("url", JDBC_URL)
-      .put("driver_class", "org.postgresql.Driver")
-      .put("user", JDBC_USER)
-      .put("password", JDBC_PASSWORD)
-      .put("castUUID", true)
-      .put("provider_class", "io.vertx.ext.jdbc.spi.impl.C3P0DataSourceProvider");
+      .put("jdbcUrl", JDBC_URL)
+      .put("driverClassName", "org.postgresql.Driver")
+      .put("principal", JDBC_USER)
+      .put("credential", JDBC_PASSWORD)
+      .put("castUUID", true);
 
     jdbcClient = JDBCClient.createNonShared(vertx, config);
 

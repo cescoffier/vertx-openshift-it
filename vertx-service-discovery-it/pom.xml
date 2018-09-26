@@ -33,11 +33,14 @@
       <groupId>io.vertx</groupId>
       <artifactId>vertx-service-discovery-bridge-kubernetes</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.vertx.openshift</groupId>
-      <artifactId>vertx-it-utils</artifactId>
-      <version>${project.version}</version>
-    </dependency>
   </dependencies>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>io.reactiverse</groupId>
+        <artifactId>vertx-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>

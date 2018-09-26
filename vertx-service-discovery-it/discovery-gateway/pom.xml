@@ -37,13 +37,4 @@
       <version>42.2.2</version>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>io.fabric8</groupId>
-        <artifactId>vertx-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
 </project>

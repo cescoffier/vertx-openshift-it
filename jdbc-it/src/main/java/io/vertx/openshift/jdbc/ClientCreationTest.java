@@ -1,15 +1,16 @@
 package io.vertx.openshift.jdbc;
 
+import io.agroal.api.AgroalDataSource;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.jdbc.JDBCClient;
+import io.vertx.ext.jdbc.spi.impl.AgroalCPDataSourceProvider;
 import io.vertx.ext.web.RoutingContext;
-import org.postgresql.ds.PGPoolingDataSource;
 
 import java.sql.SQLException;
 
-import static io.vertx.openshift.jdbc.TestUtil.*;
+import static io.vertx.openshift.jdbc.TestUtil.fail;
 
 /**
  * @author Thomas Segismont
@@ -30,13 +31,11 @@ public class ClientCreationTest implements Handler<RoutingContext> {
 
   @Override
   public void handle(RoutingContext rc) {
-    vertx.<PGPoolingDataSource>executeBlocking(fut -> {
-      PGPoolingDataSource dataSource = new PGPoolingDataSource();
-      dataSource.setUrl(config.getString("url"));
-      dataSource.setUser(config.getString("user"));
-      dataSource.setPassword(config.getString("password"));
+    vertx.<AgroalDataSource>executeBlocking(fut -> {
+      AgroalCPDataSourceProvider provider = new AgroalCPDataSourceProvider();
+      AgroalDataSource dataSource;
       try {
-        dataSource.initialize();
+        dataSource = (AgroalDataSource) provider.getDataSource(config);
         fut.complete(dataSource);
       } catch (SQLException e) {
         fut.fail(e);
@@ -47,7 +46,7 @@ public class ClientCreationTest implements Handler<RoutingContext> {
         return;
       }
 
-      PGPoolingDataSource dataSource = iniRes.result();
+      AgroalDataSource dataSource = iniRes.result();
       rc.addBodyEndHandler(v -> vertx.executeBlocking(fut -> {
         dataSource.close();
         fut.complete();
