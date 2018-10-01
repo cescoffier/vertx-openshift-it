@@ -31,7 +31,7 @@
     <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
     <vertx-maven-plugin.version>1.0.17</vertx-maven-plugin.version>
     <awaitility.version>3.1.2</awaitility.version>
-    <jgroups-kubernetes.version>1.0.5.Final</jgroups-kubernetes.version>
+    <jgroups-kubernetes.version>1.0.7.Final</jgroups-kubernetes.version>
 
     <release.candidate.repository>
       https://maven.repository.redhat.com/earlyaccess/all/
