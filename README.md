@@ -83,7 +83,12 @@ You need to set up maven properties, which are used for openshift route generati
 
 
 ## SockJS service proxy
-Integration tests for sockjs-service-proxy module (RPC-like application)
+Integration tests for sockjs-service-proxy module (RPC-like application).
+
+If this test fail on `SockJSProxyIT.initialize:34`  please try to change [selenium/standalone-chrome](https://hub.docker.com/r/selenium/standalone-chrome/) version by maven property: 
+* `chrome.selenium.image.version`. 
+  * Default value this property is set to `latest`
+  * Latest known working version on openshift is `3.14.0-europium`
 
 
 ## SSO Auth

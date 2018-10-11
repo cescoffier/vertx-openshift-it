@@ -55,6 +55,9 @@
     <fabric8.dockerUser>vertx-openshift-it</fabric8.dockerUser>
     <docker.image>${docker.group.name}/${project.artifactId}:${project.version}</docker.image>
     <vertx.health.path>/</vertx.health.path>
+
+    <!-- selenium/standalone-chrome image version-->
+    <chrome.selenium.image.version>latest</chrome.selenium.image.version>
   </properties>
 
   <modules>

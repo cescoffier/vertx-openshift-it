@@ -25,6 +25,7 @@ public class ChromeDeployment implements AutoCloseable {
   private Pod pod;
   private Service service;
   private WebDriver driver;
+  private static final String CHROME_SELENIUM_IMAGE_VERSION = System.getProperty("chrome.selenium.image.version","latest");
 
   public ChromeDeployment(OpenShiftClient client) {
     this.client = client;
@@ -83,12 +84,11 @@ public class ChromeDeployment implements AutoCloseable {
     if (!retrievePod()) {
       Container c = new ContainerBuilder()
         .withName(CHROME)
-        .withImage("selenium/standalone-chrome")
+        .withImage("selenium/standalone-chrome:" + CHROME_SELENIUM_IMAGE_VERSION)
         .withImagePullPolicy("Always")
         .withEnv(new EnvVar("IGNORE_SSL_ERRORS", "true", null))
         .withPorts(new ContainerPortBuilder().withContainerPort(4444).withName("webdriver").build())
         .build();
-
       Pod pb = new PodBuilder()
         .withNewMetadata()
         .withName(CHROME)
