@@ -20,7 +20,7 @@
     <main.class>io.vertx.core.Launcher</main.class>
     <fabric8.skip>false</fabric8.skip>
 
-    <vertx.version>3.5.1.redhat-004</vertx.version>
+    <vertx.version>3.5.4.redhat-00002</vertx.version>
     <!-- version aligned with vert.x core -->
     <slf4j.version>1.7.25</slf4j.version>
 
@@ -56,8 +56,9 @@
     <docker.image>${docker.group.name}/${project.artifactId}:${project.version}</docker.image>
     <vertx.health.path>/</vertx.health.path>
 
-    <!-- selenium/standalone-chrome image version-->
-    <chrome.selenium.image.version>latest</chrome.selenium.image.version>
+    <postgresql.driver.version>42.2.5</postgresql.driver.version>
+    <mysql.driver.version>8.0.12</mysql.driver.version>
+    <oracle.driver.version>12.2.0.1</oracle.driver.version>
   </properties>
 
   <modules>
@@ -77,6 +78,7 @@
     <module>vertx-circuit-breaker</module>
     <module>vertx-mqtt-it</module>
     <module>vertx-proton</module>
+    <module>micrometer-metrics-it</module>
   </modules>
 
   <dependencyManagement>

@@ -85,10 +85,10 @@ You need to set up maven properties, which are used for openshift route generati
 ## SockJS service proxy
 Integration tests for sockjs-service-proxy module (RPC-like application).
 
-If this test fail on `SockJSProxyIT.initialize:34`  please try to change [selenium/standalone-chrome](https://hub.docker.com/r/selenium/standalone-chrome/) version by maven property: 
+If tests fail on `SockJSProxyIT.initialize:34` try to change [selenium/standalone-chrome](https://hub.docker.com/r/selenium/standalone-chrome/) version by maven property: 
 * `chrome.selenium.image.version`. 
-  * Default value this property is set to `latest`
-  * Latest known working version on openshift is `3.14.0-europium`
+  * The default value this property is set to is `latest`
+  * Latest known working version on OpenShift is `3.14.0-europium`
 
 
 ## SSO Auth
@@ -137,6 +137,11 @@ and a MQTT client is created locally.
 Integration tests for Vert.x Proton module. The application leverages the 
 [amq63-basic OpenShift Application template](https://github.com/jboss-openshift/application-templates/blob/master/docs/amq/amq63-basic.adoc)
 and is derived from the [RHOAR AMQP messaging booster](https://github.com/openshiftio-vertx-boosters/vertx-messaging-work-queue-booster).
+
+## Micrometer Metrics
+This module contains integration tests for Vert.x Micrometer Metrics. The test run should start a Prometheus server
+along with a simple Vert.x HTTP server for providing some metrics, then execute some basic tests to verify that
+the metrics are correct.
 
 
 

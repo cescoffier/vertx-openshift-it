@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import static io.restassured.RestAssured.*;
+import static io.vertx.it.openshift.utils.Ensure.ensureThat;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -61,12 +62,12 @@ public class ProtonIT extends AbstractTestClass {
       .post(requestUrl)
       .thenReturn();
 
-    assertThat(requestResponse.getStatusCode()).isEqualTo(202);
+    ensureThat("we can publish a message", () -> assertThat(requestResponse.getStatusCode()).isEqualTo(202));
     String requestId = requestResponse.getBody().asString();
 
     // Wait for the request to be handled
-    await().atMost(10, SECONDS)
-      .untilAsserted(() -> given()
+    ensureThat("the test message is received and handled properly", () ->
+      await().atMost(10, SECONDS).untilAsserted(() -> given()
         .queryParam("request", requestId)
         .when()
         .get(responseUrl)
@@ -74,7 +75,8 @@ public class ProtonIT extends AbstractTestClass {
         .statusCode(200)
         .body("requestId", is(equalTo(requestId)))
         .body("workerId", not((isEmptyString())))
-        .body("text", is(equalTo("EGASSEM-TSET"))));
+        .body("text", is(equalTo("EGASSEM-TSET"))))
+    );
 
     JsonPath responseJson = given()
       .queryParam("request", requestId)
@@ -86,8 +88,8 @@ public class ProtonIT extends AbstractTestClass {
     String text = responseJson.getString("text");
 
     // Verify data
-    await().atMost(10, SECONDS)
-      .untilAsserted(() -> when()
+    ensureThat("the data has been processed properly", () ->
+      await().atMost(10, SECONDS).untilAsserted(() -> when()
         .get(dataUrl)
         .then()
         .statusCode(200)
@@ -98,7 +100,8 @@ public class ProtonIT extends AbstractTestClass {
         .body("workers.%s.workerId", withArgs(workerId), is(equalTo(workerId)))
         .body("workers.%s.timestamp", withArgs(workerId), is(notNullValue()))
         .body("workers.%s.requestsProcessed", withArgs(workerId), is(notNullValue()))
-        .body("workers.%s.processingErrors", withArgs(workerId), is(notNullValue())));
+        .body("workers.%s.processingErrors", withArgs(workerId), is(notNullValue())))
+    );
   }
 
   @AfterClass
