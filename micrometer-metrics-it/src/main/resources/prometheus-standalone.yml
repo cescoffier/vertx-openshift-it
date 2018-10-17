@@ -1,0 +1,95 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: prometheus
+  annotations:
+    "openshift.io/display-name": Prometheus
+    description: |
+      A Prometheus deployment that can be customized to monitor components and dispatch alerts. It can be used to monitor arbitrary clients.
+    iconClass: fa fa-cogs
+    tags: "monitoring,prometheus,time-series"
+parameters:
+- description: The location of the prometheus image
+  name: IMAGE_PROMETHEUS
+  value: openshift/prometheus:v2.3.2
+- description: The location of the alertmanager image
+  name: IMAGE_ALERTMANAGER
+  value: openshift/prometheus-alertmanager:v0.15.1
+- description: The location of alert-buffer image
+  name: IMAGE_ALERT_BUFFER
+  value: openshift/prometheus-alert-buffer:v0.0.2
+
+objects:
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    name: prom
+    labels:
+      name: prom
+  spec:
+    to:
+      name: prom
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      name: prom
+      app: prom
+    name: prom
+  spec:
+    ports:
+    - name: prom
+      port: 9090
+      protocol: TCP
+      targetPort: 9090
+    selector:
+      app: prom
+- apiVersion: apps/v1beta1
+  kind: StatefulSet
+  metadata:
+    labels:
+      app: prom
+      name: prom
+    name: prom
+  spec:
+    updateStrategy:
+      type: RollingUpdate
+    podManagementPolicy: Parallel
+    selector:
+      matchLabels:
+        app: prom
+    serviceName: prom
+    template:
+      metadata:
+        labels:
+          app: prom
+        name: prom
+      spec:
+        containers:
+        - name: prometheus
+          env:
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          args:
+          - --storage.tsdb.retention=6h
+          - --config.file=/etc/prometheus/prometheus.yml
+          image: ${IMAGE_PROMETHEUS}
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: 9090
+            name: prometheus
+          volumeMounts:
+          - mountPath: /etc/prometheus
+            name: prometheus-config
+          - mountPath: /prometheus
+            name: prometheus-data
+
+        restartPolicy: Always
+        volumes:
+        - name: prometheus-config
+          secret:
+            secretName: prom
+        - name: prometheus-data
+          emptyDir: {}

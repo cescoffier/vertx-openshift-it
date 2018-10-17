@@ -31,10 +31,6 @@ public class OC {
     OC.execute("policy", "remove-role-from-group", "view", "system:serviceaccounts", "-n", namespace);
   }
 
-  public static String execute(String... args) {
-    return executeWithQuotes(true, args);
-  }
-
   private static File find() {
     String path = System.getenv().get("PATH");
     String[] segments = path.split(File.pathSeparator);
@@ -47,13 +43,25 @@ public class OC {
     throw new IllegalArgumentException("Cannot find `oc` in PATH: " + path);
   }
 
+  public static String execute(String... args) {
+    return executeWithQuotes(true, args);
+  }
+
+  public static String execute(boolean printCommandResult, String... args) {
+    return executeWithQuotes(printCommandResult, true, args);
+  }
+
+  public static String executeWithQuotes(boolean handleQuoting, String... args) {
+    return executeWithQuotes(true, handleQuoting, args);
+  }
+
   /**
    * This method will look for the OC exec first, then execute a command constructed from <b>args</b> param.
    * @param handleQuoting specifies whether to wrap arguments in quotation marks or not.
    * @param args args from which the command will be constructed
    * @return output of the executed command, wrapped in single quotation marks.
    */
-  public static String executeWithQuotes(boolean handleQuoting, String... args) {
+  public static String executeWithQuotes(boolean printCommand, boolean handleQuoting, String... args) {
     File oc_executable = find();
 
     CommandLine commandLine = new CommandLine(oc_executable);
@@ -68,7 +76,7 @@ public class OC {
       executor.setExitValues(new int[] {0, 1, 2});
       executor.execute(commandLine);
 
-      if (! output.toString().isEmpty()) {
+      if (! output.toString().isEmpty() && printCommand) {
         System.out.println("====");
         System.out.println(output);
         System.out.println("====");
