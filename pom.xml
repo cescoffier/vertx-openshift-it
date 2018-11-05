@@ -57,7 +57,7 @@
     <vertx.health.path>/</vertx.health.path>
 
     <postgresql.driver.version>42.2.5</postgresql.driver.version>
-    <mysql.driver.version>8.0.12</mysql.driver.version>
+    <mysql.driver.version>8.0.13</mysql.driver.version>
     <oracle.driver.version>12.2.0.1</oracle.driver.version>
   </properties>
 
