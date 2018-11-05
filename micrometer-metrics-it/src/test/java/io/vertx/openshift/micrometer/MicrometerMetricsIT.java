@@ -2,8 +2,6 @@ package io.vertx.openshift.micrometer;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.http.Header;
-import io.vertx.core.cli.MissingValueException;
 import io.vertx.it.openshift.utils.AbstractTestClass;
 import io.vertx.it.openshift.utils.OC;
 import org.junit.AfterClass;
@@ -14,17 +12,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 import static io.vertx.it.openshift.utils.Ensure.ensureThat;
-import static io.vertx.it.openshift.utils.Kube.securedUrlForRoute;
 import static io.vertx.it.openshift.utils.Kube.urlForRoute;
 import static org.awaitility.Awaitility.await;
 
 /**
+ * TODO implement more tests
+ *
  * @author Martin Spisiak (mspisiak@redhat.com) on 04/10/2018.
  */
 public class MicrometerMetricsIT extends AbstractTestClass {
