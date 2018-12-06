@@ -12,7 +12,8 @@
   <artifactId>vertx-proton-integration-tests</artifactId>
 
   <properties>
-    <fabric8.skip>false</fabric8.skip>
+    <vertx.skip>true</vertx.skip>
+    <fabric8.skip>true</fabric8.skip>
   </properties>
 
   <dependencies>
