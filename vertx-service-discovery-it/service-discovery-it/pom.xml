@@ -13,6 +13,7 @@
   <artifactId>discovery-it</artifactId>
 
   <properties>
+    <vertx.skip>true</vertx.skip>
     <fabric8.skip>true</fabric8.skip>
   </properties>
 

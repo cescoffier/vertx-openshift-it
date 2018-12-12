@@ -12,6 +12,7 @@
   <artifactId>micrometer-metrics-it</artifactId>
 
   <properties>
+    <vertx.launcher>io.vertx.openshift.micrometer.MicrometerMetricsLauncher</vertx.launcher>
     <vertx.verticle>io.vertx.openshift.micrometer.MainVerticle</vertx.verticle>
     <vertx.health.timeout>5</vertx.health.timeout>
   </properties>
@@ -24,7 +25,7 @@
     <dependency>
       <groupId>io.micrometer</groupId>
       <artifactId>micrometer-registry-prometheus</artifactId>
-      <version>1.1.1</version>
+      <version>1.0.0</version>
     </dependency>
     <dependency>
       <groupId>io.vertx.openshift</groupId>

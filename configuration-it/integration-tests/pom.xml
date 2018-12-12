@@ -14,7 +14,8 @@
   <description>OpenShift integration tests for Vert.x configuration stores</description>
 
   <properties>
-    <vertx.health.path>/</vertx.health.path>
+    <vertx.skip>true</vertx.skip>
+    <fabric8.skip>true</fabric8.skip>
   </properties>
 
   <dependencies>
