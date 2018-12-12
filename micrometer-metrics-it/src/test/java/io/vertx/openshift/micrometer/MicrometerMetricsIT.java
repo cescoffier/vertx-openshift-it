@@ -50,7 +50,7 @@ public class MicrometerMetricsIT extends AbstractTestClass {
   @Test
   public void testVertxEndpointAvailable() {
     ensureThat("Vert.x server is up according to Prometheus", () ->
-      await().atMost(10, TimeUnit.SECONDS).until(() -> given()
+      await().atMost(15, TimeUnit.SECONDS).until(() -> given()
         .accept(ContentType.JSON)
         .get("/api/v1/targets")
         .body()
