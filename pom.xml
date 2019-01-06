@@ -21,6 +21,7 @@
     <fabric8.skip>false</fabric8.skip>
 
     <vertx.version>3.6.3</vertx.version>
+    <arquillian-cube.version>1.18.2</arquillian-cube.version>
     <!-- version aligned with vert.x core -->
     <slf4j.version>1.7.25</slf4j.version>
 
@@ -89,6 +90,13 @@
         <version>${vertx.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.arquillian.cube</groupId>
+        <artifactId>arquillian-cube-bom</artifactId>
+        <version>${arquillian-cube.version}</version>
+        <scope>import</scope>
+        <type>pom</type>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -299,6 +307,11 @@
           <plugin>
             <artifactId>maven-failsafe-plugin</artifactId>
             <version>2.22.1</version>
+            <configuration>
+              <systemPropertyVariables>
+                <app.name>${project.artifactId}</app.name>
+              </systemPropertyVariables>
+            </configuration>
             <executions>
               <execution>
                 <goals>

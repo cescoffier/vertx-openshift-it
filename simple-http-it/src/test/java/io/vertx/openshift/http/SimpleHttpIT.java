@@ -1,5 +1,7 @@
 package io.vertx.openshift.http;
 
+import static io.vertx.it.openshift.utils.Ensure.ensureThat;
+import static io.vertx.it.openshift.utils.Kube.sleep;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -9,11 +11,19 @@ import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 
 import static io.fabric8.kubernetes.assertions.Assertions.assertThat;
-import static io.vertx.it.openshift.utils.Ensure.ensureThat;
-import static io.vertx.it.openshift.utils.Kube.setReplicasAndWait;
-import static io.vertx.it.openshift.utils.Kube.sleep;
 
+import io.fabric8.kubernetes.api.KubernetesHelper;
+import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.ReplicationController;
+import io.fabric8.openshift.client.OpenShiftClient;
 import okio.ByteString;
+import org.arquillian.cube.kubernetes.api.Session;
+import org.arquillian.cube.openshift.impl.client.OpenShiftAssistant;
+import org.arquillian.cube.openshift.impl.enricher.AwaitRoute;
+import org.arquillian.cube.openshift.impl.enricher.RouteURL;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.test.api.ArquillianResource;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -24,36 +34,68 @@ import io.restassured.response.Response;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
-import io.vertx.it.openshift.utils.AbstractTestClass;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
+import org.junit.runner.RunWith;
 
 
 /**
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-public class SimpleHttpIT extends AbstractTestClass {
+@RunWith(Arquillian.class)
+public class SimpleHttpIT {
 
-  @BeforeClass
-  public static void initialize() throws IOException {
-    deployAndAwaitStartWithRoute();
-    await("route should be eventually served").atMost(5, TimeUnit.MINUTES).catchUncaughtExceptions().until(() -> get().getStatusCode() < 500);
+  private String project;
+
+  private final String applicationName = System.getProperty("app.name");
+
+  @ArquillianResource
+  private OpenShiftClient client;
+
+  @ArquillianResource
+  private Session session;
+
+  @ArquillianResource
+  private OpenShiftAssistant openShiftAssistant;
+
+  @RouteURL("${app.name}")
+  @AwaitRoute
+  private URL route;
+
+  @Before
+  public void setup() {
+    RestAssured.baseURI = route.toString();
+    project = this.client.getNamespace();
   }
 
   @Test
   public void stabilityTest() throws Exception {
-    ensureThat("the pod is ready and stay ready for a bit",
-      () -> assertThat(deploymentAssistant.client()).deployments().pods().isPodReadyForPeriod());
-    await("That one pod is present.").atMost(1, TimeUnit.MINUTES).catchUncaughtExceptions()
-      .untilAsserted(() -> assertThat(deploymentAssistant.client()).pods().runningStatus().hasSize(1));
+    ensureThat("the pod is ready and stays ready for a bit", () -> {
+      assertThat(client).deployments().pods().isPodReadyForPeriod();
+    });
+    ensureThat("only one pod is present", () -> {
+      await().atMost(5, TimeUnit.MINUTES).until(() -> {
+          List<Pod> list = client.pods().inNamespace(project).list().getItems();
+          return list.stream()
+            .filter(pod -> pod.getMetadata().getName().startsWith(applicationName))
+            .filter(KubernetesHelper::isPodReady)
+            .collect(Collectors.toList()).size() == 1;
+        }
+      );
+      // Check that the route is served.
+      await().atMost(5, TimeUnit.MINUTES).catchUncaughtExceptions().until(() -> get("/api/greeting")
+        .getStatusCode() < 500);
+    });
   }
 
   @Test
@@ -163,7 +205,7 @@ public class SimpleHttpIT extends AbstractTestClass {
 
   @Test
   public void testIncreasingReplicas() throws Exception {
-    setReplicasAndWait(deploymentAssistant.client(), deploymentAssistant.applicationName(), 2);
+    openShiftAssistant.scale(2);
 
     Set<String> hosts = new HashSet<>();
 
@@ -175,11 +217,12 @@ public class SimpleHttpIT extends AbstractTestClass {
         }
         sleep(100);
       }
-
+      System.out.println(hosts);
       Assertions.assertThat(hosts).hasSize(2);
     });
 
-    setReplicasAndWait(deploymentAssistant.client(), deploymentAssistant.applicationName(), 1);
+//    setReplicasAndWait(deploymentAssistant.client(), deploymentAssistant.applicationName(), 1);
+    openShiftAssistant.scale(1);
 
     hosts.clear();
 
