@@ -1,38 +1,25 @@
 package io.vertx.openshift.http;
 
-import static io.vertx.it.openshift.utils.Ensure.ensureThat;
-import static io.vertx.it.openshift.utils.Kube.sleep;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-
-import static org.awaitility.Awaitility.await;
-import static io.restassured.RestAssured.get;
-import static io.restassured.RestAssured.given;
-
-import static io.fabric8.kubernetes.assertions.Assertions.assertThat;
-
 import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.ReplicationController;
 import io.fabric8.openshift.client.OpenShiftClient;
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
 import okio.ByteString;
-import org.arquillian.cube.kubernetes.api.Session;
 import org.arquillian.cube.openshift.impl.client.OpenShiftAssistant;
 import org.arquillian.cube.openshift.impl.enricher.AwaitRoute;
 import org.arquillian.cube.openshift.impl.enricher.RouteURL;
+import org.assertj.core.api.Assertions;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import org.assertj.core.api.Assertions;
-
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
-
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -42,11 +29,13 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.WebSocket;
-import okhttp3.WebSocketListener;
-import org.junit.runner.RunWith;
+import static io.fabric8.kubernetes.assertions.Assertions.assertThat;
+import static io.restassured.RestAssured.get;
+import static io.restassured.RestAssured.given;
+import static io.vertx.it.openshift.utils.Ensure.ensureThat;
+import static io.vertx.it.openshift.utils.Kube.sleep;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.*;
 
 
 /**
@@ -61,9 +50,6 @@ public class SimpleHttpIT {
 
   @ArquillianResource
   private OpenShiftClient client;
-
-  @ArquillianResource
-  private Session session;
 
   @ArquillianResource
   private OpenShiftAssistant openShiftAssistant;
@@ -84,16 +70,16 @@ public class SimpleHttpIT {
       assertThat(client).deployments().pods().isPodReadyForPeriod();
     });
     ensureThat("only one pod is present", () -> {
-      await().atMost(5, TimeUnit.MINUTES).until(() -> {
+      await().atMost(5, TimeUnit.MINUTES).untilAsserted(() -> {
           List<Pod> list = client.pods().inNamespace(project).list().getItems();
-          return list.stream()
+          Assertions.assertThat(list.stream()
             .filter(pod -> pod.getMetadata().getName().startsWith(applicationName))
             .filter(KubernetesHelper::isPodReady)
-            .collect(Collectors.toList()).size() == 1;
+            .collect(Collectors.toList())).hasSize(1);
         }
       );
       // Check that the route is served.
-      await().atMost(5, TimeUnit.MINUTES).catchUncaughtExceptions().until(() -> get("/api/greeting")
+      await().atMost(5, TimeUnit.MINUTES).catchUncaughtExceptions().until(() -> get()
         .getStatusCode() < 500);
     });
   }
@@ -114,7 +100,7 @@ public class SimpleHttpIT {
         .param("key", "NuDVhdsfYmNkDLOZQ")
         .when()
         .get("/headers"))
-        .then()
+      .then()
       .assertThat().statusCode(200).body("id", is("abc"));
 
   }
@@ -159,7 +145,7 @@ public class SimpleHttpIT {
         .build();
 
       Request request = new Request.Builder()
-        .url(RestAssured.baseURI + "/ws")
+        .url(RestAssured.baseURI + "ws")
         .build();
 
       List<String> messages = new ArrayList<>();
@@ -205,7 +191,7 @@ public class SimpleHttpIT {
 
   @Test
   public void testIncreasingReplicas() throws Exception {
-    openShiftAssistant.scale(2);
+    openShiftAssistant.scale(applicationName, 2);
 
     Set<String> hosts = new HashSet<>();
 
@@ -221,8 +207,7 @@ public class SimpleHttpIT {
       Assertions.assertThat(hosts).hasSize(2);
     });
 
-//    setReplicasAndWait(deploymentAssistant.client(), deploymentAssistant.applicationName(), 1);
-    openShiftAssistant.scale(1);
+    openShiftAssistant.scale(applicationName, 1);
 
     hosts.clear();
 
