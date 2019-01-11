@@ -46,7 +46,7 @@ public class SimpleHttpIT {
 
   private String project;
 
-  private final String applicationName = System.getProperty("app.name");
+  private static final String APP_NAME = System.getProperty("app.name");
 
   @ArquillianResource
   private OpenShiftClient client;
@@ -73,7 +73,7 @@ public class SimpleHttpIT {
       await().atMost(5, TimeUnit.MINUTES).untilAsserted(() -> {
           List<Pod> list = client.pods().inNamespace(project).list().getItems();
           Assertions.assertThat(list.stream()
-            .filter(pod -> pod.getMetadata().getName().startsWith(applicationName))
+            .filter(pod -> pod.getMetadata().getName().startsWith(APP_NAME))
             .filter(KubernetesHelper::isPodReady)
             .collect(Collectors.toList())).hasSize(1);
         }
@@ -191,7 +191,7 @@ public class SimpleHttpIT {
 
   @Test
   public void testIncreasingReplicas() throws Exception {
-    openShiftAssistant.scale(applicationName, 2);
+    openShiftAssistant.scale(APP_NAME, 2);
 
     Set<String> hosts = new HashSet<>();
 
@@ -207,7 +207,7 @@ public class SimpleHttpIT {
       Assertions.assertThat(hosts).hasSize(2);
     });
 
-    openShiftAssistant.scale(applicationName, 1);
+    openShiftAssistant.scale(APP_NAME, 1);
 
     hosts.clear();
 

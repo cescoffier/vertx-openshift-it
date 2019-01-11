@@ -2,21 +2,18 @@ package io.vertx.openshift.micrometer;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.vertx.it.openshift.utils.AbstractTestClass;
-import io.vertx.it.openshift.utils.OC;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.arquillian.cube.openshift.impl.enricher.AwaitRoute;
+import org.arquillian.cube.openshift.impl.enricher.RouteURL;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
-import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 import static io.vertx.it.openshift.utils.Ensure.ensureThat;
-import static io.vertx.it.openshift.utils.Kube.urlForRoute;
 import static org.awaitility.Awaitility.await;
 
 /**
@@ -24,27 +21,22 @@ import static org.awaitility.Awaitility.await;
  *
  * @author Martin Spisiak (mspisiak@redhat.com) on 04/10/2018.
  */
-public class MicrometerMetricsIT extends AbstractTestClass {
-  private static final String APP_NAME = "micrometer-metrics";
-  private static String route;
+@RunWith(Arquillian.class)
+public class MicrometerMetricsIT {
 
-  @BeforeClass
-  public static void initialize() throws Exception {
-    String processedPrometheus;
-    String prometheusUrl;
-    OC.execute("create", "secret", "generic", "prom", "--from-file=target/classes/prometheus.yml");
-    processedPrometheus = OC.execute(false, "process", "-f", "target/classes/prometheus-standalone.yml");
-    try (PrintWriter out = new PrintWriter("processed-prometheus.yml")) {
-      out.println(processedPrometheus);
-    }
-    OC.execute("apply", "-f", "processed-prometheus.yml");
+  private static final String APP_NAME = System.getProperty("app.name");
 
-    route = deployApp(APP_NAME, "target/classes/META-INF/fabric8/openshift.yml");
-    RestAssured.baseURI = prometheusUrl = urlForRoute(client.routes().withName("prom").get()).toString();
+  @RouteURL("${app.name}")
+  @AwaitRoute
+  private URL route;
 
-    await(String.format("the route is accessible at %s.", route))
-      .atMost(5, TimeUnit.MINUTES)
-      .until(() -> get(route).statusCode() <= 204 && given().relaxedHTTPSValidation().get(prometheusUrl + "/metrics").statusCode() <= 204);
+  @RouteURL("prom")
+  @AwaitRoute
+  private URL prometheusRoute;
+
+  @Before
+  public void startup() {
+    RestAssured.baseURI = prometheusRoute.toString();
   }
 
   @Test
@@ -58,15 +50,5 @@ public class MicrometerMetricsIT extends AbstractTestClass {
         .getString("data.activeTargets.findAll { it -> it.labels.job == \"vertx\" }.health")
         .equalsIgnoreCase("[up]"))
     );
-  }
-
-  @AfterClass
-  public static void destroyResources() throws IOException {
-    OC.execute("delete", "all", "-l", "name=prom");
-    OC.execute("delete", "secret", "-l", "name=prom");
-    OC.execute("delete", "secret", "prom");
-    boolean delete = new File("processed-prometheus.yml").delete();
-    if (delete) System.out.println("Processed prometheus template file successfully deleted");
-    else throw new IOException("Unable to delete processed prometheus template file");
   }
 }
