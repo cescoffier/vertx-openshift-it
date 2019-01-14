@@ -26,7 +26,7 @@
 
     <!-- constrained by kubernetes assertions, which for whatever reason are way behind the latest -->
     <!--<assertj.version>3.6.2</assertj.version>-->
-    <rest-assured.version>3.2.0</rest-assured.version>
+    <rest-assured.version>3.3.0</rest-assured.version>
     <junit.version>4.12.0.redhat-003</junit.version>
     <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
     <vertx-maven-plugin.version>1.0.18</vertx-maven-plugin.version>
