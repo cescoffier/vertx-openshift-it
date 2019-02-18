@@ -1,43 +1,58 @@
 package io.vertx.openshift.healthcheck;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import static org.awaitility.Awaitility.await;
-import static org.awaitility.Awaitility.with;
-import static io.restassured.RestAssured.get;
-
-import static io.vertx.it.openshift.utils.Ensure.ensureThat;
-import static io.vertx.openshift.healthcheck.HealthCheckHttpVerticle.CHECKS_CONTENT_KO;
-import static io.vertx.openshift.healthcheck.HealthCheckHttpVerticle.CHECKS_CONTENT_OK;
-import static io.vertx.openshift.healthcheck.HealthCheckHttpVerticle.CHECKS_OK;
-import static io.vertx.openshift.healthcheck.HealthCheckHttpVerticle.REAL_CHECKS_TIMEOUT;
-import static io.vertx.openshift.healthcheck.HealthCheckHttpVerticle.RESET;
-
+import io.fabric8.kubernetes.api.model.Container;
+import io.fabric8.kubernetes.api.model.Probe;
+import io.fabric8.openshift.api.model.DeploymentConfig;
+import io.fabric8.openshift.client.OpenShiftClient;
+import io.restassured.RestAssured;
+import io.vertx.it.openshift.utils.OpenShiftHelper;
+import org.arquillian.cube.openshift.impl.enricher.AwaitRoute;
+import org.arquillian.cube.openshift.impl.enricher.RouteURL;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.test.api.ArquillianResource;
 import org.junit.After;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.fabric8.kubernetes.api.model.Container;
-import io.fabric8.kubernetes.api.model.Probe;
-import io.fabric8.openshift.api.model.DeploymentConfig;
-import io.vertx.it.openshift.utils.AbstractTestClass;
+import static io.restassured.RestAssured.get;
+import static io.vertx.it.openshift.utils.Ensure.ensureThat;
+import static io.vertx.openshift.healthcheck.HealthCheckHttpVerticle.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.with;
 
-public class HealthCheckIT extends AbstractTestClass {
+@RunWith(Arquillian.class)
+public class HealthCheckIT {
 
-  public static final String HEALTH = "health";
+  private static final String HEALTH = "health";
 
-  @BeforeClass
-  public static void initialize() throws IOException {
-    deployAndAwaitStartWithRoute("/health");
+  private static final String APP_NAME = System.getProperty("app.name");
+
+  private static boolean setUpDone = false;
+
+  private OpenShiftHelper helper;
+
+  @RouteURL("healthcheck-it")
+  @AwaitRoute(path = "/health", timeout = 15, timeoutUnit = TimeUnit.SECONDS, statusCode = 204)
+  private URL route;
+
+  @ArquillianResource
+  private OpenShiftClient client;
+
+  @Before
+  public void setUp() {
+    RestAssured.baseURI = route.toString();
+    helper = new OpenShiftHelper(client, APP_NAME);
   }
 
   @After
-  public void resetHealtChecks() {
+  public void resetHealthChecks() {
     get(RESET).then().statusCode(200);
   }
 
@@ -48,8 +63,8 @@ public class HealthCheckIT extends AbstractTestClass {
       containers.forEach(c -> {
         final Probe livenessProbe = c.getLivenessProbe();
         assertThat(livenessProbe).as("Liveness probe should not be null.").isNotNull();
-        softly.assertThat(livenessProbe.getHttpGet().getPort().getIntVal()).as("port should be defined for liveness probe").isEqualTo(8088);
-        softly.assertThat(livenessProbe.getHttpGet().getPath()).as("path should be defined for liveness probe").isEqualTo("/isAlive");
+        assertThat(livenessProbe.getHttpGet().getPort().getIntVal()).as("port should be defined for liveness probe").isEqualTo(8088);
+        assertThat(livenessProbe.getHttpGet().getPath()).as("path should be defined for liveness probe").isEqualTo("/isAlive");
       });
     });
   }
@@ -61,15 +76,15 @@ public class HealthCheckIT extends AbstractTestClass {
       containers.forEach(c -> {
         Probe readinessProbe = c.getReadinessProbe();
         assertThat(readinessProbe).as("Readiness probe should not be null.").isNotNull();
-        softly.assertThat(readinessProbe.getHttpGet().getPort().getIntVal()).as("port should be defined for readiness probe").isEqualTo(8088);
-        softly.assertThat(readinessProbe.getHttpGet().getPath()).as("path should be defined for readiness probe").isEqualTo("/start");
+        assertThat(readinessProbe.getHttpGet().getPort().getIntVal()).as("port should be defined for readiness probe").isEqualTo(8088);
+        assertThat(readinessProbe.getHttpGet().getPath()).as("path should be defined for readiness probe").isEqualTo("/start");
       });
     });
   }
 
   private List<Container> getContainers() {
-    DeploymentConfig dc = client.deploymentConfigs().withName(deploymentAssistant.applicationName()).get();
-    ensureThat("the deployment config " + deploymentAssistant.applicationName() + " exists", () -> assertThat(dc).isNotNull());
+    DeploymentConfig dc = client.deploymentConfigs().withName(APP_NAME).get();
+    ensureThat("the deployment config " + APP_NAME + " exists", () -> assertThat(dc).isNotNull());
     return dc.getSpec().getTemplate().getSpec().getContainers();
   }
 

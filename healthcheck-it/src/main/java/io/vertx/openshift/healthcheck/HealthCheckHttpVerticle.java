@@ -15,14 +15,14 @@ import io.vertx.ext.web.RoutingContext;
  */
 public class HealthCheckHttpVerticle extends AbstractVerticle {
 
-  public static final String RESET = "/checks/reset";
-  public static final String CHECKS_OK = "checks/ok";
-  public static final String CHECKS_KO = "checks/ko";
-  public static final String REAL_CHECKS_TIMEOUT = "checks/timeout";
-  public static final String REAL_CHECKS_THROW_EXCEPTION = "checks/throw_exception";
-  public static final String CHECKS_CONTENT_OK = "checks/content/ok";
-  public static final String CHECKS_CONTENT_KO = "checks/content/ko";
-  public static final String EVENTBUS_CHECKS = "eventbus_checks";
+  static final String RESET = "/checks/reset";
+  static final String CHECKS_OK = "checks/ok";
+  private static final String CHECKS_KO = "checks/ko";
+  static final String REAL_CHECKS_TIMEOUT = "checks/timeout";
+  static final String REAL_CHECKS_THROW_EXCEPTION = "checks/throw_exception";
+  static final String CHECKS_CONTENT_OK = "checks/content/ok";
+  static final String CHECKS_CONTENT_KO = "checks/content/ko";
+  private static final String EVENTBUS_CHECKS = "eventbus_checks";
 
   @Override
   public void start(Future<Void> future) throws Exception {
