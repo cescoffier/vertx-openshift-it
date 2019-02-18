@@ -14,7 +14,7 @@
 
   <properties>
     <vertx.skip>true</vertx.skip>
-    <fabric8.skip>true</fabric8.skip>
+    <docker.skip.build>true</docker.skip.build>
   </properties>
 
   <dependencies>
@@ -27,13 +27,11 @@
       <groupId>io.vertx.openshift</groupId>
       <artifactId>name-service</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>io.vertx.openshift</groupId>
       <artifactId>greeting-service</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -43,22 +41,11 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-failsafe-plugin</artifactId>
+            <groupId>io.fabric8</groupId>
+            <artifactId>fabric8-maven-plugin</artifactId>
             <configuration>
-              <systemPropertyVariables>
-                <nameServiceTemplate>${project.parent.basedir}/name-service/target/classes/META-INF/fabric8/openshift.yml</nameServiceTemplate>
-                <greetingServiceTemplate>${project.parent.basedir}/greeting-service/target/classes/META-INF/fabric8/openshift.yml</greetingServiceTemplate>
-              </systemPropertyVariables>
+              <profile>aggregate</profile>
             </configuration>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>integration-test</goal>
-                  <goal>verify</goal>
-                </goals>
-              </execution>
-            </executions>
           </plugin>
         </plugins>
       </build>

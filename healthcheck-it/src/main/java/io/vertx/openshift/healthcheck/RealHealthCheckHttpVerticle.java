@@ -12,7 +12,7 @@ import io.vertx.ext.web.Router;
  */
 public class RealHealthCheckHttpVerticle extends AbstractVerticle {
 
-  public static final String KILL = "kill";
+  private static final String KILL = "kill";
 
   @Override
   public void start(Future<Void> future) throws Exception {
@@ -44,7 +44,7 @@ public class RealHealthCheckHttpVerticle extends AbstractVerticle {
     );
 
     vertx.createHttpServer()
-      .requestHandler(internalRouter::accept)
+      .requestHandler(internalRouter)
       .listen(8088, handler -> {
         if (handler.succeeded()) {
           future.complete();
