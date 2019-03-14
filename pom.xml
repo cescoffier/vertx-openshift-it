@@ -45,7 +45,7 @@
      they are very outdated.
      -->
 
-    <fabric8.maven.plugin.version>3.5.42</fabric8.maven.plugin.version>
+    <fabric8.maven.plugin.version>4.0.0</fabric8.maven.plugin.version>
 
     <!-- muse use version from https://maven.repository.redhat.com/ga/io/fabric8/kubernetes-api/ -->
     <kubernetes.api.version>3.0.12</kubernetes.api.version>
