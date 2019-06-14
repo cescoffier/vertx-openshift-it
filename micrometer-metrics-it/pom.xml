@@ -36,7 +36,7 @@
     <dependency>
       <groupId>com.github.scribejava</groupId>
       <artifactId>scribejava-apis</artifactId>
-      <version>6.3.0</version>
+      <version>6.6.3</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
